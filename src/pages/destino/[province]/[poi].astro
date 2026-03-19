@@ -1,0 +1,210 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/Header.astro";
+import { provinces, slugify } from "../../../data/provinces.js";
+import { DEFAULT_HOURS } from "../../../data/poi-config.ts";
+
+import PoiHero from "../../../components/poi/PoiHero.astro";
+import PoiBentoGrid from "../../../components/poi/PoiBentoGrid.astro";
+import PoiSidebar from "../../../components/poi/PoiSidebar.astro";
+import PoiRelated from "../../../components/poi/PoiRelated.astro";
+
+export async function getStaticPaths() {
+    const paths = [];
+    for (const [provinceSlug, province] of Object.entries(provinces)) {
+        for (const poi of (province as any).pois) {
+            paths.push({
+                params: { province: provinceSlug, poi: slugify(poi.name) },
+                props: { poi, province, provinceSlug },
+            });
+        }
+    }
+    return paths;
+}
+
+const { poi, province, provinceSlug } = Astro.props as any;
+
+// Related: same type OR same province, max 6
+const related = Object.entries(provinces)
+    .flatMap(([slug, prov]) =>
+        (prov as any).pois
+            .filter(
+                (p: any) =>
+                    p.name !== poi.name &&
+                    (p.type === poi.type || slug === provinceSlug),
+            )
+            .map((p: any) => ({
+                ...p,
+                province: (prov as any).name,
+                provinceSlug: slug,
+                provinceColor: (prov as any).color,
+                region: (prov as any).region,
+                href: `/destino/${slug}/${slugify(p.name)}`,
+            })),
+    )
+    .slice(0, 6);
+
+// Bento images
+const seed = slugify(poi.name);
+const bentoImages: string[] = poi.images?.length
+    ? poi.images.slice(0, 3)
+    : [
+          `https://picsum.photos/seed/${seed}-b/600/400`,
+          `https://picsum.photos/seed/${seed}-c/600/400`,
+          `https://picsum.photos/seed/${seed}-d/600/400`,
+      ];
+
+// Hours + website
+const hours = poi.hours ??
+    DEFAULT_HOURS[poi.type] ?? {
+        weekdays: "Consultar disponibilidad",
+        weekend: "",
+    };
+const website = poi.website ?? null;
+const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${poi.name}, ${province.name}, República Dominicana`)}`;
+const showHours = poi.type !== "playa";
+---
+
+<Layout title={`${poi.name} — DominicanGo`} description={poi.description}>
+    <Header />
+
+    <article>
+        <PoiHero poi={poi} province={province} />
+
+        <div class="bg-[#f5f7fa]">
+            <div class="max-w-6xl mx-auto px-4 md:px-8 py-12">
+                <div class="grid md:grid-cols-[1fr_300px] gap-8 items-start">
+                    <!-- Main column -->
+                    <div class="space-y-6">
+                        <PoiBentoGrid images={bentoImages} name={poi.name} />
+
+                        <!-- About -->
+                        <div
+                            class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8"
+                        >
+                            <h2
+                                class="font-heading font-bold text-xl text-gray-800 mb-5 flex items-center gap-3"
+                            >
+                                <span
+                                    class="w-8 h-8 rounded-xl bg-sky-50 flex items-center justify-center shrink-0"
+                                >
+                                    <svg
+                                        class="w-4 h-4 text-sky-500"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        ><path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        ></path></svg
+                                    >
+                                </span>
+                                Sobre este lugar
+                            </h2>
+                            <p class="text-gray-600 text-base leading-relaxed">
+                                {poi.description}
+                            </p>
+                        </div>
+
+                        <!-- Tags -->
+                        {
+                            poi.tags?.length > 0 && (
+                                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                                    <h2 class="font-heading font-bold text-xl text-gray-800 mb-5 flex items-center gap-3">
+                                        <span class="w-8 h-8 rounded-xl bg-teal-50 flex items-center justify-center shrink-0">
+                                            <svg
+                                                class="w-4 h-4 text-teal-500"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        Qué encontrarás
+                                    </h2>
+                                    <div class="flex flex-wrap gap-2.5">
+                                        {poi.tags.map((tag: string) => (
+                                            <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 text-sky-700 text-xs font-semibold border border-sky-100">
+                                                <svg
+                                                    class="w-2.5 h-2.5 text-teal-400"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 8 8"
+                                                >
+                                                    <circle
+                                                        cx="4"
+                                                        cy="4"
+                                                        r="3"
+                                                    />
+                                                </svg>
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        }
+
+                        <!-- Province banner -->
+                        <div
+                            class="rounded-3xl overflow-hidden shadow-sm border p-8"
+                            style={`background:linear-gradient(135deg,${province.color}18 0%,${province.color}08 100%);border-color:${province.color}30`}
+                        >
+                            <div class="flex items-start gap-4">
+                                <span
+                                    class="w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center"
+                                    style={`background:${province.color}30`}
+                                >
+                                    <span
+                                        class="w-5 h-5 rounded-full"
+                                        style={`background:${province.color}`}
+                                    ></span>
+                                </span>
+                                <div>
+                                    <p
+                                        class="text-xs uppercase tracking-wider font-semibold mb-0.5"
+                                        style={`color:${province.color}`}
+                                    >
+                                        Provincia
+                                    </p>
+                                    <h3
+                                        class="font-heading font-bold text-xl text-gray-800 mb-1"
+                                    >
+                                        {province.name}
+                                    </h3>
+                                    <p
+                                        class="text-sm text-gray-500 leading-relaxed"
+                                    >
+                                        {poi.name} está ubicado en la región <strong
+                                            class="text-gray-700"
+                                            >{province.region}</strong
+                                        > de la República Dominicana.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <PoiSidebar
+                        poi={poi}
+                        province={province}
+                        hours={hours}
+                        website={website}
+                        mapLink={mapLink}
+                        showHours={showHours}
+                    />
+                </div>
+            </div>
+        </div>
+
+        <PoiRelated related={related} />
+    </article>
+</Layout>

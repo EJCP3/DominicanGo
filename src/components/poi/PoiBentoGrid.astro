@@ -1,0 +1,72 @@
+---
+// PoiBentoGrid.astro
+interface Props {
+    images: string[];
+    name: string;
+}
+const { images, name } = Astro.props;
+---
+
+<div
+    class="grid grid-cols-3 grid-rows-2 gap-2.5 h-[340px] rounded-3xl overflow-hidden shadow-sm"
+>
+    <!-- Large: col-span-2, row-span-2 -->
+    <div class="col-span-2 row-span-2 relative overflow-hidden bento-item">
+        <img
+            src={images[0]}
+            alt={`${name} - vista 1`}
+            class="w-full h-full object-cover"
+        />
+        <div
+            class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-4"
+        >
+            <span
+                class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full"
+                >Vista 1</span
+            >
+        </div>
+    </div>
+    <!-- Small top-right -->
+    <div class="col-span-1 row-span-1 relative overflow-hidden bento-item">
+        <img
+            src={images[1]}
+            alt={`${name} - vista 2`}
+            class="w-full h-full object-cover"
+        />
+        <div
+            class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-3"
+        >
+            <span
+                class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full"
+                >Vista 2</span
+            >
+        </div>
+    </div>
+    <!-- Small bottom-right -->
+    <div class="col-span-1 row-span-1 relative overflow-hidden bento-item">
+        <img
+            src={images[2]}
+            alt={`${name} - vista 3`}
+            class="w-full h-full object-cover"
+        />
+        <div
+            class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-3"
+        >
+            <span
+                class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full"
+                >Vista 3</span
+            >
+        </div>
+    </div>
+</div>
+<style>
+    .bento-item:hover .bento-hover {
+        opacity: 1;
+    }
+    .bento-item img {
+        transition: transform 0.5s ease;
+    }
+    .bento-item:hover img {
+        transform: scale(1.06);
+    }
+</style>

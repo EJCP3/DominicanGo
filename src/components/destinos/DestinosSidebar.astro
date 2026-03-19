@@ -1,0 +1,215 @@
+---
+import { TYPE_LABELS, REGION_COLORS, TIPOS } from "../../data/poi-config.ts";
+import { provinces } from "../../data/provinces.js";
+
+const regiones = [
+    ...new Set(Object.values(provinces).map((p: any) => p.region)),
+].sort();
+---
+
+<aside class="lg:w-72 shrink-0">
+    <div class="sticky top-20 space-y-4">
+        <!-- Buscar -->
+        <div
+            class="bg-white/85 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm p-4"
+        >
+            <label
+                class="text-xs uppercase tracking-wider text-gray-400 font-semibold block mb-2"
+                >Buscar</label
+            >
+            <div class="relative">
+                <svg
+                    class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input
+                    id="search-input"
+                    type="text"
+                    placeholder="Playa Bávaro, cuevas, museo..."
+                    class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100 transition"
+                />
+            </div>
+        </div>
+
+        <!-- Tipo de Lugar -->
+        <div
+            class="bg-white/85 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm p-4"
+        >
+            <label
+                class="text-xs uppercase tracking-wider text-gray-400 font-semibold block mb-3"
+                >Tipo de Lugar</label
+            >
+            <div class="space-y-1" id="filter-tipo">
+                {
+                    TIPOS.map((tipo) => (
+                        <button
+                            data-filter="tipo"
+                            data-value={tipo}
+                            class="filter-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-sky-50 hover:text-sky-700 transition-all text-left"
+                        >
+                            <span
+                                class="w-5 h-5 shrink-0 text-gray-400 icon-svg"
+                                data-icon={tipo}
+                            />
+                            <span class="font-medium">{TYPE_LABELS[tipo]}</span>
+                            <span
+                                class="ml-auto text-xs bg-gray-100 text-gray-500 rounded-full px-1.5 py-0.5 count-badge"
+                                data-count={tipo}
+                            />
+                        </button>
+                    ))
+                }
+            </div>
+        </div>
+
+        <!-- Provincia -->
+        <div
+            class="bg-white/85 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm p-4"
+        >
+            <label
+                class="text-xs uppercase tracking-wider text-gray-400 font-semibold block mb-3"
+                >Provincia</label
+            >
+            <div
+                class="space-y-0.5 max-h-56 overflow-y-auto custom-scroll"
+                id="filter-provincia"
+            >
+                {
+                    Object.entries(provinces)
+                        .sort((a: any, b: any) =>
+                            a[1].name.localeCompare(b[1].name),
+                        )
+                        .map(([slug, prov]: any) => (
+                            <button
+                                data-filter="provincia"
+                                data-value={slug}
+                                class="filter-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-sm text-gray-600 hover:bg-sky-50 hover:text-sky-700 transition-all text-left"
+                            >
+                                <span
+                                    class="w-2.5 h-2.5 rounded-full shrink-0"
+                                    style={`background:${prov.color}`}
+                                />
+                                <span class="font-medium truncate">
+                                    {prov.name}
+                                </span>
+                            </button>
+                        ))
+                }
+            </div>
+        </div>
+
+        <!-- Región -->
+        <div
+            class="bg-white/85 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm p-4"
+        >
+            <label
+                class="text-xs uppercase tracking-wider text-gray-400 font-semibold block mb-3"
+                >Región</label
+            >
+            <div class="flex flex-wrap gap-2" id="filter-region">
+                {
+                    regiones.map((region: string) => (
+                        <button
+                            data-filter="region"
+                            data-value={region}
+                            style={`border-color:${REGION_COLORS[region] ?? "#cbd5e1"}`}
+                            class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold text-gray-600 border-2 hover:text-gray-900 transition-all"
+                        >
+                            {region}
+                        </button>
+                    ))
+                }
+            </div>
+        </div>
+
+        <!-- Precio -->
+        <div
+            class="bg-white/85 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm p-4"
+        >
+            <label
+                class="text-xs uppercase tracking-wider text-gray-400 font-semibold block mb-3"
+                >Precio</label
+            >
+            <div class="flex gap-2" id="filter-precio">
+                <button
+                    data-filter="precio"
+                    data-value="gratis"
+                    class="filter-btn flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium text-gray-600 border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 transition-all"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M5 13l4 4L19 7"></path></svg
+                    >
+                    Gratis
+                </button>
+                <button
+                    data-filter="precio"
+                    data-value="pagado"
+                    class="filter-btn flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium text-gray-600 border border-gray-200 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 transition-all"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                        ></path></svg
+                    >
+                    Pagado
+                </button>
+            </div>
+        </div>
+
+        <!-- Reset -->
+        <button
+            id="reset-filters"
+            class="w-full py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-gray-600 border border-dashed border-gray-300 hover:border-gray-400 transition-all hidden"
+        >
+            Limpiar filtros
+        </button>
+    </div>
+</aside>
+
+<style>
+    .filter-btn.active {
+        background: #e0f2fe;
+        color: #0284c7;
+        font-weight: 600;
+    }
+    .filter-btn[data-filter="precio"].active[data-value="gratis"] {
+        background: #d1fae5;
+        color: #065f46;
+        border-color: #6ee7b7;
+    }
+    .filter-btn[data-filter="precio"].active[data-value="pagado"] {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fcd34d;
+    }
+    .custom-scroll::-webkit-scrollbar {
+        width: 3px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 99px;
+    }
+</style>

@@ -1,0 +1,105 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import { provinces, slugify } from "../data/provinces.js";
+
+import DestinosHero from "../components/destinos/DestinosHero.astro";
+import DestinosSidebar from "../components/destinos/DestinosSidebar.astro";
+import DestinoCard from "../components/destinos/DestinoCard.astro";
+import DestinoModal from "../components/destinos/DestinoModal.astro";
+import DestinosFilterScript from "../components/destinos/DestinosFilterScript.astro";
+
+const allDestinos = Object.entries(provinces).flatMap(
+    ([provinceSlug, province]: any) =>
+        province.pois.map((poi: any) => ({
+            ...poi,
+            province: province.name,
+            provinceSlug,
+            region: province.region,
+            provinceColor: province.color,
+            poiSlug: slugify(poi.name),
+            href: `/destino/${provinceSlug}/${slugify(poi.name)}`,
+        })),
+);
+---
+
+<Layout
+    title="Destinos — DominicanGo"
+    description="Explora todos los destinos turísticos de República Dominicana."
+>
+    <Header />
+
+    <main
+        class="min-h-screen pt-14"
+        style="background:linear-gradient(180deg,#e8f4f8 0%,#d4eef7 30%,#e2f0e8 70%,#eef6fa 100%);"
+    >
+        <DestinosHero
+            totalCount={allDestinos.length}
+            provinceCount={Object.keys(provinces).length}
+        />
+
+        <div
+            class="max-w-[1400px] mx-auto px-4 sm:px-6 pb-16 flex flex-col lg:flex-row gap-6"
+        >
+            <DestinosSidebar />
+
+            <section class="flex-1 min-w-0">
+                <div
+                    class="flex flex-wrap items-center gap-2 mb-5"
+                    id="active-chips"
+                >
+                    <span
+                        id="result-count"
+                        class="text-sm text-gray-500 font-medium"
+                        >{allDestinos.length} destinos</span
+                    >
+                </div>
+
+                <div
+                    id="destinos-grid"
+                    class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                >
+                    {allDestinos.map((d: any) => <DestinoCard d={d} />)}
+                </div>
+
+                <!-- Empty state -->
+                <div id="empty-state" class="hidden text-center py-24">
+                    <div
+                        class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-100 flex items-center justify-center"
+                    >
+                        <svg
+                            class="w-8 h-8 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.5"
+                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                            ></path>
+                        </svg>
+                    </div>
+                    <h3
+                        class="font-heading font-semibold text-gray-700 text-xl mb-2"
+                    >
+                        Sin resultados
+                    </h3>
+                    <p class="text-gray-400 text-sm">
+                        Intenta con otros filtros o términos de búsqueda.
+                    </p>
+                    <button
+                        id="reset-empty"
+                        class="mt-4 px-5 py-2 rounded-full bg-sky-100 text-sky-600 text-sm font-medium hover:bg-sky-200 transition"
+                    >
+                        Limpiar filtros
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <DestinoModal />
+    <DestinosFilterScript />
+</Layout>

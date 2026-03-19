@@ -1,0 +1,25 @@
+---
+interface Props {
+    totalCount: number;
+    provinceCount: number;
+}
+const { totalCount, provinceCount } = Astro.props;
+---
+
+<div class="pt-12 pb-8 px-6 text-center">
+    <p
+        class="text-xs uppercase tracking-[0.3em] text-sky-500 font-semibold mb-2"
+    >
+        República Dominicana
+    </p>
+    <h1 class="font-heading font-bold text-4xl md:text-5xl text-gray-800 mb-3">
+        Explora los <span
+            class="text-transparent bg-clip-text bg-linear-to-r from-sky-500 to-teal-400"
+            >Destinos</span
+        >
+    </h1>
+    <p class="text-gray-500 max-w-xl mx-auto text-base">
+        {totalCount} lugares increíbles en {provinceCount} provincias — filtra, busca
+        y descubre tu próxima aventura.
+    </p>
+</div>

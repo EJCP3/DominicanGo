@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+@theme {
+  /* Light pastel palette */
+  --color-sky-50: #f0f9ff;
+  --color-sky-100: #e0f2fe;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+
+  --color-mint-50: #f0fdf4;
+  --color-mint-100: #dcfce7;
+  --color-mint-200: #bbf7d0;
+  --color-mint-300: #86efac;
+  --color-mint-400: #4ade80;
+
+  --color-lavender-50: #faf5ff;
+  --color-lavender-100: #f3e8ff;
+  --color-lavender-200: #e9d5ff;
+  --color-lavender-300: #d8b4fe;
+
+  --color-peach-50: #fff7ed;
+  --color-peach-100: #ffedd5;
+  --color-peach-200: #fed7aa;
+  --color-peach-300: #fdba74;
+
+  --color-rose-50: #fff1f2;
+  --color-rose-100: #ffe4e6;
+  --color-rose-200: #fecdd3;
+  --color-rose-300: #fda4af;
+
+  --color-lemon-50: #fefce8;
+  --color-lemon-100: #fef9c3;
+  --color-lemon-200: #fef08a;
+  --color-lemon-300: #fde047;
+
+  /* Keep tropical for accents */
+  --color-tropical-400: #4fd762;
+  --color-tropical-500: #36be49;
+
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+}
+
+/* Province SVG styles */
+.province-path {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.province-path:hover {
+  filter: brightness(1.08) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.12));
+  stroke: white;
+  stroke-width: 2;
+  transform-origin: center;
+}
+
+.province-path.active {
+  filter: brightness(1.1) drop-shadow(0 3px 12px rgba(0, 0, 0, 0.15));
+  stroke: white;
+  stroke-width: 2.5;
+}
+
+/* Map container */
+.map-container {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.map-container.shifted {
+  transform: scale(0.92) translateX(-5%);
+}
+
+/* Modal animations */
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modalOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cardStagger {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-overlay {
+  animation: overlayIn 0.3s ease-out;
+}
+
+.modal-panel {
+  animation: modalIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-panel.closing {
+  animation: modalOut 0.3s ease-in forwards;
+}
+
+.poi-card {
+  animation: cardStagger 0.4s ease-out both;
+}
+
+.poi-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.poi-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.poi-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.poi-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
