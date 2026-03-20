@@ -1,10 +1,11 @@
 ---
 // Header — light theme with clean nav
+import Icon from './Icon.astro';
 const currentPath = Astro.url.pathname;
 ---
 
 <header
-    class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 no-underline
+    class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md  no-underline
 "
 >
     <div
@@ -12,13 +13,11 @@ const currentPath = Astro.url.pathname;
     >
         <!-- Logo -->
         <div class="flex items-center gap-2">
-          
             <a
                 href="/"
-                class="no-underline
- font-heading font-bold text-gray-800 text-lg hover:text-gray-600 transition-colors"
+                class="no-underline font-heading font-extrabold text-neutral text-lg sm:text-xl transition-all hover:opacity-80"
             >
-                DominicanGo <span class="font-light text-gray-400"></span>
+                Dominican<span class="text-success font-extrabold text-2xl">Go</span>
             </a>
         </div>
 
@@ -29,8 +28,8 @@ const currentPath = Astro.url.pathname;
                 class={`no-underline
  px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
                     currentPath === "/"
-                        ? "text-gray-800 bg-gray-100"
-                        : "text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                        ? "text-base-content bg-base-200"
+                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
                 }`}
             >
                 Mapa
@@ -40,8 +39,8 @@ const currentPath = Astro.url.pathname;
                 class={`no-underline
  px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
                     currentPath.startsWith("/destinos")
-                        ? "text-gray-800 bg-gray-100"
-                        : "text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                        ? "text-base-content bg-base-200"
+                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
                 }`}
             >
                 Destinos
@@ -49,28 +48,82 @@ const currentPath = Astro.url.pathname;
             <a
                 href="#"
                 class="no-underline
- px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-all"
+ px-4 py-1.5 rounded-full text-sm font-medium text-base-content/70 hover:text-base-content hover:bg-base-200 transition-all"
             >
                 Blog
             </a>
         </nav>
 
-        <!-- Search icon -->
-        <button
-            class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors"
-        >
-            <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+        <div class="flex items-center gap-2 sm:gap-4">{
+             <button
+                class="btn btn-secondary btn-sm rounded-full hidden sm:inline-flex shadow-sm"
             >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-        </button>
+                Registrar lugar
+            </button>
+            }
+            <!-- Theme Dropdown -->
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-sm btn-ghost rounded-full px-3 text-base-content/80 font-medium">
+                    <Icon name="seasons" class="w-4 h-4 mr-1 opacity-60" />
+                    Estaciones
+                </div>
+                <ul tabindex="0" class="dropdown-content bg-base-100/95 backdrop-blur-md rounded-2xl z-50 w-44 p-2 mt-2 shadow-2xl border border-base-200">
+                    <li>
+                        <button data-theme-btn="pastel" class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200 hover:text-primary font-medium transition-colors">
+                            <Icon name="spring" class="w-4 h-4 mr-2" />
+                            Primavera
+                        </button>
+                    </li>
+                    <li>
+                        <button data-theme-btn="cupcake" class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200 hover:text-primary font-medium transition-colors">
+                            <Icon name="summer" class="w-4 h-4 mr-2" />
+                            Verano
+                        </button>
+                    </li>
+                    <li>
+                        <button data-theme-btn="caramellatte" class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200 hover:text-primary font-medium transition-colors">
+                            <Icon name="autumn" class="w-4 h-4 mr-2" />
+                            Otoño
+                        </button>
+                    </li>
+                    <li>
+                        <button data-theme-btn="nord" class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200 hover:text-primary font-medium transition-colors">
+                            <Icon name="winter" class="w-4 h-4 mr-2" />
+                            Invierno
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+           
+        </div>
     </div>
 </header>
+
+<script>
+    // Lógica del cliente para cambiar de tema desde el dropdown
+    const updateTheme = () => {
+        const themeBtns = document.querySelectorAll('.theme-btn');
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.currentTarget as HTMLButtonElement | null;
+                if (!target) return;
+                
+                const newTheme = target.getAttribute('data-theme-btn') || 'cupcake';
+                
+                // Aplicar al DOM y guardar en localStorage
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Opcional: Cerrar el dropdown quitando el focus
+                if(document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                }
+            });
+        });
+    };
+
+    // Ejecutar en navegación y transiciones de Astro si las hay
+    document.addEventListener('astro:page-load', updateTheme);
+    document.addEventListener('DOMContentLoaded', updateTheme);
+</script>

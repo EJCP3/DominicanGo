@@ -1,4 +1,7 @@
 ---
+import "../styles/app.css";
+import IconSprite from "../components/IconSprite.astro";
+
 interface Props {
     title?: string;
     description?: string;
@@ -10,7 +13,7 @@ const {
 } = Astro.props;
 ---
 
-<html lang="es">
+<html lang="es" data-theme="cupcake">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,12 +25,21 @@ const {
             href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap"
             rel="stylesheet"
         />
+        <script is:inline>
+            // Evita el flashazo blanco/oscuro aplicando el tema antes del render
+            (function() {
+                var theme = localStorage.getItem('theme');
+                if (!theme) {
+                    theme = 'cupcake'; // Verano / default
+                    localStorage.setItem('theme', theme);
+                }
+                document.documentElement.setAttribute('data-theme', theme);
+            })();
+        </script>
         <title>{title}</title>
-        <style>
-            @import "../styles/app.css";
-        </style>
     </head>
     <body class="font-body min-h-screen">
+        <IconSprite />
         <slot />
     </body>
 </html>

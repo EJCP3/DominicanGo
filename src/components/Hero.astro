@@ -1,46 +1,52 @@
 ---
 // Hero section with animated background and CTA
+import Icon from './Icon.astro';
 ---
 
 <section
-    class="relative min-h-screen flex items-center justify-center gradient-bg overflow-hidden"
+    class="relative min-h-screen flex items-center justify-center bg-base-100 overflow-hidden"
 >
     <!-- Decorative elements -->
     <div class="absolute inset-0 overflow-hidden">
         <div
-            class="absolute -top-40 -right-40 w-96 h-96 bg-tropical-400/10 rounded-full blur-3xl floating"
+            class="absolute -top-40 -right-40 w-96 h-96 bg-secondary/10 rounded-full blur-3xl floating"
         >
         </div>
         <div
-            class="absolute -bottom-40 -left-40 w-96 h-96 bg-ocean-400/10 rounded-full blur-3xl floating"
+            class="absolute top-20 left-[15%] w-72 h-72 bg-accent/10 rounded-full blur-3xl floating"
+            style="animation-delay: -1.5s;"
+        >
+        </div>
+        <div
+            class="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl floating"
             style="animation-delay: -3s;"
         >
         </div>
         <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sand-400/5 rounded-full blur-3xl"
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl"
         >
         </div>
     </div>
 
     <div class="relative z-10 text-center px-4 max-w-4xl mx-auto pt-20">
         <div
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-sm text-ocean-100 mb-8"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-base-200/50 backdrop-blur-sm border border-base-200 text-sm text-base-content/80 mb-8"
         >
-            <span class="w-2 h-2 rounded-full bg-tropical-400 animate-pulse"
+            <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"
             ></span>
             🌴 Tu próxima aventura comienza aquí
         </div>
         <h2
-            class="font-heading font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-tight mb-6"
+            class="font-heading font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-tight mb-6 text-base-content"
         >
-            <span class="block">Explora cada rincón de</span>
+            <span class="block text-base-content">Explora cada rincón de</span>
             <span
-                class="bg-gradient-to-r from-sand-400 via-sunset-400 to-tropical-400 bg-clip-text text-transparent"
+                class="text-secondary opacity-90"
                 >República Dominicana</span
             >
         </h2>
         <p
-            class="text-lg sm:text-xl text-ocean-200 max-w-2xl mx-auto mb-10 leading-relaxed"
+            class="text-lg sm:text-xl text-base-content/70 max-w-2xl mx-auto mb-10 leading-relaxed"
         >
             Descubre playas paradisíacas, montañas majestuosas y una cultura
             vibrante. Haz clic en cualquier provincia del mapa para explorar sus
@@ -48,41 +54,18 @@
         </p>
         <a
             href="#mapa"
-            class="inline-flex items-center gap-3 bg-gradient-to-r from-tropical-500 to-ocean-500 hover:from-tropical-400 hover:to-ocean-400 text-white font-heading font-semibold px-8 py-4 rounded-2xl text-lg shadow-lg shadow-tropical-500/30 hover:shadow-tropical-400/40 transition-all duration-300 hover:-translate-y-0.5"
+            class="inline-flex items-center gap-3 bg-linear-to-r from-secondary to-primary hover:from-secondary/90 hover:to-primary/90 text-primary-content font-heading font-semibold px-8 py-4 rounded-2xl text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5"
         >
-            <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                ></path>
-            </svg>
+            <Icon name="map" class="w-5 h-5" />
             Explorar el Mapa
         </a>
 
         <!-- Scroll indicator -->
         <div
-            class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-ocean-300 text-xs"
+            class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-base-content/50 text-xs"
         >
             <span>Desliza hacia abajo</span>
-            <svg
-                class="w-5 h-5 animate-bounce"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
+            <Icon name="arrow-down" class="w-5 h-5 animate-bounce" />
         </div>
     </div>
 </section>

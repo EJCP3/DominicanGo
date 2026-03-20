@@ -52,12 +52,12 @@
             .filter(Boolean)
             .map(
                 (t) =>
-                    `<span class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 text-[11px] font-medium">#${t}</span>`,
+                    `<span class="px-2.5 py-1 rounded-full bg-base-200 text-base-content/70 text-[11px] font-medium">#${t}</span>`,
             )
             .join("");
         const free = d.modalPrice === "gratis";
         modalPrice.textContent = free ? "✓ GRATIS" : "💳 PAGADO";
-        modalPrice.className = `px-3 py-1 rounded-full text-xs font-bold shadow-sm ${free ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`;
+        modalPrice.className = `badge badge-sm font-bold shadow-sm ${free ? "badge-success" : "badge-warning"}`;
         modalLink.href = d.href ?? "#";
         modal.classList.add("open");
         document.body.style.overflow = "hidden";
@@ -197,19 +197,11 @@
 </script>
 
 <style>
+    @reference "../../styles/app.css";
     .chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 3px 10px;
-        border-radius: 9999px;
-        font-size: 11px;
-        font-weight: 600;
-        background: #e0f2fe;
-        color: #0284c7;
-        cursor: pointer;
+        @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-primary/20 text-primary border border-primary/20 cursor-pointer;
     }
     .chip:hover {
-        background: #bae6fd;
+        @apply bg-primary/30;
     }
 </style>

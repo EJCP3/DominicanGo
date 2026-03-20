@@ -1,68 +1,58 @@
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: pastel, cupcake, caramellatte, nord;
+}
 
 @theme {
-  /* Light pastel palette */
-  --color-sky-50: #f0f9ff;
-  --color-sky-100: #e0f2fe;
-  --color-sky-200: #bae6fd;
-  --color-sky-300: #7dd3fc;
-  --color-sky-400: #38bdf8;
-  --color-sky-500: #0ea5e9;
+  --font-heading: "Outfit", sans-serif;
+  --font-body: "Poppins", sans-serif;
+}
 
-  --color-mint-50: #f0fdf4;
-  --color-mint-100: #dcfce7;
-  --color-mint-200: #bbf7d0;
-  --color-mint-300: #86efac;
-  --color-mint-400: #4ade80;
+/* Premium Global Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-base-300, #cbd5e1);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary, #4ade80);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-base-300, #cbd5e1) transparent;
+}
 
-  --color-lavender-50: #faf5ff;
-  --color-lavender-100: #f3e8ff;
-  --color-lavender-200: #e9d5ff;
-  --color-lavender-300: #d8b4fe;
-
-  --color-peach-50: #fff7ed;
-  --color-peach-100: #ffedd5;
-  --color-peach-200: #fed7aa;
-  --color-peach-300: #fdba74;
-
-  --color-rose-50: #fff1f2;
-  --color-rose-100: #ffe4e6;
-  --color-rose-200: #fecdd3;
-  --color-rose-300: #fda4af;
-
-  --color-lemon-50: #fefce8;
-  --color-lemon-100: #fef9c3;
-  --color-lemon-200: #fef08a;
-  --color-lemon-300: #fde047;
-
-  /* Keep tropical for accents */
-  --color-tropical-400: #4fd762;
-  --color-tropical-500: #36be49;
-
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Poppins', sans-serif;
+/* Custom minimal scroll for small panels */
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-base-300, #cbd5e1);
+  border-radius: 4px;
 }
 
 /* Province SVG styles */
 .province-path {
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  stroke: rgba(255, 255, 255, 0.9);
-  stroke-width: 1.5;
+  stroke: none;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
 }
 
 .province-path:hover {
   filter: brightness(1.08) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.12));
-  stroke: white;
-  stroke-width: 2;
   transform-origin: center;
 }
 
 .province-path.active {
   filter: brightness(1.1) drop-shadow(0 3px 12px rgba(0, 0, 0, 0.15));
-  stroke: white;
-  stroke-width: 2.5;
 }
 
 /* Map container */

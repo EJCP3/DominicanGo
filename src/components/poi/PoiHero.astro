@@ -1,7 +1,5 @@
 ---
 // PoiHero.astro
-import PoiBentoGrid from "./PoiBentoGrid.astro";
-
 interface Props {
     name: string;
     type: string;
@@ -17,225 +15,31 @@ interface Props {
 
 const {
     name,
-    type,
-    province,
-    description,
-    price,
-    hours,
-    website,
     image,
-    images = [],
-    color = "#4ade80",
 } = Astro.props;
-
-const allImages = [image, ...images].slice(0, 3);
-while (allImages.length < 3) allImages.push(image);
-
-const typeIcons: Record<string, string> = {
-    playa: "🏖️",
-    naturaleza: "🌿",
-    aventura: "🧗",
-    museo: "🏛️",
-    cultura: "🎭",
-    parque: "🌲",
-    tienda: "🛍️",
-};
-const typeIcon = typeIcons[type] ?? "📍";
-const priceLabel =
-    price === "gratis" ? "🆓 Entrada gratuita" : "💳 Entrada con costo";
 ---
 
-<section class="poi-hero">
-    <div class="poi-hero-inner">
-        <!-- Left: Info -->
-        <div class="poi-info">
-            <nav class="breadcrumb" aria-label="breadcrumb">
-                <a href="/destinos">Destinos</a>
-                <span>›</span>
-                <span>{province}</span>
-                <span>›</span>
-                <span>{name}</span>
-            </nav>
-
-            <div class="poi-badges">
-                <span
-                    class="badge-type"
-                    style={`background:${color}22;border-color:${color}55;color:${color}`}
-                >
-                    {typeIcon}
-                    {type}
-                </span>
-                <span class="badge-price">{priceLabel}</span>
-            </div>
-
-            <h1 class="poi-title">{name}</h1>
-            <p class="poi-province">📍 {province}</p>
-            <p class="poi-desc">{description}</p>
-
-            {
-                hours && (
-                    <div class="poi-hours">
-                        <h3 class="hours-title">🕐 Horarios</h3>
-                        <p>{hours.weekdays}</p>
-                        <p>{hours.weekend}</p>
-                    </div>
-                )
-            }
-
-            <div class="poi-actions">
-                {
-                    website && (
-                        <a
-                            href={website}
-                            target="_blank"
-                            rel="noopener"
-                            class="btn-primary"
-                        >
-                            Sitio oficial →
-                        </a>
-                    )
-                }
-                <a href="/destinos" class="btn-ghost">← Volver a destinos</a>
-            </div>
-        </div>
-
-        <!-- Right: Bento image grid -->
-        <div class="poi-gallery">
-            <PoiBentoGrid images={allImages} name={name} />
-        </div>
+<header class="relative w-full h-[50vh] min-h-[350px] max-h-[500px] flex items-end pb-12 overflow-hidden bg-black">
+    <!-- Background Image -->
+    <img 
+        src={image} 
+        alt={name} 
+        class="absolute inset-0 w-full h-full object-cover select-none"
+    />
+    
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
+    
+    <!-- Content -->
+    <div class="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-8">
+        <a 
+            href="/destinos" 
+            class="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm font-medium mb-4 transition-colors no-underline"
+        >
+            ← Volver a destinos
+        </a>
+        <h1 class="text-4xl sm:text-6xl font-heading font-extrabold text-white m-0 drop-shadow-md leading-tight">
+            {name}
+        </h1>
     </div>
-</section>
-
-<style>
-    .poi-hero {
-        background: linear-gradient(180deg, #0f172a 0%, #0c1a2e 100%);
-        padding: 2rem 2rem 3rem;
-        border-bottom: 1px solid #1e293b;
-    }
-    .poi-hero-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 1fr 1.1fr;
-        gap: 3rem;
-        align-items: start;
-    }
-    .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.78rem;
-        color: #64748b;
-        margin-bottom: 1.25rem;
-        flex-wrap: wrap;
-    }
-    .breadcrumb a {
-        color: #4ade80;
-        text-decoration: none;
-    }
-    .breadcrumb a:hover {
-        text-decoration: underline;
-    }
-    .poi-badges {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-bottom: 0.75rem;
-    }
-    .badge-type {
-        font-size: 0.75rem;
-        font-weight: 700;
-        padding: 0.3rem 0.8rem;
-        border-radius: 999px;
-        border: 1px solid;
-    }
-    .badge-price {
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 0.3rem 0.8rem;
-        border-radius: 999px;
-        background: #1e293b;
-        color: #94a3b8;
-    }
-    .poi-title {
-        font-size: clamp(1.6rem, 4vw, 2.6rem);
-        font-weight: 800;
-        color: #f8fafc;
-        margin: 0 0 0.35rem;
-        line-height: 1.15;
-    }
-    .poi-province {
-        font-size: 0.85rem;
-        color: #4ade80;
-        font-weight: 600;
-        margin: 0 0 1rem;
-    }
-    .poi-desc {
-        font-size: 0.95rem;
-        color: #94a3b8;
-        line-height: 1.65;
-        margin: 0 0 1.5rem;
-    }
-    .poi-hours {
-        background: #1e293b;
-        border-radius: 12px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.5rem;
-    }
-    .hours-title {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #f8fafc;
-        margin: 0 0 0.5rem;
-    }
-    .poi-hours p {
-        font-size: 0.82rem;
-        color: #94a3b8;
-        margin: 0.2rem 0;
-    }
-    .poi-actions {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-    }
-    .btn-primary {
-        background: #4ade80;
-        color: #0f172a;
-        font-weight: 700;
-        font-size: 0.9rem;
-        padding: 0.65rem 1.4rem;
-        border-radius: 10px;
-        text-decoration: none;
-        transition:
-            background 0.2s,
-            transform 0.15s;
-    }
-    .btn-primary:hover {
-        background: #22c55e;
-        transform: translateY(-1px);
-    }
-    .btn-ghost {
-        color: #64748b;
-        font-size: 0.85rem;
-        text-decoration: none;
-        padding: 0.65rem 0.5rem;
-        transition: color 0.2s;
-    }
-    .btn-ghost:hover {
-        color: #f8fafc;
-    }
-    .poi-gallery {
-        position: relative;
-    }
-
-    @media (max-width: 900px) {
-        .poi-hero-inner {
-            grid-template-columns: 1fr;
-        }
-        .poi-gallery {
-            order: -1;
-        }
-    }
-</style>
+</header>

@@ -1,5 +1,5 @@
 /**
- * Modal Controller — Light theme
+ * Modal Controller — Light theme using daisyUI
  * Handles opening, closing, and populating the province detail modal.
  */
 
@@ -13,12 +13,6 @@ export function openModal(provinceId, provincesData) {
   if (!data) return;
 
   const mapContainer = document.getElementById('map-container');
-  const modalOverlay = document.getElementById('modal-overlay');
-  const modalPanel = document.getElementById('modal-panel');
-  const modalTitle = document.getElementById('modal-title');
-  const modalDescription = document.getElementById('modal-description');
-  const modalPois = document.getElementById('modal-pois');
-  const modalColorDot = document.getElementById('modal-color-dot');
   const tooltip = document.getElementById('province-tooltip');
 
   // Set active province highlight
@@ -33,66 +27,104 @@ export function openModal(provinceId, provincesData) {
     activeProvince = activePath;
   }
 
-  mapContainer?.classList.add('shifted');
+  if (mapContainer) {
+    mapContainer.classList.add('shifted');
+  }
 
-  modalTitle.textContent = data.name;
-  modalDescription.textContent = data.description;
-  modalColorDot.style.backgroundColor = data.color;
+  // Remove the old modal overlay if it exists (legacy non-daisyUI structure)
+  const oldOverlay = document.getElementById('modal-overlay');
+  if (oldOverlay) {
+    oldOverlay.remove();
+  }
 
-  // Build POI cards — light themed
-  modalPois.innerHTML = data.pois
+  // Ensure daisyUI dialog container exists
+  let dialog = document.getElementById('daisy-province-modal');
+  if (!dialog) {
+    dialog = document.createElement('dialog');
+    dialog.id = 'daisy-province-modal';
+    dialog.className = 'modal';
+    document.body.appendChild(dialog);
+
+    // Event listener to handle closing state cleanly (like clicking outside or ESC)
+    dialog.addEventListener('close', () => {
+      if (mapContainer) {
+        mapContainer.classList.remove('shifted');
+      }
+      if (activeProvince) {
+        activeProvince.classList.remove('active');
+        activeProvince = null;
+      }
+      document.body.style.overflow = '';
+    });
+  }
+
+  // Build POI cards — daisyUI card-side variant
+  const poisHtml = data.pois
     .map(
       (poi) => `
-      <div class="poi-card group rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg bg-white">
-        <div class="sm:flex">
-          <div class="sm:w-44 h-40 sm:h-auto overflow-hidden flex-shrink-0">
-            <img src="${poi.image}" alt="${poi.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-          </div>
-          <div class="p-4 flex flex-col justify-between flex-1">
-            <div>
-              <h5 class="font-heading font-semibold text-lg text-gray-800 mb-1">${poi.name}</h5>
-              <p class="text-gray-500 text-sm leading-relaxed">${poi.description}</p>
-            </div>
-            <button class="mt-3 inline-flex items-center gap-2 text-sm font-medium text-sky-500 hover:text-sky-600 transition-colors group/btn">
-              Ver más
-              <svg class="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-            </button>
+      <div class="card card-side bg-base-100 shadow-sm border border-base-200 mb-4 hover:shadow-md transition-shadow duration-300">
+        <figure class="w-1/3 sm:w-48 overflow-hidden shrink-0">
+          <img src="${poi.image}" alt="${poi.name}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" loading="lazy" />
+        </figure>
+        <div class="card-body p-4 sm:p-6 w-2/3">
+          <h2 class="card-title text-lg sm:text-xl text-base-content font-heading">${poi.name}</h2>
+          <p class="font-map text-sm sm:text-base text-base-content/80 leading-relaxed">${poi.description}</p>
+          <div class="card-actions justify-end mt-4">
+            <button class="btn btn-primary btn-sm rounded-full px-6">Ver más</button>
           </div>
         </div>
       </div>
-    `,
+    `
     )
     .join('');
 
-  modalOverlay.classList.remove('hidden');
-  modalOverlay.classList.add('flex');
-  modalPanel.classList.remove('closing');
+  // Inject the native daisyUI modal structure into the dialog
+  // Using background blur/opacity to integrate softly with the clean map design
+  dialog.innerHTML = `
+    <div class="modal-box w-11/12 max-w-3xl overflow-hidden p-0 rounded-3xl" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10 text-base-content/60 hover:text-base-content">✕</button>
+      </form>
+      
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-base-200/50">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-3 h-3 rounded-full shadow-sm" style="background-color: ${data.color}"></div>
+          <span class="text-xs uppercase tracking-wider font-semibold opacity-50">Provincia</span>
+        </div>
+        <h3 class="font-logo font-bold text-3xl sm:text-4xl text-base-content mb-2">${data.name}</h3>
+        <p class="font-map text-base-content/70 text-sm sm:text-base">${data.description}</p>
+      </div>
+
+      <!-- Modal Body (POIs) -->
+      <div class="p-6 overflow-y-auto max-h-[60vh] bg-base-200/20 custom-scrollbar">
+        <div class="text-xs uppercase tracking-wider font-semibold opacity-50 mb-4">
+          Puntos de Interés
+        </div>
+        <div>
+          ${poisHtml}
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  `;
 
   if (tooltip) tooltip.style.opacity = '0';
   document.body.style.overflow = 'hidden';
+
+  // Show the modal natively
+  dialog.showModal();
 }
 
 /**
  * Close the province modal.
+ * Keeping this for backward compatibility if called from inline HTML event listeners.
  */
 export function closeModal() {
-  const modalOverlay = document.getElementById('modal-overlay');
-  const modalPanel = document.getElementById('modal-panel');
-  const mapContainer = document.getElementById('map-container');
-
-  modalPanel?.classList.add('closing');
-
-  setTimeout(() => {
-    modalOverlay?.classList.add('hidden');
-    modalOverlay?.classList.remove('flex');
-    modalPanel?.classList.remove('closing');
-    mapContainer?.classList.remove('shifted');
-
-    if (activeProvince) {
-      activeProvince.classList.remove('active');
-      activeProvince = null;
-    }
-
-    document.body.style.overflow = '';
-  }, 300);
+  const dialog = document.getElementById('daisy-province-modal');
+  if (dialog) {
+    dialog.close(); // Triggers the 'close' event listener added in openModal
+  }
 }

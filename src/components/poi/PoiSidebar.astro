@@ -100,68 +100,35 @@ const priceLabel = poi.price === "gratis" ? "Gratuito" : "Tiene costo";
 </aside>
 
 <style>
+    @reference "../../styles/app.css";
     .poi-sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+        @apply flex flex-col gap-4;
     }
     .sidebar-card {
-        background: #0f172a;
-        border: 1px solid #1e293b;
-        border-radius: 16px;
-        padding: 1.25rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+        @apply bg-base-100 rounded-2xl p-5 flex flex-col gap-3 shadow-sm border border-base-200;
     }
     .sc-title {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: #4ade80;
-        margin: 0;
+        @apply text-xs font-bold uppercase tracking-wider text-primary m-0;
     }
     .info-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        @apply list-none m-0 p-0 flex flex-col gap-2;
     }
     .info-list li {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.5rem;
-        font-size: 0.82rem;
-        color: #94a3b8;
+        @apply flex items-start gap-2 text-sm text-base-content/80;
     }
     .info-icon {
-        font-size: 1rem;
-        flex-shrink: 0;
+        @apply text-base shrink-0;
     }
     .tags-wrap {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
+        @apply flex flex-wrap gap-1.5;
     }
     .tag-pill {
-        font-size: 0.72rem;
-        font-weight: 600;
-        border: 1px solid;
-        padding: 0.25rem 0.65rem;
-        border-radius: 999px;
+        @apply text-[11px] font-semibold border px-2.5 py-1 rounded-full;
     }
     .sidebar-link {
-        display: block;
-        font-size: 0.82rem;
-        color: #64748b;
-        text-decoration: none;
-        padding: 0.3rem 0;
-        transition: color 0.2s;
+        @apply block text-sm text-base-content/70 no-underline py-1 transition-colors;
     }
     .sidebar-link:hover {
-        color: #4ade80;
+        @apply text-primary;
     }
 </style>

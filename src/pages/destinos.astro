@@ -31,7 +31,7 @@ const allDestinos = Object.entries(provinces).flatMap(
 
     <main
         class="min-h-screen pt-14"
-        style="background:linear-gradient(180deg,#e8f4f8 0%,#d4eef7 30%,#e2f0e8 70%,#eef6fa 100%);"
+  
     >
         <DestinosHero
             totalCount={allDestinos.length}
@@ -50,7 +50,7 @@ const allDestinos = Object.entries(provinces).flatMap(
                 >
                     <span
                         id="result-count"
-                        class="text-sm text-gray-500 font-medium"
+                        class="text-sm text-base-content/70 font-medium"
                         >{allDestinos.length} destinos</span
                     >
                 </div>
@@ -65,10 +65,10 @@ const allDestinos = Object.entries(provinces).flatMap(
                 <!-- Empty state -->
                 <div id="empty-state" class="hidden text-center py-24">
                     <div
-                        class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-100 flex items-center justify-center"
+                        class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center"
                     >
                         <svg
-                            class="w-8 h-8 text-gray-400"
+                            class="w-8 h-8 text-base-content/50"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -82,16 +82,16 @@ const allDestinos = Object.entries(provinces).flatMap(
                         </svg>
                     </div>
                     <h3
-                        class="font-heading font-semibold text-gray-700 text-xl mb-2"
+                        class="font-heading font-semibold text-base-content text-xl mb-2"
                     >
                         Sin resultados
                     </h3>
-                    <p class="text-gray-400 text-sm">
+                    <p class="text-base-content/60 text-sm">
                         Intenta con otros filtros o términos de búsqueda.
                     </p>
                     <button
                         id="reset-empty"
-                        class="mt-4 px-5 py-2 rounded-full bg-sky-100 text-sky-600 text-sm font-medium hover:bg-sky-200 transition"
+                        class="btn btn-outline btn-primary btn-sm rounded-full mt-4"
                     >
                         Limpiar filtros
                     </button>

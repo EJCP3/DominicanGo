@@ -69,9 +69,20 @@ const showHours = poi.type !== "playa";
     <Header />
 
     <article>
-        <PoiHero poi={poi} province={province} />
+        <PoiHero 
+            name={poi.name}
+            type={poi.type}
+            province={province.name}
+            description={poi.description}
+            price={poi.price}
+            hours={hours}
+            website={website}
+            image={bentoImages[0]}
+            images={bentoImages}
+            color={province.color}
+        />
 
-        <div class="bg-[#f5f7fa]">
+        <div class="bg-base-200">
             <div class="max-w-6xl mx-auto px-4 md:px-8 py-12">
                 <div class="grid md:grid-cols-[1fr_300px] gap-8 items-start">
                     <!-- Main column -->
@@ -80,16 +91,16 @@ const showHours = poi.type !== "playa";
 
                         <!-- About -->
                         <div
-                            class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8"
+                            class="bg-base-100 rounded-3xl shadow-sm border border-base-200 p-8"
                         >
                             <h2
-                                class="font-heading font-bold text-xl text-gray-800 mb-5 flex items-center gap-3"
+                                class="font-heading font-bold text-xl text-base-content mb-5 flex items-center gap-3"
                             >
                                 <span
-                                    class="w-8 h-8 rounded-xl bg-sky-50 flex items-center justify-center shrink-0"
+                                    class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
                                 >
                                     <svg
-                                        class="w-4 h-4 text-sky-500"
+                                        class="w-4 h-4 text-primary"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -103,7 +114,7 @@ const showHours = poi.type !== "playa";
                                 </span>
                                 Sobre este lugar
                             </h2>
-                            <p class="text-gray-600 text-base leading-relaxed">
+                            <p class="text-base-content/80 text-base leading-relaxed">
                                 {poi.description}
                             </p>
                         </div>
@@ -111,11 +122,11 @@ const showHours = poi.type !== "playa";
                         <!-- Tags -->
                         {
                             poi.tags?.length > 0 && (
-                                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-                                    <h2 class="font-heading font-bold text-xl text-gray-800 mb-5 flex items-center gap-3">
-                                        <span class="w-8 h-8 rounded-xl bg-teal-50 flex items-center justify-center shrink-0">
+                                <div class="bg-base-100 rounded-3xl shadow-sm border border-base-200 p-8">
+                                    <h2 class="font-heading font-bold text-xl text-base-content mb-5 flex items-center gap-3">
+                                        <span class="w-8 h-8 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
                                             <svg
-                                                class="w-4 h-4 text-teal-500"
+                                                class="w-4 h-4 text-secondary"
                                                 fill="none"
                                                 stroke="currentColor"
                                                 viewBox="0 0 24 24"
@@ -132,9 +143,9 @@ const showHours = poi.type !== "playa";
                                     </h2>
                                     <div class="flex flex-wrap gap-2.5">
                                         {poi.tags.map((tag: string) => (
-                                            <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 text-sky-700 text-xs font-semibold border border-sky-100">
+                                            <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary/5 text-primary text-xs font-semibold border border-primary/20">
                                                 <svg
-                                                    class="w-2.5 h-2.5 text-teal-400"
+                                                    class="w-2.5 h-2.5 text-secondary"
                                                     fill="currentColor"
                                                     viewBox="0 0 8 8"
                                                 >
@@ -175,15 +186,15 @@ const showHours = poi.type !== "playa";
                                         Provincia
                                     </p>
                                     <h3
-                                        class="font-heading font-bold text-xl text-gray-800 mb-1"
+                                        class="font-heading font-bold text-xl text-base-content mb-1"
                                     >
                                         {province.name}
                                     </h3>
                                     <p
-                                        class="text-sm text-gray-500 leading-relaxed"
+                                        class="text-sm text-base-content/70 leading-relaxed"
                                     >
                                         {poi.name} está ubicado en la región <strong
-                                            class="text-gray-700"
+                                            class="text-base-content"
                                             >{province.region}</strong
                                         > de la República Dominicana.
                                     </p>
