@@ -46,7 +46,7 @@ const currentPath = Astro.url.pathname;
                 Destinos
             </a>
             <a
-                href="#"
+                href="/blog"
                 class="no-underline
  px-4 py-1.5 rounded-full text-sm font-medium text-base-content/70 hover:text-base-content hover:bg-base-200 transition-all"
             >
@@ -100,30 +100,61 @@ const currentPath = Astro.url.pathname;
     </div>
 </header>
 
-<script>
-    // Lógica del cliente para cambiar de tema desde el dropdown
-    const updateTheme = () => {
+<script is:inline>
+    function initThemeDropdown() {
         const themeBtns = document.querySelectorAll('.theme-btn');
+        if (!themeBtns.length) return; // Salir si no encuentra los botones
+
+        // 1. Leer el tema actual (por defecto 'cupcake')
+        const currentTheme = localStorage.getItem('theme') || 'cupcake';
+        
+        // 2. Marcar el botón activo al cargar la página
         themeBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const target = e.currentTarget as HTMLButtonElement | null;
-                if (!target) return;
+            const btnTheme = btn.getAttribute('data-theme-btn');
+            if (btnTheme === currentTheme) {
+                btn.classList.add('bg-base-200', 'text-primary-content', 'font-bold');
+                btn.classList.remove('font-medium');
+            } else {
+                btn.classList.remove('bg-base-200', 'text-primary-content', 'font-bold');
+                btn.classList.add('font-medium');
+            }
+        });
+
+        // 3. Agregar el evento de clic a cada botón
+        themeBtns.forEach(btn => {
+            // Usamos una función tradicional para asegurarnos de que no se dupliquen eventos
+            btn.onclick = function(e) {
+                const newTheme = this.getAttribute('data-theme-btn') || 'cupcake';
                 
-                const newTheme = target.getAttribute('data-theme-btn') || 'cupcake';
-                
-                // Aplicar al DOM y guardar en localStorage
+                // Cambiar el tema en el HTML y guardar
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
                 
-                // Opcional: Cerrar el dropdown quitando el focus
-                if(document.activeElement instanceof HTMLElement) {
+                // Limpiar todos los botones
+                themeBtns.forEach(b => {
+                    b.classList.remove('bg-base-200', 'text-primary-content', 'font-bold');
+                    b.classList.add('font-medium');
+                });
+                
+                // Resaltar solo el botón clickeado
+                this.classList.add('bg-base-200', 'text-primary-content', 'font-bold');
+                this.classList.remove('font-medium');
+                
+                // Cerrar el dropdown quitando el foco
+                if (document.activeElement) {
                     document.activeElement.blur();
                 }
-            });
+            };
         });
-    };
+    }
 
-    // Ejecutar en navegación y transiciones de Astro si las hay
-    document.addEventListener('astro:page-load', updateTheme);
-    document.addEventListener('DOMContentLoaded', updateTheme);
+    // Ejecutar inmediatamente o cuando el DOM esté listo (cubre navegaciones normales)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initThemeDropdown);
+    } else {
+        initThemeDropdown();
+    }
+
+    // Por si en algún momento activas ViewTransitions de Astro
+    document.addEventListener('astro:after-swap', initThemeDropdown);
 </script>

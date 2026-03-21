@@ -13,10 +13,18 @@ const { totalCount, provinceCount } = Astro.props;
         República Dominicana
     </p>
     <h1 class="font-heading font-bold text-4xl md:text-5xl text-base-content mb-3">
-        Explora los <span
-            class="text-secondary"
-            >Destinos</span
-        >
+       <span>Explora</span>
+       <span class="text-error animate-pulse">&hearts;</span>
+      <span class="text-rotate text-secondary font-extrabold overflow-hidden inline-flex flex-col duration-15000">
+        <span class="  flex flex-col items-center lg:items-start justify-center">
+            <span class="h-[1.2em] flex items-center justify-center">los Destinos</span>
+            <span class="h-[1.2em] flex items-center justify-center">las Playas</span>
+            <span class="h-[1.2em] flex items-center justify-center">los Ríos</span>
+            <span class="h-[1.2em] flex items-center justify-center">las Montañas</span>
+            <span class="h-[1.2em] flex items-center justify-center">el Paraíso</span>
+            <span class="h-[1.2em] flex items-center justify-center">la comida</span>
+        </span>
+    </span>
     </h1>
     <p class="text-base-content/70 max-w-xl mx-auto text-base">
         {totalCount} lugares increíbles en {provinceCount} provincias — filtra, busca

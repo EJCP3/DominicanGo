@@ -8,6 +8,7 @@ interface DestinoItem {
     price: string;
     tags?: string[];
     image: string;
+    images?: string[];
     province: string;
     provinceSlug: string;
     provinceColor: string;
@@ -38,18 +39,33 @@ const { d } = Astro.props;
     data-modal-price={d.price}
     data-modal-type={d.type}
     data-modal-image={d.image}
+    data-modal-images={d.images ? [d.image, ...d.images.filter((img: string) => img !== d.image)].join(",") : ""}
     data-modal-tags={(d.tags ?? []).join(",")}
 >
-    <div class="relative h-44 overflow-hidden bg-base-200">
-        <img
-            src={d.image}
-            alt={d.name}
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+    <div class="relative h-44 bg-base-300 overflow-hidden group/card">
+        <figure class={`w-full h-full m-0 ${d.images && d.images.length > 0 ? "hover-gallery" : ""}`}>
+            {
+                d.images && d.images.length > 0 ? (
+                    [d.image, ...d.images.filter((img: string) => img !== d.image)].map((img) => (
+                        <img
+                            src={img}
+                            alt={d.name}
+                            class="w-full h-full object-cover"
+                        />
+                    ))
+                ) : (
+                    <img
+                        src={d.image}
+                        alt={d.name}
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                )
+            }
+        </figure>
         <!-- Type badge -->
-        <div class="absolute top-3 left-3">
+        <div class="absolute top-3 left-3 z-10 pointer-events-none">
             <span
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-accent/20 backdrop-blur-md text-accent border border-accent/20 shadow-sm card-type-badge"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-accent/70 backdrop-blur-md text-accent-content border border-accent/20 shadow-sm card-type-badge"
                 data-type={d.type}
             >
                 <span class="w-3.5 h-3.5 card-icon"></span>
@@ -57,7 +73,7 @@ const { d } = Astro.props;
             </span>
         </div>
         <!-- Price badge -->
-        <div class="absolute top-3 right-3">
+        <div class="absolute top-3 right-3 z-10 pointer-events-none">
             <span
                 class={`badge badge-sm font-bold shadow-sm ${d.price === "gratis" ? "badge-success" : "badge-warning"}`}
             >
@@ -91,7 +107,7 @@ const { d } = Astro.props;
                     .slice(0, 3)
                     .map((tag: string) => (
                         <span class="px-2 py-0.5 rounded-full bg-base-200 text-base-content/70 text-[10px] font-medium">
-                            #{tag}
+                            {tag}
                         </span>
                     ))
             }

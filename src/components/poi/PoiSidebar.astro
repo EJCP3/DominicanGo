@@ -1,5 +1,6 @@
 ---
 // PoiSidebar.astro — sharing & quick-info sidebar
+import Icon from "../Icon.astro";
 interface Props {
     poi: any;
     province: any;
@@ -18,18 +19,18 @@ const priceLabel = poi.price === "gratis" ? "Gratuito" : "Tiene costo";
         <h3 class="sc-title">Información rápida</h3>
         <ul class="info-list">
             <li>
-                <span class="info-icon">📍</span><span
-                    ><strong>Provincia:</strong> {province.name}</span
+             
+                    <strong>Provincia:</strong> {province.name}</span
                 >
             </li>
             <li>
-                <span class="info-icon">🏷️</span><span
-                    ><strong>Categoría:</strong> {poi.type}</span
+               
+                    <strong>Categoría:</strong> {poi.type}</span
                 >
             </li>
             <li>
-                <span class="info-icon">💰</span><span
-                    ><strong>Precio:</strong> {priceLabel}</span
+               
+                    <strong>Precio:</strong> {priceLabel}</span
                 >
             </li>
         </ul>
@@ -60,13 +61,11 @@ const priceLabel = poi.price === "gratis" ? "Gratuito" : "Tiene costo";
                 <ul class="info-list">
                     <li>
                         <>
-                            <span class="info-icon">🕒</span>
                             <span>Lunes a Viernes: {hours.weekdays}</span>
                         </>
                     </li>
                     <li>
                         <>
-                            <span class="info-icon">🕒</span>
                             <span>Fines de semana: {hours.weekend}</span>
                         </>
                     </li>
@@ -81,21 +80,24 @@ const priceLabel = poi.price === "gratis" ? "Gratuito" : "Tiene costo";
             href={mapLink}
             target="_blank"
             rel="noopener noreferrer"
-            class="sidebar-link">🗺️ Ver en Google Maps</a
-        >
+            class="hover:underline text-error flex items-center gap-2"
+        >   
+     Ver en Google Maps<Icon name="arrow-right" />
+        </a>
         {
             website && (
                 <a
                     href={website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="sidebar-link"
+                    class=" flex items-center gap-2 hover:underline text-error"
                 >
-                    🌐 Sitio Web Oficial
+                   Sitio Web Oficial<Icon name="globe" />
                 </a>
             )
         }
-        <a href={`/destinos`} class="sidebar-link">← Todos los destinos</a>
+        <a href={`/destinos`} class=" flex items-center gap-2 hover:underline text-primary">
+             <Icon name="arrow-left" /> Todos los destinos</a>
     </div>
 </aside>
 
