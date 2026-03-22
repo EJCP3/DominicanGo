@@ -1,17 +1,17 @@
 ---
 // Footer component
 
-
 import Icon from "./Icon.astro";
 ---
 
-
-<footer class="py-8 bg-ocean-900 border-t border-white/5">
+<footer
+    class="py-8 pb-28 md:pb-8 bg-ocean-900 border-t border-white/5 relative z-40"
+>
     <div
-        class="px-6 pb-3 flex items-center justify-between text-[10px] text-base-content/50 tracking-widest uppercase max-w-[1400px] w-full mx-auto"
+        class="px-4 md:px-6 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-0 text-center md:text-left text-[10px] text-base-content/50 tracking-widest uppercase max-w-[1400px] w-full mx-auto"
     >
-        <span class="flex items-center gap-2">
-            <Icon name="map" class="w-3 h-3" />
+        <span class="flex flex-col sm:flex-row items-center gap-2">
+            <Icon name="map" class="w-3 h-3 hidden sm:inline-block" />
             Guía Turística Interactiva de República Dominicana &hearts;
         </span>
         <span>&copy; 2026 DominicanGo</span>

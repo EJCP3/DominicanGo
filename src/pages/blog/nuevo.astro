@@ -5,15 +5,15 @@ import Header from "../../components/Header.astro";
 // Obtenemos los destinos para pasarlos al frontend script.
 import { provinces } from "../../data/provinces.js";
 
-const destinationsList = Object.entries(provinces).flatMap(
-    ([provinceSlug, province]: any) =>
+const destinationsList = Object.entries(provinces)
+    .flatMap(([provinceSlug, province]: any) =>
         province.pois.map((poi: any) => ({
             id: poi.name, // Display name
             value: `${provinceSlug}|${poi.name}`, // To keep track of province for linking later if needed
-            provinceName: province.name 
-        }))
-).sort((a, b) => a.id.localeCompare(b.id));
-
+            provinceName: province.name,
+        })),
+    )
+    .sort((a, b) => a.id.localeCompare(b.id));
 ---
 
 <Layout title="Publicar experiencia — Blog DominicanGo">
@@ -21,79 +21,189 @@ const destinationsList = Object.entries(provinces).flatMap(
 
     <main class="min-h-screen pt-24 pb-24 bg-base-200/30">
         <div class="max-w-3xl mx-auto px-4 sm:px-6">
-            
             <div class="mb-10 text-center">
-                <h1 class="font-heading font-extrabold text-3xl md:text-4xl text-base-content mb-3">
+                <h1
+                    class="font-heading font-extrabold text-3xl md:text-4xl text-base-content mb-3"
+                >
                     Comparte tu <span class="text-primary">Aventura</span>
                 </h1>
                 <p class="text-base-content/70">
-                    Inspira a otros viajeros contando tu experiencia en nuestros destinos.
+                    Inspira a otros viajeros contando tu experiencia en nuestros
+                    destinos.
                 </p>
             </div>
 
             <!-- Success Alert (Hidden by default) -->
-            <div id="success-alert" class="alert alert-success shadow-lg mb-8 hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div
+                id="success-alert"
+                class="alert alert-success shadow-lg mb-8 hidden"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="stroke-current shrink-0 h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path></svg
+                >
                 <div>
                     <h3 class="font-bold">¡Publicación enviada!</h3>
-                    <div class="text-xs">Tu historia está siendo procesada y se publicará pronto.</div>
+                    <div class="text-xs">
+                        Tu historia está siendo procesada y se publicará pronto.
+                    </div>
                 </div>
             </div>
 
             <div class="card bg-base-100 shadow-xl border border-base-200">
                 <div class="card-body p-6 md:p-10">
                     <form id="new-post-form" class="space-y-6">
-                        
                         <!-- Title Field -->
                         <div class="form-control w-full">
                             <label class="label">
-                                <span class="label-text font-bold text-base-content">Título de tu historia</span>
+                                <span
+                                    class="label-text font-bold text-base-content"
+                                    >Título de tu historia</span
+                                >
                             </label>
-                            <input type="text" id="post-title" placeholder="Ej: Amanecer mágico en Bahía de las Águilas..." class="input input-bordered input-primary w-full focus:outline-none" required />
+                            <input
+                                type="text"
+                                id="post-title"
+                                placeholder="Ej: Amanecer mágico en Bahía de las Águilas..."
+                                class="input input-bordered input-primary w-full focus:outline-none"
+                                required
+                            />
                         </div>
 
                         <!-- Destination Dropdown -->
                         <div class="form-control w-full">
                             <label class="label">
-                                <span class="label-text font-bold text-base-content">¿Sobre qué destino escribes?</span>
+                                <span
+                                    class="label-text font-bold text-base-content"
+                                    >¿Sobre qué destino escribes?</span
+                                >
                             </label>
-                            <select id="post-destination" class="select select-bordered select-primary w-full focus:outline-none" required>
-                                <option disabled selected value="">Selecciona un destino de la lista...</option>
+                            <select
+                                id="post-destination"
+                                class="select select-bordered select-primary w-full focus:outline-none"
+                                required
+                            >
+                                <option disabled selected value=""
+                                    >Selecciona un destino de la lista...</option
+                                >
                                 {/* Populated via client-side script */}
+                            </select>
+                        </div>
+
+                        <!-- Story Type Dropdown -->
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span
+                                    class="label-text font-bold text-base-content"
+                                    >Tipo de historia</span
+                                >
+                            </label>
+                            <select
+                                id="post-type"
+                                class="select select-bordered select-primary w-full focus:outline-none"
+                                required
+                            >
+                                <option disabled selected value=""
+                                    >Selecciona el tipo de historia...</option
+                                >
+                                <option value="aventura">Aventura</option>
+                                <option value="cultura">Cultura</option>
+                                <option value="naturaleza">Naturaleza</option>
+                                <option value="experiencia">Experiencia</option>
+                                <option value="gastronomia">Gastronomía</option>
+                                <option value="relajacion">Relajación</option>
+                                <option value="romance">Romance</option>
+                                <option value="fotografia">Fotografía</option>
+                                <option value="otro">Otro</option>
                             </select>
                         </div>
 
                         <!-- Image Upload Field -->
                         <div class="form-control w-full">
                             <label class="label">
-                                <span class="label-text font-bold text-base-content">Imágenes de tu viaje</span>
-                                <span class="label-text-alt text-base-content/50">Puedes seleccionar varias</span>
+                                <span
+                                    class="label-text font-bold text-base-content"
+                                    >Imágenes de tu viaje</span
+                                >
+                                <span
+                                    class="label-text-alt text-base-content/50"
+                                    >Puedes seleccionar varias</span
+                                >
                             </label>
-                            <input type="file" id="post-image" class="file-input file-input-bordered file-input-primary w-full" accept="image/png, image/jpeg, image/webp" multiple />
-                            <div id="image-preview" class="flex flex-wrap gap-2 mt-3"></div>
+                            <input
+                                type="file"
+                                id="post-image"
+                                class="file-input file-input-bordered file-input-primary w-full"
+                                accept="image/png, image/jpeg, image/webp"
+                                multiple
+                            />
+                            <div
+                                id="image-preview"
+                                class="flex flex-wrap gap-2 mt-3"
+                            >
+                            </div>
                         </div>
 
                         <!-- Story Textarea -->
                         <div class="form-control w-full">
                             <label class="label">
-                                <span class="label-text font-bold text-base-content">Tu historia de viaje</span>
+                                <span
+                                    class="label-text font-bold text-base-content"
+                                    >Tu historia de viaje</span
+                                >
                             </label>
-                            
-                            <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
-                            <style is:inline>
-                                .ql-toolbar.ql-snow { border: 1px solid oklch(var(--p)); border-bottom: none; background: oklch(var(--b2)); border-radius: 0.75rem 0.75rem 0 0; }
-                                .ql-container.ql-snow { border: 1px solid oklch(var(--p)); border-radius: 0 0 0.75rem 0.75rem; font-family: inherit; font-size: 1rem; }
-                                .ql-editor { min-height: 16rem; }
-                                .ql-editor p { margin-bottom: 0.5em; }
-                            </style>
-                            <script is:inline src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
-                            <div id="quill-editor" class="bg-base-100 text-base-content"></div>
+                            <link
+                                href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+                                rel="stylesheet"
+                            />
+                            <style is:inline>
+                                .ql-toolbar.ql-snow {
+                                    border: 1px solid oklch(var(--p));
+                                    border-bottom: none;
+                                    background: oklch(var(--b2));
+                                    border-radius: 0.75rem 0.75rem 0 0;
+                                }
+                                .ql-container.ql-snow {
+                                    border: 1px solid oklch(var(--p));
+                                    border-radius: 0 0 0.75rem 0.75rem;
+                                    font-family: inherit;
+                                    font-size: 1rem;
+                                }
+                                .ql-editor {
+                                    min-height: 16rem;
+                                }
+                                .ql-editor p {
+                                    margin-bottom: 0.5em;
+                                }
+                            </style>
+                            <script
+                                is:inline
+                                src="https://cdn.quilljs.com/1.3.6/quill.min.js"
+                            ></script>
+
+                            <div
+                                id="quill-editor"
+                                class="bg-base-100 text-base-content"
+                            >
+                            </div>
                         </div>
 
                         <!-- Submit Button -->
                         <div class="form-control mt-8">
-                            <button type="submit" id="submit-btn" class="btn btn-primary btn-lg w-full rounded-full shadow-lg">
+                            <button
+                                type="submit"
+                                id="submit-btn"
+                                class="btn btn-primary btn-lg w-full rounded-full shadow-lg"
+                            >
                                 Publicar historia
                             </button>
                         </div>
@@ -102,9 +212,12 @@ const destinationsList = Object.entries(provinces).flatMap(
             </div>
 
             <div class="text-center mt-8">
-                <a href="/blog" class="text-base-content/50 hover:text-primary transition-colors hover:underline text-sm font-medium">Cancelar y volver al blog</a>
+                <a
+                    href="/blog"
+                    class="text-base-content/50 hover:text-primary transition-colors hover:underline text-sm font-medium"
+                    >Cancelar y volver al blog</a
+                >
             </div>
-
         </div>
     </main>
 
@@ -112,8 +225,8 @@ const destinationsList = Object.entries(provinces).flatMap(
     <script define:vars={{ destinationsList }}>
         // Populating the dropdown
         const destinationSelect = document.getElementById("post-destination");
-        
-        destinationsList.forEach(dest => {
+
+        destinationsList.forEach((dest) => {
             const option = document.createElement("option");
             option.value = dest.value;
             option.textContent = `${dest.id} (${dest.provinceName})`;
@@ -122,37 +235,40 @@ const destinationsList = Object.entries(provinces).flatMap(
 
         // Initialize Quill Rich Text Editor
         // @ts-ignore
-        const quill = new Quill('#quill-editor', {
-            theme: 'snow',
-            placeholder: 'Érase una vez en un rincón paradisíaco de República Dominicana...',
+        const quill = new Quill("#quill-editor", {
+            theme: "snow",
+            placeholder:
+                "Érase una vez en un rincón paradisíaco de República Dominicana...",
             modules: {
                 toolbar: [
-                    [{ 'header': [2, 3, false] }],
-                    ['bold', 'italic', 'underline', 'blockquote'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    ['link'],
-                    ['clean']
-                ]
-            }
+                    [{ header: [2, 3, false] }],
+                    ["bold", "italic", "underline", "blockquote"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["link"],
+                    ["clean"],
+                ],
+            },
         });
 
         // Image Preview & State Logic
         const imageInput = document.getElementById("post-image");
         const previewContainer = document.getElementById("image-preview");
         let selectedFiles = []; // Array en memoria para no perder archivos al abrir la ventana múltiple veces
-        
-        imageInput.addEventListener("change", function() {
+
+        imageInput.addEventListener("change", function () {
             // Añadir nuevos archivos al arreglo
-            Array.from(this.files).forEach(file => {
+            Array.from(this.files).forEach((file) => {
                 if (!file.type.startsWith("image/")) return;
                 // Evitar duplicados exactos
-                const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                const exists = selectedFiles.some(
+                    (f) => f.name === file.name && f.size === file.size,
+                );
                 if (!exists) {
                     selectedFiles.push(file);
                 }
             });
             // Limpiar el input nativo para permitir reconseleccionar el mismo archivo si se elimina
-            this.value = ""; 
+            this.value = "";
             renderPreviews();
         });
 
@@ -166,12 +282,14 @@ const destinationsList = Object.entries(provinces).flatMap(
 
                     const img = document.createElement("img");
                     img.src = e.target.result;
-                    img.className = "w-full h-full object-cover rounded-xl border border-primary/20 shadow-sm";
-                    
+                    img.className =
+                        "w-full h-full object-cover rounded-xl border border-primary/20 shadow-sm";
+
                     const removeBtn = document.createElement("button");
                     removeBtn.type = "button";
                     removeBtn.innerHTML = "&times;";
-                    removeBtn.className = "absolute -top-2 -right-2 bg-error text-error-content rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity shadow-md cursor-pointer disabled:opacity-50";
+                    removeBtn.className =
+                        "absolute -top-2 -right-2 bg-error text-error-content rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity shadow-md cursor-pointer disabled:opacity-50";
                     removeBtn.onclick = () => {
                         selectedFiles.splice(index, 1);
                         renderPreviews();
@@ -201,25 +319,30 @@ const destinationsList = Object.entries(provinces).flatMap(
 
             // Validar de forma manual la imagen
             if (selectedFiles.length === 0) {
-                alert("Por favor, selecciona al menos una imagen principal para tu viaje.");
+                alert(
+                    "Por favor, selecciona al menos una imagen principal para tu viaje.",
+                );
                 return;
             }
 
             // Get form data
             const title = document.getElementById("post-title").value;
-            const destination = document.getElementById("post-destination").value;
+            const destination =
+                document.getElementById("post-destination").value;
+            const type = document.getElementById("post-type").value;
             const content = quill.root.innerHTML;
-            
+
             // Usamos nuestro array en memoria en lugar del input directo
-            const fileNames = selectedFiles.map(f => f.name);
+            const fileNames = selectedFiles.map((f) => f.name);
 
             // Setup mock payload (Logging to console as requested for backend simulation layer)
             const postPayload = {
                 title,
                 destinationValue: destination,
+                storyType: type,
                 content,
                 imageNames: fileNames,
-                dateSubmitted: new Date().toISOString()
+                dateSubmitted: new Date().toISOString(),
             };
 
             console.log("=== NEW BLOG POST PREPARED FOR BACKEND ===");
@@ -228,7 +351,8 @@ const destinationsList = Object.entries(provinces).flatMap(
 
             // UI Feedback
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading loading-spinner"></span> Procesando...';
+            submitBtn.innerHTML =
+                '<span class="loading loading-spinner"></span> Procesando...';
 
             // Simulate network request delay
             setTimeout(() => {
@@ -237,12 +361,12 @@ const destinationsList = Object.entries(provinces).flatMap(
                 quill.root.innerHTML = ""; // Limpiar el editor
                 selectedFiles = []; // Limpiar memoria de imagenes
                 renderPreviews(); // Limpiar UI
-                
+
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Publicar otra historia";
-                
+
                 // Scroll to top to see success message
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }, 1200);
         });
     </script>

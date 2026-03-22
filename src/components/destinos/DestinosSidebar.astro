@@ -1,178 +1,175 @@
 ---
 import { TYPE_LABELS, REGION_COLORS, TIPOS } from "../../data/poi-config.ts";
 import { provinces } from "../../data/provinces.js";
-import Icon from "../Icon.astro";
 
 const regiones = [
     ...new Set(Object.values(provinces).map((p: any) => p.region)),
 ].sort();
 ---
 
-<aside class="lg:w-72 shrink-0">
-    <div class="sticky top-24 space-y-6 max-h-[calc(100vh-7rem)] overflow-y-auto custom-scroll pb-6 pr-2">
-        <!-- Buscar -->
-        <div
-            class="bg-base-100/85 backdrop-blur-md rounded-2xl border border-base-content/10 shadow-sm p-4"
-        >
-            <label
-                class="text-xs uppercase tracking-wider text-base-content/50 font-semibold block mb-2"
-                >Buscar</label
-            >
-            <div class="relative">
-                <Icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50" />
-                <input
-                    id="search-input"
-                    type="text"
-                    placeholder="Playa Bávaro, cuevas, museo..."
-                    class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-base-200 border border-base-300 text-sm text-base-content placeholder-base-content/50 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
-                />
-            </div>
-        </div>
+<div
+    id="filtros-panel"
+    class="invisible opacity-0 scale-95 pointer-events-none origin-right transition-all duration-300 ease-out absolute top-30 right-0 -translate-y-1/2 w-[calc(100vw-2rem)] sm:w-[500px] z-50 bg-[#fdfcfa] border border-[#f0e6d2] shadow-2xl rounded-3xl p-6"
+>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="font-heading font-extrabold text-xl text-base-content">
+            Filtros
+        </h3>
 
-        <!-- Tipo de Lugar -->
-        <div
-            class="bg-base-100/85 backdrop-blur-md rounded-2xl border border-base-content/10 shadow-sm p-4"
-        >
-            <label
-                class="text-xs uppercase tracking-wider text-base-content/50 font-semibold block mb-3"
-                >Tipo de Lugar</label
+        <div class="flex items-center gap-2">
+            <button
+                id="reset-filters"
+                class="btn btn-sm btn-circle btn-ghost text-base-content/60"
+                title="Limpiar filtros"
             >
-            <div class="space-y-1" id="filter-tipo">
-                {
-                    TIPOS.map((tipo) => (
-                        <button
-                            data-filter="tipo"
-                            data-value={tipo}
-                            class="filter-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-base-content/80 hover:bg-primary/10 hover:text-primary transition-all text-left"
-                        >
-                            <span
-                                class="w-5 h-5 shrink-0 text-base-content/50 icon-svg"
-                                data-icon={tipo}
-                            />
-                            <span class="font-medium">{TYPE_LABELS[tipo]}</span>
-                            <span
-                                class="ml-auto text-xs bg-accent/10 text-accent font-semibold rounded-full px-1.5 py-0.5 count-badge"
-                                data-count={tipo}
-                            />
-                        </button>
-                    ))
-                }
-            </div>
-        </div>
-
-        <!-- Provincia -->
-        <div
-            class="bg-base-100/85 backdrop-blur-md rounded-2xl border border-base-content/10 shadow-sm p-4"
-        >
-            <label
-                class="text-xs uppercase tracking-wider text-base-content/50 font-semibold block mb-3"
-                >Provincia</label
-            >
-            <div
-                class="space-y-0.5 max-h-56 overflow-y-auto custom-scroll"
-                id="filter-provincia"
-            >
-                {
-                    Object.entries(provinces)
-                        .sort((a: any, b: any) =>
-                            a[1].name.localeCompare(b[1].name),
-                        )
-                        .map(([slug, prov]: any) => (
-                            <button
-                                data-filter="provincia"
-                                data-value={slug}
-                                class="filter-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-sm text-base-content/80 hover:bg-primary/10 hover:text-primary transition-all text-left"
-                            >
-                                <span
-                                    class="w-2.5 h-2.5 rounded-full shrink-0"
-                                    style={`background:${prov.color}`}
-                                />
-                                <span class="font-medium truncate">
-                                    {prov.name}
-                                </span>
-                            </button>
-                        ))
-                }
-            </div>
-        </div>
-
-        <!-- Región -->
-        <div
-            class="bg-base-100/85 backdrop-blur-md rounded-2xl border border-base-content/10 shadow-sm p-4"
-        >
-            <label
-                class="text-xs uppercase tracking-wider text-base-content/50 font-semibold block mb-3"
-                >Región</label
-            >
-            <div class="flex flex-wrap gap-2" id="filter-region">
-                {
-                    regiones.map((region: string) => (
-                        <button
-                            data-filter="region"
-                            data-value={region}
-                            style={`border-color:${REGION_COLORS[region] ?? "#cbd5e1"}`}
-                            class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold text-base-content/80 border-2 hover:text-base-content transition-all"
-                        >
-                            {region}
-                        </button>
-                    ))
-                }
-            </div>
-        </div>
-
-        <!-- Precio -->
-        <div
-            class="bg-base-100/85 backdrop-blur-md rounded-2xl border border-base-content/10 shadow-sm p-4"
-        >
-            <label
-                class="text-xs uppercase tracking-wider text-base-content/50 font-semibold block mb-3"
-                >Precio</label
-            >
-            <div class="flex gap-2" id="filter-precio">
-                <button
-                    data-filter="precio"
-                    data-value="gratis"
-                    class="filter-btn flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium text-base-content border border-base-300 hover:border-success hover:bg-success/10 hover:text-success transition-all"
+                <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    ></path></svg
                 >
-                    <Icon name="check" class="w-4 h-4" />
-                    Gratis
-                </button>
-                <button
-                    data-filter="precio"
-                    data-value="pagado"
-                    class="filter-btn flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium text-base-content border border-base-300 hover:border-warning hover:bg-warning/10 hover:text-warning transition-all"
+            </button>
+            <button
+                class="btn btn-sm btn-circle btn-ghost text-base-content/60"
+                onclick="document.getElementById('filtros-panel').classList.remove('popup-open');"
+            >
+                <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"></path></svg
                 >
-                    <Icon name="cash" class="w-4 h-4" />
-                    Pagado
-                </button>
-            </div>
+            </button>
         </div>
-
-        <!-- Reset -->
-        <button
-            id="reset-filters"
-            class="w-full py-2.5 rounded-xl text-sm font-medium text-error/70 hover:text-error border border-dashed border-error/30 hover:border-error/60 hover:bg-error/5 transition-all hidden"
-        >
-            Limpiar filtros
-        </button>
     </div>
-</aside>
+
+    <!-- Body Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column: Selects -->
+        <div class="space-y-5">
+            <div>
+                <label
+                    class="text-sm text-base-content/60 font-medium block mb-2 px-1"
+                    >Categoría del destino</label
+                >
+                <select
+                    id="filter-select-tipo"
+                    class="select select-bordered select-md w-full bg-base-200/50 border-none rounded-2xl text-base-content font-medium focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                >
+                    <option value="">Todos</option>
+                    {
+                        TIPOS.map((tipo) => (
+                            <option value={tipo}>{TYPE_LABELS[tipo]}</option>
+                        ))
+                    }
+                </select>
+            </div>
+
+            <div>
+                <label
+                    class="text-sm text-base-content/60 font-medium block mb-2 px-1"
+                    >Provincia</label
+                >
+                <select
+                    id="filter-select-provincia"
+                    class="select select-bordered select-md w-full bg-base-200/50 border-none rounded-2xl text-base-content font-medium focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                >
+                    <option value="">Todas</option>
+                    {
+                        Object.entries(provinces)
+                            .sort((a: any, b: any) =>
+                                a[1].name.localeCompare(b[1].name),
+                            )
+                            .map(([slug, prov]: any) => (
+                                <option value={slug}>{prov.name}</option>
+                            ))
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Right Column: Warm Cards -->
+        <div class="space-y-5">
+            <!-- Región Cards (Warm styling) -->
+            <div class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA]">
+                <h4
+                    class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4"
+                >
+                    Región
+                </h4>
+                <div class="flex flex-wrap gap-2.5" id="filter-region">
+                    {
+                        regiones.map((region: string) => {
+                            const borderColor =
+                                REGION_COLORS[region] ?? "#cbd5e1";
+                            return (
+                                <button
+                                    data-filter="region"
+                                    data-value={region}
+                                    class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold border-2 bg-white transition-all text-[#7A4B3A]"
+                                    style={`border-color:${borderColor}`}
+                                >
+                                    {region}
+                                </button>
+                            );
+                        })
+                    }
+                </div>
+            </div>
+
+            <!-- Precio Cards -->
+            <div class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA]">
+                <h4
+                    class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4"
+                >
+                    Precio
+                </h4>
+                <div class="flex gap-3" id="filter-precio">
+                    <button
+                        data-filter="precio"
+                        data-value="gratis"
+                        class="filter-btn flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border border-[#E8D4BE] bg-white hover:border-[#D5A77B] transition-all"
+                    >
+                        ✓ Gratis
+                    </button>
+                    <button
+                        data-filter="precio"
+                        data-value="pagado"
+                        class="filter-btn flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border border-[#E8D4BE] bg-white hover:border-[#D5A77B] transition-all"
+                    >
+                        💳 Pagado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
     @reference "../../styles/app.css";
-    .filter-btn.active {
-        @apply bg-primary/20 text-primary-content font-semibold border-primary/20;
+
+    #filtros-panel.popup-open {
+        @apply visible opacity-100 scale-100 pointer-events-auto;
     }
-    .filter-btn[data-filter="precio"].active[data-value="gratis"] {
-        @apply bg-success/20 text-success-content border-success;
+
+    /* Active states for Pill buttons */
+    .filter-btn[data-filter="region"].active {
+        @apply shadow-md scale-105 border-transparent text-white;
+        background-color: var(--active-bg, #d5a77b);
     }
-    .filter-btn[data-filter="precio"].active[data-value="pagado"] {
-        @apply bg-warning/20 text-warning-content border-warning;
-    }
-    .custom-scroll::-webkit-scrollbar {
-        width: 3px;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-        @apply bg-base-300 rounded-full;
+    .filter-btn[data-filter="precio"].active {
+        @apply bg-[#FFF1E0] border-[#D5A77B] text-[#5A3824] shadow-inner;
     }
 </style>

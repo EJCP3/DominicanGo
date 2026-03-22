@@ -11,35 +11,60 @@ interface Props {
     image: string;
     images?: string[];
     color?: string;
+    slug?: string;
+    provinceSlug?: string;
+    poiSlug?: string;
 }
 
-const {
-    name,
-    image,
-} = Astro.props;
+const { name, image, slug, provinceSlug, poiSlug } = Astro.props;
+
+// Identificador único para enlazar la transición con la tarjeta
+const uniqueID = provinceSlug && poiSlug ? `${provinceSlug}-${poiSlug}` : null;
 ---
 
-<header class="relative w-full h-[50vh] min-h-[350px] max-h-[500px] flex items-end pb-12 overflow-hidden bg-black">
-    <!-- Background Image -->
-    <img 
-        src={image} 
-        alt={name} 
-        class="absolute inset-0 w-full h-full object-cover select-none"
-    />
-    
-    <!-- Gradient Overlay -->
-    <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
-    
-    <!-- Content -->
-    <div class="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-8">
-        <a 
-            href="/destinos" 
-            class="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm font-medium mb-4 transition-colors no-underline"
+<header class="pt-24 pb-10 bg-base-100">
+    <div class="w-full max-w-6xl mx-auto px-4 md:px-8">
+        <a
+            href="/destinos"
+            class="inline-flex items-center gap-1.5 text-base-content/60 hover:text-primary text-sm font-medium mb-6 transition-colors no-underline"
         >
-            ← Volver a destinos
+            <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg
+            >
+            Volver a destinos
         </a>
-        <h1 class="text-4xl sm:text-6xl font-heading font-extrabold text-white m-0 drop-shadow-md leading-tight">
-            {name}
-        </h1>
+
+        <figure
+            class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative"
+        >
+            <img
+                src={image}
+                alt={name}
+                class="w-full h-full object-cover select-none"
+                transition:name={uniqueID
+                    ? `img-destino-${uniqueID}`
+                    : undefined}
+            />
+            <div
+                class="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent pointer-events-none"
+            >
+            </div>
+        </figure>
+
+        <div class="max-w-4xl">
+            <h1
+                class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold text-base-content m-0 leading-tight"
+            >
+                {name}
+            </h1>
+        </div>
     </div>
 </header>

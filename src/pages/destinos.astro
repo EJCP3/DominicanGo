@@ -29,35 +29,57 @@ const allDestinos = Object.entries(provinces).flatMap(
 >
     <Header />
 
-    <main
-        class="min-h-screen pt-14"
-  
-    >
+    <main class="min-h-screen pt-14">
         <DestinosHero
             totalCount={allDestinos.length}
             provinceCount={Object.keys(provinces).length}
         />
 
-        <div
-            class="max-w-[1400px] mx-auto px-4 sm:px-6 pb-16 flex flex-col lg:flex-row gap-6"
-        >
-            <DestinosSidebar />
-
-            <section class="flex-1 min-w-0">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 pb-16">
+            <section class="w-full">
                 <div
-                    class="flex flex-wrap items-center gap-2 mb-5"
-                    id="active-chips"
+                    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 relative z-100"
                 >
-                    <span
-                        id="result-count"
-                        class="text-sm text-base-content/70 font-medium"
-                        >{allDestinos.length} destinos</span
+                    <div
+                        class="flex flex-wrap items-center gap-2"
+                        id="active-chips"
                     >
+                        <span
+                            id="result-count"
+                            class="text-sm text-base-content/70 font-medium"
+                            >{allDestinos.length} destinos</span
+                        >
+                    </div>
+
+                    <div class="relative z-50">
+                        <button
+                            id="btn-abrir-filtros"
+                            class="btn btn-sm h-10 px-5 rounded-full bg-base-100 hover:bg-base-200 text-base-content border-base-300 shadow-sm flex items-center gap-2 shrink-0"
+                            onclick="document.getElementById('filtros-panel').classList.toggle('popup-open');"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                                ></path></svg
+                            >
+                            Filtros
+                        </button>
+
+                        <!-- Tooltip Container -->
+                        <DestinosSidebar />
+                    </div>
                 </div>
 
                 <div
                     id="destinos-grid"
-                    class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                 >
                     {allDestinos.map((d: any) => <DestinoCard d={d} />)}
                 </div>

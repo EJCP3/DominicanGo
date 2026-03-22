@@ -11,6 +11,7 @@ interface DestinoItem {
     images?: string[];
     province: string;
     provinceSlug: string;
+    poiSlug: string;
     provinceColor: string;
     region: string;
     href: string;
@@ -21,8 +22,9 @@ interface Props {
 const { d } = Astro.props;
 ---
 
-<article
-    class="destino-card group bg-base-100/90 rounded-2xl overflow-hidden border border-base-content/10 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+<a
+    href={d.href}
+    class="destino-card group block bg-base-100/90 rounded-2xl overflow-hidden border border-base-content/10 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     data-name={d.name.toLowerCase()}
     data-description={d.description.toLowerCase()}
     data-tipo={d.type}
@@ -39,28 +41,23 @@ const { d } = Astro.props;
     data-modal-price={d.price}
     data-modal-type={d.type}
     data-modal-image={d.image}
-    data-modal-images={d.images ? [d.image, ...d.images.filter((img: string) => img !== d.image)].join(",") : ""}
+    data-modal-images={d.images
+        ? [d.image, ...d.images.filter((img: string) => img !== d.image)].join(
+              ",",
+          )
+        : ""}
     data-modal-tags={(d.tags ?? []).join(",")}
 >
-    <div class="relative h-44 bg-base-300 overflow-hidden group/card">
-        <figure class={`w-full h-full m-0 ${d.images && d.images.length > 0 ? "hover-gallery" : ""}`}>
-            {
-                d.images && d.images.length > 0 ? (
-                    [d.image, ...d.images.filter((img: string) => img !== d.image)].map((img) => (
-                        <img
-                            src={img}
-                            alt={d.name}
-                            class="w-full h-full object-cover"
-                        />
-                    ))
-                ) : (
-                    <img
-                        src={d.image}
-                        alt={d.name}
-                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                )
-            }
+    <div
+        class="relative h-44 bg-base-300 overflow-hidden group/card rounded-t-2xl"
+        transition:name={`img-destino-${d.provinceSlug}-${d.poiSlug}`}
+    >
+        <figure class="w-full h-full m-0">
+            <img
+                src={d.image}
+                alt={d.name}
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
         </figure>
         <!-- Type badge -->
         <div class="absolute top-3 left-3 z-10 pointer-events-none">
@@ -98,7 +95,9 @@ const { d } = Astro.props;
         >
             {d.name}
         </h3>
-        <p class="text-base-content/70 text-xs leading-relaxed line-clamp-2 mb-3">
+        <p
+            class="text-base-content/70 text-xs leading-relaxed line-clamp-2 mb-3"
+        >
             {d.description}
         </p>
         <div class="flex flex-wrap gap-1">
@@ -113,7 +112,7 @@ const { d } = Astro.props;
             }
         </div>
     </div>
-</article>
+</a>
 
 <style>
     .line-clamp-1 {

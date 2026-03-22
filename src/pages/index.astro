@@ -18,6 +18,16 @@ import { provinces } from "../data/provinces.js";
 
 	<!-- App entry point -->
 	<script>
+		// Redirigir a vista Grid si viene de móvil (pantallas pequeñas) en la carga inicial
+		// Usamos sessionStorage para que solo ocurra 1 vez y permita ver el mapa si el usuario lo solicita.
+		if (
+			window.innerWidth < 768 &&
+			!sessionStorage.getItem("mobile_redirect_done")
+		) {
+			sessionStorage.setItem("mobile_redirect_done", "true");
+			window.location.replace("/destinos");
+		}
+
 		import "../scripts/app.js";
 	</script>
 </Layout>

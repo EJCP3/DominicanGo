@@ -69,17 +69,20 @@ const showHours = poi.type !== "playa";
     <Header />
 
     <article>
-        <PoiHero 
+        <PoiHero
             name={poi.name}
+            slug={`${provinceSlug}-${seed}`}
             type={poi.type}
             province={province.name}
             description={poi.description}
             price={poi.price}
             hours={hours}
             website={website}
-            image={bentoImages[0]}
+            image={poi.image || bentoImages[0]}
             images={bentoImages}
             color={province.color}
+            provinceSlug={provinceSlug}
+            poiSlug={seed}
         />
 
         <div class="bg-base-200">
@@ -87,7 +90,6 @@ const showHours = poi.type !== "playa";
                 <div class="grid md:grid-cols-[1fr_300px] gap-8 items-start">
                     <!-- Main column -->
                     <div class="space-y-6">
-                        <PoiBentoGrid images={bentoImages} name={poi.name} />
 
                         <!-- About -->
                         <div
@@ -114,7 +116,9 @@ const showHours = poi.type !== "playa";
                                 </span>
                                 Sobre este lugar
                             </h2>
-                            <p class="text-base-content/80 text-base leading-relaxed">
+                            <p
+                                class="text-base-content/80 text-base leading-relaxed"
+                            >
                                 {poi.description}
                             </p>
                         </div>
@@ -201,6 +205,7 @@ const showHours = poi.type !== "playa";
                                 </div>
                             </div>
                         </div>
+                        <PoiBentoGrid images={bentoImages} name={poi.name} />
                     </div>
 
                     <!-- Sidebar -->

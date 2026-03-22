@@ -1,36 +1,40 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
+import BlogFiltersPanel from "../../components/blog/BlogFiltersPanel.astro";
 
 // Dummy data for visual prototype
 const posts = [
-  {
-    title: "Amanecer en Bahía de las Águilas",
-    slug: "amanecer-bahia-aguilas",
-    excerpt: "Nuestra experiencia acampando en la playa más prístina del país, rodeados de naturaleza virgen y un cielo estrellado inolvidable.",
-    author: "María Pérez",
-    date: "15 Mar, 2026",
-    category: "Aventura",
-    image: "https://picsum.photos/seed/bahia-aguilas-post/800/600"
-  },
-  {
-    title: "Los colores del Carnaval Vegano",
-    slug: "colores-carnaval-vegano",
-    excerpt: "Sumergiéndome en la tradición, las máscaras y la alegría desbordante del carnaval más famoso de República Dominicana.",
-    author: "Carlos Gómez",
-    date: "28 Feb, 2026",
-    category: "Cultura",
-    image: "https://picsum.photos/seed/carnaval-post/800/600"
-  },
-  {
-    title: "Acampando en Valle Nuevo",
-    slug: "acampando-valle-nuevo",
-    excerpt: "Sobreviviendo al frío del Caribe en Las Pirámides, una aventura de altura rodeada de pinos y neblina constante.",
-    author: "Laura Castillo",
-    date: "10 Ene, 2026",
-    category: "Naturaleza",
-    image: "https://picsum.photos/seed/valle-nuevo-post/800/600"
-  }
+    {
+        title: "Amanecer en Bahía de las Águilas",
+        slug: "amanecer-bahia-aguilas",
+        excerpt:
+            "Nuestra experiencia acampando en la playa más prístina del país, rodeados de naturaleza virgen y un cielo estrellado inolvidable.",
+        author: "María Pérez",
+        date: "15 Mar, 2026",
+        category: "Aventura",
+        images: ["https://picsum.photos/seed/bahia-aguilas-post/800/600"],
+    },
+    {
+        title: "Los colores del Carnaval Vegano",
+        slug: "colores-carnaval-vegano",
+        excerpt:
+            "Sumergiéndome en la tradición, las máscaras y la alegría desbordante del carnaval más famoso de República Dominicana.",
+        author: "Carlos Gómez",
+        date: "28 Feb, 2026",
+        category: "Cultura",
+        images: ["https://picsum.photos/seed/carnaval-post/800/600"],
+    },
+    {
+        title: "Acampando en Valle Nuevo",
+        slug: "acampando-valle-nuevo",
+        excerpt:
+            "Sobreviviendo al frío del Caribe en Las Pirámides, una aventura de altura rodeada de pinos y neblina constante.",
+        author: "Laura Castillo",
+        date: "10 Ene, 2026",
+        category: "Naturaleza",
+        images: ["https://picsum.photos/seed/valle-nuevo-post/800/600"],
+    },
 ];
 ---
 
@@ -42,60 +46,122 @@ const posts = [
 
     <main class="min-h-screen pt-24 pb-16">
         <div class="max-w-[1400px] mx-auto px-4 sm:px-6">
-            
             <!-- Hero / Header Section -->
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div
+                class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12"
+            >
                 <div>
-                    <h1 class="font-heading font-extrabold text-4xl md:text-5xl text-base-content mb-3">
+                    <h1
+                        class="font-heading font-extrabold text-4xl md:text-5xl text-base-content mb-3"
+                    >
                         Diarios de <span class="text-primary">Viaje</span>
                     </h1>
                     <p class="text-base-content/70 max-w-2xl text-lg">
-                        Historias auténticas, guías detalladas y narrativas visuales de exploradores descubriendo cada rincón de República Dominicana.
+                        Historias auténticas, guías detalladas y narrativas
+                        visuales de exploradores descubriendo cada rincón de
+                        República Dominicana.
                     </p>
                 </div>
-                <a href="/blog/nuevo" class="btn btn-primary rounded-full shadow-lg shrink-0">
-                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <a
+                    href="/blog/nuevo"
+                    class="btn btn-primary rounded-full shadow-lg shrink-0"
+                >
+                    <svg
+                        class="w-5 h-5 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 4v16m8-8H4"></path></svg
+                    >
                     Publicar mi experiencia
                 </a>
             </div>
 
             <!-- Categories / Filter (Visual only for prototype) -->
-            <div class="flex flex-wrap gap-2 mb-10">
-                <button class="btn btn-sm btn-primary rounded-full">Todas las historias</button>
-                <button class="btn btn-sm btn-ghost bg-base-200 rounded-full">Aventura</button>
-                <button class="btn btn-sm btn-ghost bg-base-200 rounded-full">Cultura</button>
-                <button class="btn btn-sm btn-ghost bg-base-200 rounded-full">Naturaleza</button>
+            <div class="flex items-center gap-4 mb-10">
+                <div class="relative z-50">
+                    <button
+                        id="btn-abrir-filtros"
+                        class="btn btn-sm h-10 px-5 rounded-full bg-base-100 hover:bg-base-200 text-[#2F3D4E] font-bold border-base-300 shadow-sm flex items-center gap-2 shrink-0"
+                        onclick="document.getElementById('blog-filtros-panel').classList.toggle('popup-open');"
+                    >
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2.5"
+                                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                            ></path>
+                        </svg>
+                        Filtros
+                    </button>
+                    <!-- Filter content pop-over (tooltip) component -->
+                    <BlogFiltersPanel />
+                </div>
             </div>
 
             <!-- Blog Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {posts.map((post) => (
-                    <a href={`/blog/${post.slug}`} class="card bg-base-100 shadow-sm border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
-                        <figure class="aspect-[4/3] overflow-hidden relative">
-                            <img src={post.image} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                            <div class="absolute top-4 left-4 bg-base-100/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-primary shadow-sm">
-                                {post.category}
+                {
+                    posts.map((post) => (
+                        <a
+                            href={`/blog/${post.slug}`}
+                            class="card bg-base-100 shadow-sm border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
+                        >
+                            <figure class="aspect-[4/3] overflow-hidden relative">
+                                <img
+                                    src={post.images[0]}
+                                    alt={post.title}
+                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    transition:name={`img-blog-${post.slug}`}
+                                />
+                                <div class="absolute top-4 left-4 bg-base-100/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-primary shadow-sm">
+                                    {post.category}
+                                </div>
+                            </figure>
+                            <div class="card-body p-6">
+                                <h2
+                                    transition:name={`title-blog-${post.slug}`}
+                                    class="card-title font-heading font-bold text-xl leading-tight mb-2 group-hover:text-primary transition-colors"
+                                >
+                                    {post.title}
+                                </h2>
+                                <p class="text-base-content/70 text-sm line-clamp-3 mb-4">
+                                    {post.excerpt}
+                                </p>
+                                <div class="mt-auto flex items-center justify-between text-xs text-base-content/50 font-medium pt-4 border-t border-base-200">
+                                    <span>{post.date}</span>
+                                    <span class="flex items-center gap-1.5">
+                                        <svg
+                                            class="w-4 h-4 text-base-content/30"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                        5 min read
+                                    </span>
+                                </div>
                             </div>
-                        </figure>
-                        <div class="card-body p-6">
-                            <h2 class="card-title font-heading font-bold text-xl leading-tight mb-2 group-hover:text-primary transition-colors">
-                                {post.title}
-                            </h2>
-                            <p class="text-base-content/70 text-sm line-clamp-3 mb-4">
-                                {post.excerpt}
-                            </p>
-                            <div class="mt-auto flex items-center justify-between text-xs text-base-content/50 font-medium pt-4 border-t border-base-200">
-                                <span>{post.date}</span>
-                                <span class="flex items-center gap-1.5">
-                                    <svg class="w-4 h-4 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    5 min read
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                ))}
+                        </a>
+                    ))
+                }
             </div>
-
         </div>
     </main>
 </Layout>
