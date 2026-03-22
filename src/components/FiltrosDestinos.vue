@@ -30,6 +30,8 @@ const state = reactive<{
   search: '',
 })
 
+const isMounted = ref(false)
+
 const isOpen = ref(false)
 const panelRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLElement | null>(null)
@@ -176,6 +178,8 @@ function precioPillClass(precio: string) {
 
 /* ── Lifecycle ────────────────────────────────────────── */
 onMounted(() => {
+
+  isMounted.value = true
   document.addEventListener('click', handleClickOutside)
 
   nextTick(() => {
@@ -213,7 +217,7 @@ onUnmounted(() => {
     <div
       ref="panelRef"
       :class="[
-        'absolute top-14 right-0 w-[calc(100vw-2rem)] sm:w-[500px] z-50',
+        'absolute top-0 right-0 w-[calc(100vw-2rem)] sm:w-[500px] z-50',
         'bg-[#fdfcfa] border border-[#f0e6d2] shadow-2xl rounded-3xl p-6',
         'transition-all duration-300 ease-out origin-top-right',
         isOpen
@@ -350,7 +354,7 @@ onUnmounted(() => {
   </div>
 
   <!-- Active Chips (rendered outside the panel, inside the chips area) -->
-  <Teleport to="#active-chips">
+  <Teleport to="#active-chips" v-if="isMounted">
     <button
       v-for="chip in activeFilters"
       :key="chip.key"

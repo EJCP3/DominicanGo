@@ -171,25 +171,7 @@ function renderGeographicFeatures(projection) {
 
   // Bahía de Samaná
   addLabel(-69.45, 19.08, 'Bahía de Samaná', 6.5, 0.75);
-
-  // Lago Enriquillo
-  {
-    const [cx, cy] = projection([-71.55, 18.52]);
-    const le = document.createElementNS(SVG_NS, 'ellipse');
-    le.setAttribute('cx', cx.toFixed(1));
-    le.setAttribute('cy', cy.toFixed(1));
-    // Keep small so it fits inside Bahoruco/Independencia area (scale manually or hardcode rx/ry if needed, old code used 14 and 6)
-    le.setAttribute('rx', '14');
-    le.setAttribute('ry', '6');
-    le.setAttribute('fill', '#5ab4d0');
-    le.setAttribute('fill-opacity', '0.72');
-    le.setAttribute('stroke', '#3898b8');
-    le.setAttribute('stroke-width', '0.8');
-    le.setAttribute('class', 'pointer-events-none');
-    group.appendChild(le);
-  }
-  addLabel(-71.55, 18.52, 'L. Enriquillo', 5, 0.9, '#1a6070');
-
+  addLabel(-71.65, 18.52, 'L. Enriquillo', 5, 0.9, '#1a6070');
   // Islands — italic text labels only
   addLabel(-68.67, 18.14, 'Isla Saona', 5.5, 0.75, '#4a8a96');
   addLabel(-68.97, 18.37, 'Isla Catalina', 5, 0.75, '#4a8a96');

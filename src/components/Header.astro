@@ -42,13 +42,23 @@ const isHomeOrDestinos = currentPath === "/" || currentPath.startsWith("/destino
             >
                 Blog
             </a>
+            <a
+                href="/favoritos"
+                class={`no-underline px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    currentPath.startsWith("/favoritos")
+                        ? "text-base-content bg-base-200"
+                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+                }`}
+            >
+                Favoritos
+            </a>
         </nav>
 
         <!-- Right Side Actions -->
         <div class="flex items-center gap-2 sm:gap-4">
-            <button class="btn btn-secondary btn-sm rounded-full hidden md:inline-flex shadow-sm">
-                Registrar lugar
-            </button>
+            <a href="/nuevo-destino" class="btn btn-secondary btn-sm rounded-full hidden md:inline-flex shadow-sm">
+                Registrar   Destino
+            </a>
             <ThemeDropdown />
             <MobileMenu />
         </div>

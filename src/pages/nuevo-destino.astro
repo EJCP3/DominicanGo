@@ -1,0 +1,38 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import FormularioDestino from "../components/FormularioDestino.vue";
+import { provinces } from "../data/provinces.js";
+import { TIPOS, TYPE_LABELS } from "../data/poi-config.ts";
+
+const provinciasList = Object.entries(provinces)
+    .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
+    .map(([slug, prov]: any) => ({ slug, name: prov.name }));
+---
+
+<Layout
+    title="Comparte un Destino — DominicanGo"
+    description="Agrega un nuevo destino a nuestro directorio turístico de República Dominicana."
+>
+    <Header />
+
+    <main class="min-h-screen pt-24 pb-16 bg-[#FDFBF7]">
+        <div class="max-w-[800px] mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <h1 class="font-heading font-extrabold text-4xl md:text-5xl text-base-content mb-3">
+                    Comparte un <span class="text-secondary">Destino</span>
+                </h1>
+                <p class="text-base-content/70 max-w-xl text-lg mx-auto">
+                    ¿Conoces un lugar increíble en República Dominicana? Colabora con nuestra comunidad compartiendo este destino para que todos puedan descubrirlo.
+                </p>
+            </div>
+            
+            <FormularioDestino
+                client:load
+                provincias={provinciasList}
+                tipos={TIPOS}
+                typeLabels={TYPE_LABELS}
+            />
+        </div>
+    </main>
+</Layout>
