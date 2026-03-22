@@ -1,0 +1,80 @@
+---
+// BlogPostContent.astro
+interface Props {
+    title: string;
+    author: string;
+    date: string;
+    content: string;
+    destinationName: string;
+    destinationId: string;
+    provinceId: string;
+    slug: string;
+}
+
+const {
+    title,
+    author,
+    date,
+    content,
+    destinationName,
+    destinationId,
+    provinceId,
+    slug,
+} = Astro.props;
+---
+
+<div class="max-w-3xl mx-auto">
+    <div class="flex items-center gap-3 text-sm text-base-content/60 font-medium mb-4 uppercase tracking-wider">
+        <span class="text-primary">Destino vinculado</span>
+        <span>•</span>
+        <a
+            href={`/destino/${provinceId}/${destinationId}`}
+            class="hover:text-primary transition-colors hover:underline inline-flex items-center gap-1"
+        >
+            <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                ></path>
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                ></path>
+            </svg>
+            {destinationName}
+        </a>
+    </div>
+
+    <h1
+        transition:name={`title-blog-${slug}`}
+        class="font-heading font-extrabold text-4xl md:text-5xl lg:text-6xl text-base-content leading-tight mb-8"
+    >
+        {title}
+    </h1>
+
+    <div class="flex items-center gap-4 mb-12 border-b border-base-200 pb-8">
+        <div class="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg">
+            {author.charAt(0)}
+        </div>
+        <div>
+            <div class="font-bold text-base-content">{author}</div>
+            <div class="text-sm text-base-content/50">
+                {date} • Lectura de 5 min
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="prose prose-lg prose-base-content max-w-none text-base-content/80 font-serif leading-relaxed"
+        set:html={content}
+    />
+</div>

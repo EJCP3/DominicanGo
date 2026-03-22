@@ -1,0 +1,116 @@
+---
+// BlogPostForm.astro
+---
+
+<form id="new-post-form" class="space-y-6">
+    <!-- Title Field -->
+    <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-bold text-base-content">Título de tu historia</span>
+        </label>
+        <input
+            type="text"
+            id="post-title"
+            placeholder="Ej: Amanecer mágico en Bahía de las Águilas..."
+            class="input input-bordered input-primary w-full focus:outline-none"
+            required
+        />
+    </div>
+
+    <!-- Destination Dropdown -->
+    <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-bold text-base-content">¿Sobre qué destino escribes?</span>
+        </label>
+        <select
+            id="post-destination"
+            class="select select-bordered select-primary w-full focus:outline-none"
+            required
+        >
+            <option disabled selected value="">Selecciona un destino de la lista...</option>
+            {/* Populated via client-side script */}
+        </select>
+    </div>
+
+    <!-- Story Type Dropdown -->
+    <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-bold text-base-content">Tipo de historia</span>
+        </label>
+        <select
+            id="post-type"
+            class="select select-bordered select-primary w-full focus:outline-none"
+            required
+        >
+            <option disabled selected value="">Selecciona el tipo de historia...</option>
+            <option value="aventura">Aventura</option>
+            <option value="cultura">Cultura</option>
+            <option value="naturaleza">Naturaleza</option>
+            <option value="experiencia">Experiencia</option>
+            <option value="gastronomia">Gastronomía</option>
+            <option value="relajacion">Relajación</option>
+            <option value="romance">Romance</option>
+            <option value="fotografia">Fotografía</option>
+            <option value="otro">Otro</option>
+        </select>
+    </div>
+
+    <!-- Image Upload Field -->
+    <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-bold text-base-content">Imágenes de tu viaje</span>
+            <span class="label-text-alt text-base-content/50">Puedes seleccionar varias</span>
+        </label>
+        <input
+            type="file"
+            id="post-image"
+            class="file-input file-input-bordered file-input-primary w-full"
+            accept="image/png, image/jpeg, image/webp"
+            multiple
+        />
+        <div id="image-preview" class="flex flex-wrap gap-2 mt-3"></div>
+    </div>
+
+    <!-- Story Textarea -->
+    <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-bold text-base-content">Tu historia de viaje</span>
+        </label>
+
+        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+        <style is:inline>
+            .ql-toolbar.ql-snow {
+                border: 1px solid oklch(var(--p));
+                border-bottom: none;
+                background: oklch(var(--b2));
+                border-radius: 0.75rem 0.75rem 0 0;
+            }
+            .ql-container.ql-snow {
+                border: 1px solid oklch(var(--p));
+                border-radius: 0 0 0.75rem 0.75rem;
+                font-family: inherit;
+                font-size: 1rem;
+            }
+            .ql-editor {
+                min-height: 16rem;
+            }
+            .ql-editor p {
+                margin-bottom: 0.5em;
+            }
+        </style>
+        <script is:inline src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+        <div id="quill-editor" class="bg-base-100 text-base-content"></div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-control mt-8">
+        <button
+            type="submit"
+            id="submit-btn"
+            class="btn btn-primary btn-lg w-full rounded-full shadow-lg"
+        >
+            Publicar historia
+        </button>
+    </div>
+</form>

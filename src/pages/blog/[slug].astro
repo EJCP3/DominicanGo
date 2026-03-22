@@ -1,33 +1,36 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
+import BlogPostHero from "../../components/blog/BlogPostHero.astro";
+import BlogPostContent from "../../components/blog/BlogPostContent.astro";
+import BlogBentoGallery from "../../components/blog/BlogBentoGallery.astro";
 
 // Para el prototipo generaremos rutas estáticas para los 3 posts dummies.
 export function getStaticPaths() {
-  return [
-    { params: { slug: "amanecer-bahia-aguilas" } },
-    { params: { slug: "colores-carnaval-vegano" } },
-    { params: { slug: "acampando-valle-nuevo" } },
-  ];
+    return [
+        { params: { slug: "amanecer-bahia-aguilas" } },
+        { params: { slug: "colores-carnaval-vegano" } },
+        { params: { slug: "acampando-valle-nuevo" } },
+    ];
 }
 
 const { slug } = Astro.params;
 
 // Datos dummy de los posts dependiendo del slug
 const posts = {
-  "amanecer-bahia-aguilas": {
-    title: "Amanecer en Bahía de las Águilas",
-    author: "María Pérez",
-    date: "15 Mar, 2026",
-    images: [
-      "https://picsum.photos/seed/bahia-aguilas-post/1200/600",
-      "https://picsum.photos/seed/bahia-aguilas-2/800/600",
-      "https://picsum.photos/seed/bahia-aguilas-3/800/600",
-    ],
-    destinationId: "bahia-de-las-aguilas",
-    provinceId: "barahona",
-    destinationName: "Bahía de las Águilas",
-    content: `
+    "amanecer-bahia-aguilas": {
+        title: "Amanecer en Bahía de las Águilas",
+        author: "María Pérez",
+        date: "15 Mar, 2026",
+        images: [
+            "https://picsum.photos/seed/bahia-aguilas-post/1200/600",
+            "https://picsum.photos/seed/bahia-aguilas-2/800/600",
+            "https://picsum.photos/seed/bahia-aguilas-3/800/600",
+        ],
+        destinationId: "bahia-de-las-aguilas",
+        provinceId: "barahona",
+        destinationName: "Bahía de las Águilas",
+        content: `
       <p class="mb-4 text-lg">Acampar en Bahía de las Águilas ha sido una de las experiencias más reveladoras de mi vida. Lejos del ruido de la ciudad, de la cobertura del celular y de cualquier distracción de la vida moderna, uno se encuentra cara a cara con la naturaleza cruda y majestuosa del suroeste dominicano.</p>
       
       <p class="mb-4 text-lg">Llegamos a Cabo Rojo al atardecer y tomamos el bote hacia la bahía. El contraste entre la tierra rida, los cactus y el mar turquesa es hipnótico. Montamos nuestra casa de campaña just antes de que el sol se ocultara, regalándonos un espectáculo de colores cálidos que pintaban el cielo de naranja y violeta.</p>
@@ -39,243 +42,98 @@ const posts = {
 
       <p class="text-lg">La noche, sin embargo, fue el verdadero premio. Tumbados en la suave arena blanca, fuimos testigos de un cielo estrellado como pocos en el mundo. La Vía Láctea se dejaba ver claramente a simple vista. El silencio, interrumpido sólo por el suave oleaje, era abrumador. Despertar al amanecer con la primera luz filtrándose en la tienda y caminar descalza por los 8 kilómetros de playa virgen... es algo que las palabras no hacen justicia. Debes vivirlo.</p>
     `,
-  },
-  "colores-carnaval-vegano": {
-    title: "Los colores del Carnaval Vegano",
-    author: "Carlos Gómez",
-    date: "28 Feb, 2026",
-    images: [
-      "https://picsum.photos/seed/carnaval-post/1200/600",
-      "https://picsum.photos/seed/carnaval-2/800/600",
-      "https://picsum.photos/seed/carnaval-3/800/600",
-    ],
-    destinationId: "carnaval-de-la-vega",
-    provinceId: "la-vega",
-    destinationName: "Carnaval de La Vega",
-    content: `
+    },
+    "colores-carnaval-vegano": {
+        title: "Los colores del Carnaval Vegano",
+        author: "Carlos Gómez",
+        date: "28 Feb, 2026",
+        images: [
+            "https://picsum.photos/seed/carnaval-post/1200/600",
+            "https://picsum.photos/seed/carnaval-2/800/600",
+            "https://picsum.photos/seed/carnaval-3/800/600",
+        ],
+        destinationId: "carnaval-de-la-vega",
+        provinceId: "la-vega",
+        destinationName: "Carnaval de La Vega",
+        content: `
       <p class="mb-4 text-lg">Sumergiéndome en la tradición, las máscaras y la alegría desbordante del carnaval más famoso de República Dominicana.</p>
       <p class="mb-4 text-lg">El sonido ensordecedor de los vejigazos y la música resonando en las calles creando un ambiente de euforia que te contagia al instante. Ver de cerca la artesanía detrás de los trajes de los Diablos Cojuelos te hace apreciar el patrimonio inmaterial que poseemos.</p>
     `,
-  },
-  "acampando-valle-nuevo": {
-    title: "Acampando en Valle Nuevo",
-    author: "Laura Castillo",
-    date: "10 Ene, 2026",
-    images: [
-      "https://picsum.photos/seed/valle-nuevo-post/1200/600",
-      "https://picsum.photos/seed/valle-nuevo-2/800/600",
-      "https://picsum.photos/seed/valle-nuevo-3/800/600",
-    ],
-    // Link "fake" just to show the UX.
-    destinationId: "jarabacoa",
-    provinceId: "la-vega",
-    destinationName: "Valle Nuevo / Jarabacoa",
-    content: `
+    },
+    "acampando-valle-nuevo": {
+        title: "Acampando en Valle Nuevo",
+        author: "Laura Castillo",
+        date: "10 Ene, 2026",
+        images: [
+            "https://picsum.photos/seed/valle-nuevo-post/1200/600",
+            "https://picsum.photos/seed/valle-nuevo-2/800/600",
+            "https://picsum.photos/seed/valle-nuevo-3/800/600",
+        ],
+        // Link "fake" just to show the UX.
+        destinationId: "jarabacoa",
+        provinceId: "la-vega",
+        destinationName: "Valle Nuevo / Jarabacoa",
+        content: `
       <p class="mb-4 text-lg">Cero grados centígrados. Escarcha sobre la grama. Neblina espesa. No, no es otro país, es el corazón de la República Dominicana. Valle Nuevo es el paraíso frío que contrasta con nuestras cálidas playas.</p>
       <p class="mb-4 text-lg">El Monumento a las Pirámides fue nuestro punto base. Preparamos chocolate caliente, encendimos una pequeña fogata (en el área permitida) y pasamos la noche contando estrellas envueltos en abrigos gruesos. Una experiencia mágica.</p>
     `,
-  },
+    },
 };
 
 const post =
-  posts[slug as keyof typeof posts] || posts["amanecer-bahia-aguilas"];
+    posts[slug as keyof typeof posts] || posts["amanecer-bahia-aguilas"];
 ---
 
 <Layout title={`${post.title} — Blog DominicanGo`}>
-  <Header />
+    <Header />
 
-  <main class="min-h-screen pt-24 pb-24">
-    <article class="max-w-4xl mx-auto px-4 sm:px-6">
-      <figure
-        class="w-full aspect-video md:aspect-[21/9] rounded-3xl overflow-hidden shadow-xl mb-10 relative"
-      >
-        <img
-          src={post.images[0]}
-          alt={post.title}
-          class="w-full h-full object-cover"
-          transition:name={`img-blog-${slug}`}
-        />
-        <div
-          class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent"
-        >
-        </div>
-      </figure>
+    <main class="min-h-screen pt-24 pb-24">
+        <article class="max-w-4xl mx-auto px-4 sm:px-6">
+            <BlogPostHero
+                title={post.title}
+                image={post.images[0]}
+                slug={slug as string}
+            />
 
-      <div class="max-w-3xl mx-auto">
-        <div
-          class="flex items-center gap-3 text-sm text-base-content/60 font-medium mb-4 uppercase tracking-wider"
-        >
-          <span class="text-primary">Destino vinculado</span>
-          <span>•</span>
-          <a
-            href={`/destino/${post.provinceId}/${post.destinationId}`}
-            class="hover:text-primary transition-colors hover:underline inline-flex items-center gap-1"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              ></path><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg
+            <BlogPostContent
+                title={post.title}
+                author={post.author}
+                date={post.date}
+                content={post.content}
+                destinationName={post.destinationName}
+                destinationId={post.destinationId}
+                provinceId={post.provinceId}
+                slug={slug as string}
+            />
+
+            <BlogBentoGallery images={post.images} title={post.title} />
+
+            <div
+                class="max-w-3xl mx-auto mt-16 pt-8 border-t border-base-200 flex justify-between items-center"
             >
-            {post.destinationName}
-          </a>
-        </div>
-
-        <h1
-            transition:name={`title-blog-${slug}`} class="font-heading font-extrabold text-4xl md:text-5xl lg:text-6xl text-base-content leading-tight mb-8"
-        >
-          {post.title}
-        </h1>
-
-        <div
-          class="flex items-center gap-4 mb-12 border-b border-base-200 pb-8"
-        >
-          <div
-            class="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg"
-          >
-            {post.author.charAt(0)}
-          </div>
-          <div>
-            <div class="font-bold text-base-content">{post.author}</div>
-            <div class="text-sm text-base-content/50">
-              {post.date} • Lectura de 5 min
-            </div>
-          </div>
-        </div>
-
-        <div
-            class="prose prose-lg prose-base-content max-w-none text-base-content/80 font-serif leading-relaxed"
-          set:html={post.content}
-        />
-
-        {
-          post.images && post.images.length > 1 && (
-            <div class="mt-12">
-              <h3 class="font-heading font-bold text-2xl text-base-content mb-6">
-                Galería
-              </h3>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-[150px] md:auto-rows-[200px]">
-                {post.images.slice(1).map((img, index) => {
-                  const spanClass =
-                    index % 5 === 0
-                      ? "col-span-2 row-span-2"
-                      : index % 5 === 1 || index % 5 === 2
-                        ? "col-span-2 md:col-span-1 row-span-1"
-                        : "col-span-1 row-span-1";
-
-                  return (
-                    <div
-                      class={`group overflow-hidden rounded-2xl md:rounded-3xl shadow-sm cursor-pointer relative ${spanClass} bento-trigger`}
-                      data-img={img}
-                    >
-                      <img
-                        src={img}
-                        alt={`${post.title} - Galería`}
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                <a
+                    href="/blog"
+                    class="btn btn-ghost text-base-content/60 hover:text-base-content"
+                >
+                    ← Volver al blog
+                </a>
+                <div class="flex gap-2">
+                    <button class="btn btn-circle btn-ghost bg-base-200">
                         <svg
-                          class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-md"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            ><path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                            ></path></svg
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    </button>
+                </div>
             </div>
-          )
-        }
-
-        <div
-          class="mt-16 pt-8 border-t border-base-200 flex justify-between items-center"
-        >
-          <a
-            href="/blog"
-            class="btn btn-ghost text-base-content/60 hover:text-base-content"
-          >
-            ← Volver al blog
-          </a>
-          <div class="flex gap-2">
-            <button class="btn btn-circle btn-ghost bg-base-200">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                ></path></svg
-              >
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
-  </main>
-
-  <!-- Modal for Bento Image -->
-  <dialog id="bento-modal" class="modal backdrop-blur-sm">
-    <div
-      class="modal-box max-w-5xl p-2 bg-transparent shadow-none overflow-hidden flex flex-col items-center"
-    >
-      <form method="dialog" class="w-full text-right mb-2">
-        <button
-          class="btn btn-circle btn-ghost btn-sm text-white bg-black/30 border-none hover:bg-black/60"
-        >
-          ✕
-        </button>
-      </form>
-      <img
-        id="bento-modal-img"
-        src=""
-        alt="Imagen ampliada"
-        class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
-      />
-    </div>
-    <form method="dialog" class="modal-backdrop bg-black/80">
-      <button>close</button>
-    </form>
-  </dialog>
-
-  <script is:inline>
-    // Usamos defer o DOMContentLoaded para que Astro maneje la recarga si hay ViewTransitions
-    document.addEventListener("DOMContentLoaded", () => {
-      const triggers = document.querySelectorAll(".bento-trigger");
-      const modal = document.getElementById("bento-modal");
-      const modalImg = document.getElementById("bento-modal-img");
-
-      triggers.forEach((trigger) => {
-        trigger.addEventListener("click", () => {
-          const src = trigger.getAttribute("data-img");
-          if (src && modalImg && modal) {
-            modalImg.src = src;
-            modal.showModal();
-          }
-        });
-      });
-    });
-  </script>
+        </article>
+    </main>
 </Layout>

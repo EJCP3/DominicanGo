@@ -36,6 +36,7 @@ export const nameToSlug = {
     'SAMANÁ': 'samana',
     'SANCHEZ RAMIREZ': 'sanchez-ramirez',
     'SÁNCHEZ RAMÍREZ': 'sanchez-ramirez',
+    'SANCHEZ RAMÍREZ': 'sanchez-ramirez', // GeoJSON typo fix
     'SAN CRISTOBAL': 'san-cristobal',
     'SAN CRISTÓBAL': 'san-cristobal',
     'SAN JOSE DE OCOA': 'san-jose-de-ocoa',

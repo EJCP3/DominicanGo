@@ -1,0 +1,88 @@
+---
+import Icon from "../Icon.astro";
+---
+
+<div class="dropdown dropdown-end md:hidden">
+    <div
+        tabindex="0"
+        role="button"
+        class="btn btn-ghost btn-circle"
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h7"></path></svg
+        >
+    </div>
+    <ul
+        tabindex="0"
+        class="dropdown-content menu bg-base-100/95 backdrop-blur-md rounded-2xl z-50 w-64 p-4 mt-3 shadow-2xl border border-base-200"
+    >
+        <!-- Enlaces principales -->
+        <li>
+            <a href="/" class="font-medium px-4 py-2">Destinos</a>
+        </li>
+        <li>
+            <a href="/blog" class="font-medium px-4 py-2">Blog</a>
+        </li>
+
+        <div class="divider my-1"></div>
+
+        <!-- Opciones de Tema -->
+        <li class="menu-title px-1 pb-2 pt-1">
+            <span
+                class="text-xs font-bold uppercase tracking-wider opacity-60"
+                >Estaciones (Tema)</span
+            >
+        </li>
+        <li>
+            <button
+                data-theme-btn="pastel"
+                class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200"
+            >
+                <Icon name="spring" class="w-4 h-4 mr-2" /> Primavera
+            </button>
+        </li>
+        <li>
+            <button
+                data-theme-btn="cupcake"
+                class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200"
+            >
+                <Icon name="summer" class="w-4 h-4 mr-2" /> Verano
+            </button>
+        </li>
+        <li>
+            <button
+                data-theme-btn="caramellatte"
+                class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200"
+            >
+                <Icon name="autumn" class="w-4 h-4 mr-2" /> Otoño
+            </button>
+        </li>
+        <li>
+            <button
+                data-theme-btn="nord"
+                class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200"
+            >
+                <Icon name="winter" class="w-4 h-4 mr-2" /> Invierno
+            </button>
+        </li>
+
+        <div class="divider my-1"></div>
+
+        <!-- Registrar -->
+        <li class="mt-2">
+            <button
+                class="btn btn-secondary btn-md rounded-full w-full justify-center"
+                >Registrar lugar</button
+            >
+        </li>
+    </ul>
+</div>

@@ -4,10 +4,12 @@ import Header from "../components/Header.astro";
 import { provinces, slugify } from "../data/provinces.js";
 
 import DestinosHero from "../components/destinos/DestinosHero.astro";
-import DestinosSidebar from "../components/destinos/DestinosSidebar.astro";
+import FiltrosDestinos from "../components/FiltrosDestinos.vue";
 import DestinoCard from "../components/destinos/DestinoCard.astro";
 import DestinoModal from "../components/destinos/DestinoModal.astro";
 import DestinosFilterScript from "../components/destinos/DestinosFilterScript.astro";
+
+import { TIPOS, TYPE_LABELS, REGION_COLORS } from "../data/poi-config.ts";
 
 const allDestinos = Object.entries(provinces).flatMap(
     ([provinceSlug, province]: any) =>
@@ -21,6 +23,14 @@ const allDestinos = Object.entries(provinces).flatMap(
             href: `/destino/${provinceSlug}/${slugify(poi.name)}`,
         })),
 );
+
+const regiones = [
+    ...new Set(Object.values(provinces).map((p: any) => p.region)),
+].sort() as string[];
+
+const provinciasList = Object.entries(provinces)
+    .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
+    .map(([slug, prov]: any) => ({ slug, name: prov.name }));
 ---
 
 <Layout
@@ -51,30 +61,14 @@ const allDestinos = Object.entries(provinces).flatMap(
                         >
                     </div>
 
-                    <div class="relative z-50">
-                        <button
-                            id="btn-abrir-filtros"
-                            class="btn btn-sm h-10 px-5 rounded-full bg-base-100 hover:bg-base-200 text-base-content border-base-300 shadow-sm flex items-center gap-2 shrink-0"
-                            onclick="document.getElementById('filtros-panel').classList.toggle('popup-open');"
-                        >
-                            <svg
-                                class="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                ><path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                                ></path></svg
-                            >
-                            Filtros
-                        </button>
-
-                        <!-- Tooltip Container -->
-                        <DestinosSidebar />
-                    </div>
+                    <FiltrosDestinos
+                        client:load
+                        tipos={TIPOS}
+                        typeLabels={TYPE_LABELS}
+                        regiones={regiones}
+                        regionColors={REGION_COLORS}
+                        provincias={provinciasList}
+                    />
                 </div>
 
                 <div

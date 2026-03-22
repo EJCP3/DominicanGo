@@ -1,0 +1,97 @@
+---
+// BlogBentoGallery.astro
+interface Props {
+    images: string[];
+    title: string;
+}
+
+const { images, title } = Astro.props;
+const galleryImages = images.slice(1);
+---
+
+{
+    galleryImages.length > 0 && (
+        <div class="mt-12 max-w-3xl mx-auto">
+            <h3 class="font-heading font-bold text-2xl text-base-content mb-6">
+                Galería
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-[150px] md:auto-rows-[200px]">
+                {galleryImages.map((img, index) => {
+                    const spanClass =
+                        index % 5 === 0
+                            ? "col-span-2 row-span-2"
+                            : index % 5 === 1 || index % 5 === 2
+                              ? "col-span-2 md:col-span-1 row-span-1"
+                              : "col-span-1 row-span-1";
+
+                    return (
+                        <div
+                            class={`group overflow-hidden rounded-2xl md:rounded-3xl shadow-sm cursor-pointer relative ${spanClass} bento-trigger`}
+                            data-img={img}
+                        >
+                            <img
+                                src={img}
+                                alt={`${title} - Galería`}
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                                <svg
+                                    class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-md"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    )
+}
+
+<!-- Modal for Bento Image -->
+<dialog id="bento-modal" class="modal backdrop-blur-sm">
+    <div class="modal-box max-w-5xl p-2 bg-transparent shadow-none overflow-hidden flex flex-col items-center">
+        <form method="dialog" class="w-full text-right mb-2">
+            <button class="btn btn-circle btn-ghost btn-sm text-white bg-black/30 border-none hover:bg-black/60">
+                ✕
+            </button>
+        </form>
+        <img
+            id="bento-modal-img"
+            src=""
+            alt="Imagen ampliada"
+            class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+        />
+    </div>
+    <form method="dialog" class="modal-backdrop bg-black/80">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script is:inline>
+    // Usamos defer o DOMContentLoaded para que Astro maneje la recarga si hay ViewTransitions
+    document.addEventListener("DOMContentLoaded", () => {
+        const triggers = document.querySelectorAll(".bento-trigger");
+        const modal = document.getElementById("bento-modal");
+        const modalImg = document.getElementById("bento-modal-img");
+
+        triggers.forEach((trigger) => {
+            trigger.addEventListener("click", () => {
+                const src = trigger.getAttribute("data-img");
+                if (src && modalImg && modal) {
+                    modalImg.src = src;
+                    modal.showModal();
+                }
+            });
+        });
+    });
+</script>

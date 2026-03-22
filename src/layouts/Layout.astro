@@ -4,6 +4,7 @@ import IconSprite from "../components/IconSprite.astro";
 
 import { ClientRouter } from "astro:transitions";
 import ViewToggle from "../components/ViewToggle.astro";
+import RandomDestinationPop from "../components/RandomDestinationPop.astro";
 
 interface Props {
     title?: string;
@@ -56,5 +57,6 @@ const {
         <IconSprite />
         <slot />
         <ViewToggle />
+        <RandomDestinationPop />
     </body>
 </html>

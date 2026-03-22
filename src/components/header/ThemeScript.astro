@@ -1,0 +1,71 @@
+---
+// ThemeScript.astro
+---
+<script is:inline>
+    function initThemeDropdown() {
+        const themeBtns = document.querySelectorAll(".theme-btn");
+        if (!themeBtns.length) return; // Salir si no encuentra los botones
+
+        // 1. Leer el tema actual (por defecto 'cupcake')
+        const currentTheme = localStorage.getItem("theme") || "cupcake";
+
+        // 2. Marcar el botón activo al cargar la página
+        themeBtns.forEach((btn) => {
+            const btnTheme = btn.getAttribute("data-theme-btn");
+            if (btnTheme === currentTheme) {
+                btn.classList.add(
+                    "bg-base-200",
+                    "text-primary-content",
+                    "font-bold",
+                );
+                btn.classList.remove("font-medium");
+            } else {
+                btn.classList.remove(
+                    "bg-base-200",
+                    "text-primary-content",
+                    "font-bold",
+                );
+                btn.classList.add("font-medium");
+            }
+        });
+
+        // 3. Agregar el evento de clic a cada botón
+        themeBtns.forEach((btn) => {
+            // Usamos una función tradicional para asegurarnos de que no se dupliquen eventos
+            btn.onclick = function (e) {
+                const newTheme =
+                    this.getAttribute("data-theme-btn") || "cupcake";
+
+                // Cambiar el tema en el HTML y guardar
+                document.documentElement.setAttribute("data-theme", newTheme);
+                localStorage.setItem("theme", newTheme);
+
+                // Limpiar todos los botones
+                themeBtns.forEach((b) => {
+                    b.classList.remove(
+                        "bg-base-200",
+                        "text-primary-content",
+                        "font-bold",
+                    );
+                    b.classList.add("font-medium");
+                });
+
+                // Resaltar solo el botón clickeado
+                this.classList.add(
+                    "bg-base-200",
+                    "text-primary-content",
+                    "font-bold",
+                );
+                this.classList.remove("font-medium");
+
+                // Cerrar el dropdown quitando el foco
+                if (document.activeElement) {
+                    document.activeElement.blur();
+                }
+            };
+        });
+    }
+
+    // Ejecutar en cada navegación (inicial de navegador o recarga por página SPA de Astro)
+    document.addEventListener("astro:page-load", initThemeDropdown);
+</script>

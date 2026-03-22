@@ -1,262 +1,57 @@
 ---
 // Header — light theme with clean nav
-import Icon from "./Icon.astro";
+import ThemeDropdown from "./header/ThemeDropdown.astro";
+import MobileMenu from "./header/MobileMenu.astro";
+import ThemeScript from "./header/ThemeScript.astro";
+
 const currentPath = Astro.url.pathname;
+const isHomeOrDestinos = currentPath === "/" || currentPath.startsWith("/destinos");
 ---
 
 <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md no-underline">
-    <div
-        class="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between"
-    >
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center gap-2">
             <a
                 href="/"
                 class="no-underline font-heading font-extrabold text-neutral text-lg sm:text-xl transition-all hover:opacity-80"
             >
-                Dominican<span class="text-success font-extrabold text-2xl"
-                    >Go</span
-                >
+                Dominican<span class="text-success font-extrabold text-2xl">Go</span>
             </a>
         </div>
 
-        <!-- Nav links -->
+        <!-- Nav links (Desktop) -->
         <nav class="hidden md:flex items-center gap-1">
             <a
                 href="/"
-                class={`no-underline
- px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-     currentPath === "/" || currentPath.startsWith("/destinos")
-         ? "text-base-content bg-base-200"
-         : "text-base-content/70 hover:text-base-content hover:bg-base-200"
- }`}
+                class={`no-underline px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    isHomeOrDestinos
+                        ? "text-base-content bg-base-200"
+                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+                }`}
             >
                 Destinos
             </a>
             <a
                 href="/blog"
-                class="no-underline
- px-4 py-1.5 rounded-full text-sm font-medium text-base-content/70 hover:text-base-content hover:bg-base-200 transition-all"
+                class={`no-underline px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    currentPath.startsWith("/blog")
+                        ? "text-base-content bg-base-200"
+                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+                }`}
             >
                 Blog
             </a>
         </nav>
 
+        <!-- Right Side Actions -->
         <div class="flex items-center gap-2 sm:gap-4">
-            {
-                (
-                    <button class="btn btn-secondary btn-sm rounded-full hidden md:inline-flex shadow-sm">
-                        Registrar lugar
-                    </button>
-                )
-            }
-            <!-- Theme Dropdown (Desktop) -->
-            <div class="dropdown dropdown-end hidden md:block">
-                <div
-                    tabindex="0"
-                    role="button"
-                    class="btn btn-sm btn-ghost rounded-full px-3 text-base-content/80 font-medium"
-                >
-                    <Icon name="seasons" class="w-4 h-4 mr-1 opacity-60" />
-                    Estaciones
-                </div>
-                <ul
-                    tabindex="0"
-                    class="dropdown-content bg-base-100/95 backdrop-blur-md rounded-2xl z-50 w-44 p-2 mt-2 shadow-2xl border border-base-200"
-                >
-                    <li>
-                        <button
-                            data-theme-btn="pastel"
-                            class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200 hover:text-primary font-medium transition-colors"
-                        >
-                            <Icon name="spring" class="w-4 h-4 mr-2" />
-                            Primavera
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            data-theme-btn="cupcake"
-                            class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200 hover:text-primary font-medium transition-colors"
-                        >
-                            <Icon name="summer" class="w-4 h-4 mr-2" />
-                            Verano
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            data-theme-btn="caramellatte"
-                            class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200 hover:text-primary font-medium transition-colors"
-                        >
-                            <Icon name="autumn" class="w-4 h-4 mr-2" />
-                            Otoño
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            data-theme-btn="nord"
-                            class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200 hover:text-primary font-medium transition-colors"
-                        >
-                            <Icon name="winter" class="w-4 h-4 mr-2" />
-                            Invierno
-                        </button>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Mobile Menu Drawer (Dropdown) -->
-            <div class="dropdown dropdown-end md:hidden">
-                <div
-                    tabindex="0"
-                    role="button"
-                    class="btn btn-ghost btn-circle"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h7"></path></svg
-                    >
-                </div>
-                <ul
-                    tabindex="0"
-                    class="dropdown-content menu bg-base-100/95 backdrop-blur-md rounded-2xl z-50 w-64 p-4 mt-3 shadow-2xl border border-base-200"
-                >
-                    <!-- Enlaces principales -->
-                    <li>
-                        <a href="/" class="font-medium px-4 py-2">Destinos</a>
-                    </li>
-                    <li>
-                        <a href="/blog" class="font-medium px-4 py-2">Blog</a>
-                    </li>
-
-                    <div class="divider my-1"></div>
-
-                    <!-- Opciones de Tema -->
-                    <li class="menu-title px-1 pb-2 pt-1">
-                        <span
-                            class="text-xs font-bold uppercase tracking-wider opacity-60"
-                            >Estaciones (Tema)</span
-                        >
-                    </li>
-                    <li>
-                        <button
-                            data-theme-btn="pastel"
-                            class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200"
-                        >
-                            <Icon name="spring" class="w-4 h-4 mr-2" /> Primavera
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            data-theme-btn="cupcake"
-                            class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200"
-                        >
-                            <Icon name="summer" class="w-4 h-4 mr-2" /> Verano
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            data-theme-btn="caramellatte"
-                            class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200"
-                        >
-                            <Icon name="autumn" class="w-4 h-4 mr-2" /> Otoño
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            data-theme-btn="nord"
-                            class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200"
-                        >
-                            <Icon name="winter" class="w-4 h-4 mr-2" /> Invierno
-                        </button>
-                    </li>
-
-                    <div class="divider my-1"></div>
-
-                    <!-- Registrar -->
-                    <li class="mt-2">
-                        <button
-                            class="btn btn-secondary btn-md rounded-full w-full justify-center"
-                            >Registrar lugar</button
-                        >
-                    </li>
-                </ul>
-            </div>
+            <button class="btn btn-secondary btn-sm rounded-full hidden md:inline-flex shadow-sm">
+                Registrar lugar
+            </button>
+            <ThemeDropdown />
+            <MobileMenu />
         </div>
     </div>
 </header>
-
-<script is:inline>
-    function initThemeDropdown() {
-        const themeBtns = document.querySelectorAll(".theme-btn");
-        if (!themeBtns.length) return; // Salir si no encuentra los botones
-
-        // 1. Leer el tema actual (por defecto 'cupcake')
-        const currentTheme = localStorage.getItem("theme") || "cupcake";
-
-        // 2. Marcar el botón activo al cargar la página
-        themeBtns.forEach((btn) => {
-            const btnTheme = btn.getAttribute("data-theme-btn");
-            if (btnTheme === currentTheme) {
-                btn.classList.add(
-                    "bg-base-200",
-                    "text-primary-content",
-                    "font-bold",
-                );
-                btn.classList.remove("font-medium");
-            } else {
-                btn.classList.remove(
-                    "bg-base-200",
-                    "text-primary-content",
-                    "font-bold",
-                );
-                btn.classList.add("font-medium");
-            }
-        });
-
-        // 3. Agregar el evento de clic a cada botón
-        themeBtns.forEach((btn) => {
-            // Usamos una función tradicional para asegurarnos de que no se dupliquen eventos
-            btn.onclick = function (e) {
-                const newTheme =
-                    this.getAttribute("data-theme-btn") || "cupcake";
-
-                // Cambiar el tema en el HTML y guardar
-                document.documentElement.setAttribute("data-theme", newTheme);
-                localStorage.setItem("theme", newTheme);
-
-                // Limpiar todos los botones
-                themeBtns.forEach((b) => {
-                    b.classList.remove(
-                        "bg-base-200",
-                        "text-primary-content",
-                        "font-bold",
-                    );
-                    b.classList.add("font-medium");
-                });
-
-                // Resaltar solo el botón clickeado
-                this.classList.add(
-                    "bg-base-200",
-                    "text-primary-content",
-                    "font-bold",
-                );
-                this.classList.remove("font-medium");
-
-                // Cerrar el dropdown quitando el foco
-                if (document.activeElement) {
-                    document.activeElement.blur();
-                }
-            };
-        });
-    }
-
-    // Ejecutar en cada navegación (inicial de navegador o recarga por página SPA de Astro)
-    document.addEventListener("astro:page-load", initThemeDropdown);
-</script>
+<ThemeScript />

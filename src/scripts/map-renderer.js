@@ -1,274 +1,218 @@
 /**
- * Map Renderer
- * Loads GeoJSON data and renders province SVG paths into the map container.
- * Also renders geographic overlays: water bodies, islands.
+ * SVG Map Renderer
+ * Handles GeoJSON parsing, drawing SVG paths, and POI overlays
+ * with performance optimizations to avoid blocking the main thread.
  */
+
 import {
-    nameToSlug,
-    provinceColors,
-    dataProvinces,
-    displayNames,
-    GEOJSON_URL,
-} from './map-config.js';
+  nameToSlug,
+  provinceColors,
+  dataProvinces,
+  displayNames,
+} from './map-config';
 
-const SVG_NS = 'http://www.w3.org/2000/svg';
-const SVG_WIDTH = 960;
-const SVG_HEIGHT = 500;
-const PADDING = 40;
-const MAX_POINTS_PER_RING = 120;
+// Import projection, simplification and centroid utilities
+import { computeProjection, simplifyRing, computeRingCenter } from './map-projection';
 
-/**
- * Fetch the GeoJSON and render all province paths + labels into the SVG.
- */
-export async function loadAndRenderMap() {
+const DR_GEOJSON_LINK = 'https://raw.githubusercontent.com/jeasoft/provinces_geojson/master/provinces_municipality_summary.geojson';
+
+export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinceClick = null) {
+  if (!svgElement) return;
+  const overlayContainer = document.getElementById(overlayContainerId);
+
+  // Hardcoded SVG canvas dimensions to match the design (MapSection.astro)
+  const SVG_WIDTH = 960;
+  const SVG_HEIGHT = 500;
+
+  try {
+    const response = await fetch(DR_GEOJSON_LINK);
+    const data = await response.json();
+
+    const projection = computeProjection(data, SVG_WIDTH, SVG_HEIGHT);
+    if (!projection) return;
+
+    // Use a DocumentFragment to minimize reflows during DOM insertion
+    const fragment = document.createDocumentFragment();
+
+    data.features.forEach((feature) => {
+      // 1. Process Geometry & Path String
+      let d = '';
+      if (feature.geometry.type === 'Polygon') {
+        feature.geometry.coordinates.forEach((ring) => {
+          const projectedRing = ring.map(projection);
+          const simpleRing = simplifyRing(projectedRing, 1.5); // Tune tolerance
+          d +=
+            'M' + simpleRing.map((c) => `${c[0].toFixed(1)},${c[1].toFixed(1)}`).join('L') + 'Z ';
+        });
+      } else if (feature.geometry.type === 'MultiPolygon') {
+        feature.geometry.coordinates.forEach((polygon) => {
+          polygon.forEach((ring) => {
+            const projectedRing = ring.map(projection);
+            const simpleRing = simplifyRing(projectedRing, 1.5);
+            d +=
+              'M' + simpleRing.map((c) => `${c[0].toFixed(1)},${c[1].toFixed(1)}`).join('L') + 'Z ';
+          });
+        });
+      }
+
+      // 2. Map Name to Config
+      const rawProp = feature.properties ? (feature.properties.province_name || feature.properties.PROV || '') : '';
+      const rawName = String(rawProp);
+      const slug = nameToSlug[rawName] || nameToSlug[rawName.toUpperCase()] || rawName.toLowerCase();
+      const hasData = slug ? dataProvinces.has(slug) : false;
+      const color = slug ? (provinceColors[slug] || '#E5E7EB') : '#E5E7EB'; // Fallback a gris
+
+      // 3. Create SVG Path element
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', d.trim());
+      path.setAttribute('fill', color);
+      path.setAttribute('data-province', slug);
+      path.setAttribute('data-name', rawName);
+      
+      // Modern sleek stroke
+      path.setAttribute('stroke', 'oklch(var(--b1))');
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('stroke-linejoin', 'round');
+      
+      path.classList.add('transition-all', 'duration-300', 'origin-center');
+      if (hasData) {
+        path.classList.add('cursor-pointer', 'hover:brightness-95', 'focus:outline-none', 'map-province');
+        // Agregamos tabIndex pasivo para mostrar estilo de teclado
+        path.setAttribute('tabindex', '0');
+        
+        if (onProvinceClick) {
+          path.addEventListener('click', () => onProvinceClick(slug));
+          path.addEventListener('keydown', (e) => {
+             if(e.key === 'Enter') onProvinceClick(slug);
+          });
+        }
+      } else {
+        path.classList.add('pointer-events-none');
+      }
+
+      fragment.appendChild(path);
+
+      // 4. Find largest polygon ring for placing the visual text label
+      let largestRing = null;
+      let maxArea = 0;
+
+      const checkRing = (ring) => {
+        // crude bbox area for finding biggest ring
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        ring.forEach(c => {
+           if(c[0] < minX) minX=c[0]; if(c[0]>maxX) maxX=c[0];
+           if(c[1] < minY) minY=c[1]; if(c[1]>maxY) maxY=c[1];
+        });
+        const area = (maxX - minX) * (maxY - minY);
+        if (area > maxArea) {
+           maxArea = area;
+           largestRing = ring;
+        }
+      };
+
+      if (feature.geometry.type === 'Polygon') {
+        checkRing(feature.geometry.coordinates[0]);
+      } else if (feature.geometry.type === 'MultiPolygon') {
+        feature.geometry.coordinates.forEach((p) => checkRing(p[0]));
+      }
+
+      const labelText = displayNames[slug];
+      if (largestRing && labelText) {
+        const projectedRing = largestRing.map(projection);
+        const center = computeRingCenter(projectedRing);
+        
+        // Render SVG label precisely over the SVG (for ALL provinces that have a display name)
+        renderOverlays(document.getElementById('labels-group'), center, slug, color);
+      }
+    });
+
+    // Add all paths to the correct SVG group to preserve z-index (labels on top)
     const provincesGroup = document.getElementById('provinces-group');
-    const labelsGroup = document.getElementById('labels-group');
-    const loadingText = document.getElementById('map-loading');
+    if (provincesGroup) provincesGroup.appendChild(fragment);
+    else svgElement.appendChild(fragment);
 
-    if (!provincesGroup || !labelsGroup) return;
+    // Render geographic overlay features (lakes, islands)
+    renderGeographicFeatures(projection);
 
-    try {
-        const res = await fetch(GEOJSON_URL);
-        const geojson = await res.json();
-        const features = geojson.features;
-
-        const { px, py } = computeProjection(features);
-
-        features.forEach((f) => {
-            renderProvince(f, px, py, provincesGroup, labelsGroup);
-        });
-
-        if (loadingText) loadingText.remove();
-
-        // After provinces, add geographic overlays (water, islands)
-        renderOverlays(px, py);
-    } catch (err) {
-        console.error('Failed to load GeoJSON map:', err);
-        const loadingText = document.getElementById('map-loading');
-        if (loadingText) loadingText.textContent = 'Error al cargar el mapa';
-    }
+  } catch (err) {
+    console.error('Error loading GeoJSON:', err);
+  }
 }
 
 /**
- * Compute projection from bounding box into SVG coordinates.
+ * Render extra geographic labels and shapes after provinces are drawn:
+ * - Bahía de Samaná
+ * - Lago Enriquillo
+ * - Isla Saona, Isla Catalina, Isla Beata
  */
-function computeProjection(features) {
-    let minLng = Infinity,
-        maxLng = -Infinity,
-        minLat = Infinity,
-        maxLat = -Infinity;
+function renderGeographicFeatures(projection) {
+  const group = document.getElementById('overlays-group') || document.getElementById('labels-group');
+  if (!group) return;
 
-    features.forEach((f) => {
-        const coords =
-            f.geometry.type === 'MultiPolygon'
-                ? f.geometry.coordinates
-                : [f.geometry.coordinates];
-        coords.forEach((p) =>
-            p.forEach((r) =>
-                r.forEach(([lng, lat]) => {
-                    if (lng < minLng) minLng = lng;
-                    if (lng > maxLng) maxLng = lng;
-                    if (lat < minLat) minLat = lat;
-                    if (lat > maxLat) maxLat = lat;
-                }),
-            ),
-        );
-    });
+  const SVG_NS = 'http://www.w3.org/2000/svg';
 
-    const scaleX = (SVG_WIDTH - 2 * PADDING) / (maxLng - minLng);
-    const scaleY = (SVG_HEIGHT - 2 * PADDING) / (maxLat - minLat);
-    const scale = Math.min(scaleX, scaleY);
-    const offX =
-        PADDING + ((SVG_WIDTH - 2 * PADDING) - (maxLng - minLng) * scale) / 2;
-    const offY =
-        PADDING + ((SVG_HEIGHT - 2 * PADDING) - (maxLat - minLat) * scale) / 2;
+  function addLabel(lngDeg, latDeg, text, fontSize = 6, opacity = 0.8, color = '#5ba8c4') {
+    const [x, y] = projection([lngDeg, latDeg]);
+    const t = document.createElementNS(SVG_NS, 'text');
+    t.setAttribute('x', x.toFixed(1));
+    t.setAttribute('y', y.toFixed(1));
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('fill', color);
+    t.setAttribute('font-size', fontSize);
+    t.setAttribute('font-family', "'Outfit', sans-serif");
+    t.setAttribute('font-style', 'italic');
+    t.setAttribute('font-weight', '400');
+    t.setAttribute('letter-spacing', '0.6');
+    t.setAttribute('opacity', opacity);
+    t.setAttribute('class', 'pointer-events-none');
+    t.textContent = text;
+    group.appendChild(t);
+  }
 
-    return {
-        px: (lng) => offX + (lng - minLng) * scale,
-        py: (lat) => offY + (maxLat - lat) * scale,
-        scale,
-        minLng,
-        minLat,
-        maxLat,
-        offX,
-        offY,
-    };
+  // Bahía de Samaná
+  addLabel(-69.45, 19.08, 'Bahía de Samaná', 6.5, 0.75);
+
+  // Lago Enriquillo
+  {
+    const [cx, cy] = projection([-71.55, 18.52]);
+    const le = document.createElementNS(SVG_NS, 'ellipse');
+    le.setAttribute('cx', cx.toFixed(1));
+    le.setAttribute('cy', cy.toFixed(1));
+    // Keep small so it fits inside Bahoruco/Independencia area (scale manually or hardcode rx/ry if needed, old code used 14 and 6)
+    le.setAttribute('rx', '14');
+    le.setAttribute('ry', '6');
+    le.setAttribute('fill', '#5ab4d0');
+    le.setAttribute('fill-opacity', '0.72');
+    le.setAttribute('stroke', '#3898b8');
+    le.setAttribute('stroke-width', '0.8');
+    le.setAttribute('class', 'pointer-events-none');
+    group.appendChild(le);
+  }
+  addLabel(-71.55, 18.52, 'L. Enriquillo', 5, 0.9, '#1a6070');
+
+  // Islands — italic text labels only
+  addLabel(-68.67, 18.14, 'Isla Saona', 5.5, 0.75, '#4a8a96');
+  addLabel(-68.97, 18.37, 'Isla Catalina', 5, 0.75, '#4a8a96');
+  addLabel(-71.52, 17.62, 'Isla Beata', 5.5, 0.75, '#4a8a96');
 }
 
 /**
- * Render a single GeoJSON feature as an SVG path + optional label.
+ * Renders SVG text labels precisely over the geographic paths
  */
-function renderProvince(feature, px, py, provincesGroup, labelsGroup) {
-    const name = feature.properties.province_name;
-    const slug = nameToSlug[name] || name.toLowerCase().replace(/[^a-z]/g, '-');
-    const color = provinceColors[slug] || '#c8dcc8';
-    const hasData = dataProvinces.has(slug);
+function renderOverlays(labelsGroup, center, slug, color) {
+  const shortName = displayNames[slug] || slug.toUpperCase();
+  
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text.setAttribute('x', center[0].toFixed(0));
+  text.setAttribute('y', center[1].toFixed(0));
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('fill', '#5a7a6e');
+  text.setAttribute('font-size', '6');
+  text.setAttribute('font-family', "'Outfit', sans-serif");
+  text.setAttribute('font-weight', '600');
+  text.setAttribute('letter-spacing', '0.5');
+  text.setAttribute('class', 'pointer-events-none');
+  text.textContent = shortName;
 
-    const coords =
-        feature.geometry.type === 'MultiPolygon'
-            ? feature.geometry.coordinates
-            : [feature.geometry.coordinates];
-
-    let pathD = '';
-    let maxArea = 0,
-        cx = 0,
-        cy = 0;
-
-    coords.forEach((polygon) => {
-        polygon.forEach((ring, ri) => {
-            const simplified = simplifyRing(ring, MAX_POINTS_PER_RING);
-            let d = '';
-            simplified.forEach(([lng, lat], i) => {
-                d +=
-                    (i === 0 ? 'M' : 'L') +
-                    px(lng).toFixed(1) +
-                    ',' +
-                    py(lat).toFixed(1);
-            });
-            d += 'Z';
-            pathD += d + ' ';
-
-            if (ri === 0) {
-                const { area, centerX, centerY } = computeRingCenter(ring, px, py);
-                if (area > maxArea) {
-                    maxArea = area;
-                    cx = centerX;
-                    cy = centerY;
-                }
-            }
-        });
-    });
-
-    // Create SVG <path>
-    // stroke matches fill to eliminate white anti-alias gaps between provinces
-    const path = document.createElementNS(SVG_NS, 'path');
-    path.setAttribute('class', 'province-path');
-    path.setAttribute('fill', color);
-    path.setAttribute('stroke', color);
-    path.setAttribute('stroke-width', '1');
-    path.setAttribute('stroke-linejoin', 'round');
-    path.setAttribute('d', pathD.trim());
-    if (hasData) path.setAttribute('data-province', slug);
-    provincesGroup.appendChild(path);
-
-    // Create label <text> for provinces with enough area
-    const label = displayNames[slug];
-    if (label && maxArea > 100) {
-        const text = document.createElementNS(SVG_NS, 'text');
-        text.setAttribute('x', cx.toFixed(0));
-        text.setAttribute('y', cy.toFixed(0));
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('fill', '#5a7a6e');
-        text.setAttribute('font-size', '6');
-        text.setAttribute('font-family', "'Outfit', sans-serif");
-        text.setAttribute('font-weight', '600');
-        text.setAttribute('letter-spacing', '0.5');
-        text.setAttribute('class', 'pointer-events-none');
-        text.textContent = label;
-        labelsGroup.appendChild(text);
-    }
-}
-
-/**
- * Render extra geographic labels after provinces are drawn:
- * - Bahía de Samaná (italic text in the water area)
- * - Lago Enriquillo (italic text)
- * - Isla Saona, Isla Catalina, Isla Beata (small shape + label)
- */
-function renderOverlays(px, py) {
-    const group = document.getElementById('overlays-group');
-    if (!group) return;
-
-    /** Add an italic water/geo label */
-    function addLabel(lngDeg, latDeg, text, fontSize = 6, opacity = 0.8, color = '#5ba8c4') {
-        const t = document.createElementNS(SVG_NS, 'text');
-        t.setAttribute('x', px(lngDeg).toFixed(1));
-        t.setAttribute('y', py(latDeg).toFixed(1));
-        t.setAttribute('text-anchor', 'middle');
-        t.setAttribute('fill', color);
-        t.setAttribute('font-size', fontSize);
-        t.setAttribute('font-family', "'Outfit', sans-serif");
-        t.setAttribute('font-style', 'italic');
-        t.setAttribute('font-weight', '400');
-        t.setAttribute('letter-spacing', '0.6');
-        t.setAttribute('opacity', opacity);
-        t.setAttribute('class', 'pointer-events-none');
-        t.textContent = text;
-        group.appendChild(t);
-    }
-
-    /** Add a tiny island shape + label below it */
-    function addIsland(lngDeg, latDeg, rx, ry, labelText) {
-        const el = document.createElementNS(SVG_NS, 'ellipse');
-        el.setAttribute('cx', px(lngDeg).toFixed(1));
-        el.setAttribute('cy', py(latDeg).toFixed(1));
-        el.setAttribute('rx', rx);
-        el.setAttribute('ry', ry);
-        el.setAttribute('fill', '#b0d8dc');
-        el.setAttribute('stroke', '#7ab8c4');
-        el.setAttribute('stroke-width', '0.6');
-        el.setAttribute('class', 'pointer-events-none');
-        group.appendChild(el);
-
-        addLabel(lngDeg, latDeg + (ry / 70), labelText, 5.5, 0.75, '#4a8a96');
-    }
-
-    // ----------------------------------------------------------------
-    // Bahía de Samaná — italic text in the water between the peninsula
-    // and the main coast (~lng -69.5, lat 19.05)
-    // ----------------------------------------------------------------
-    addLabel(-69.45, 19.08, 'Bahía de Samaná', 6.5, 0.75);
-
-    // ----------------------------------------------------------------
-    // Lago Enriquillo — distinctive water ellipse + label
-    // ----------------------------------------------------------------
-    {
-        const le = document.createElementNS(SVG_NS, 'ellipse');
-        le.setAttribute('cx', px(-71.55).toFixed(1));
-        le.setAttribute('cy', py(18.52).toFixed(1));
-        // Keep small so it fits inside Bahoruco/Independencia area
-        le.setAttribute('rx', '14');
-        le.setAttribute('ry', '6');
-        le.setAttribute('fill', '#5ab4d0');
-        le.setAttribute('fill-opacity', '0.72');
-        le.setAttribute('stroke', '#3898b8');
-        le.setAttribute('stroke-width', '0.8');
-        le.setAttribute('class', 'pointer-events-none');
-        group.appendChild(le);
-    }
-    addLabel(-71.55, 18.52, 'L. Enriquillo', 5, 0.9, '#1a6070');
-
-    // Islands — italic text labels only (no shapes)
-    addLabel(-68.67, 18.14, 'Isla Saona', 5.5, 0.75, '#4a8a96');
-    addLabel(-68.97, 18.37, 'Isla Catalina', 5, 0.75, '#4a8a96');
-    addLabel(-71.52, 17.62, 'Isla Beata', 5.5, 0.75, '#4a8a96');
-}
-
-function simplifyRing(ring, maxPoints) {
-    const step = Math.max(1, Math.floor(ring.length / maxPoints));
-    const pts = [];
-    for (let i = 0; i < ring.length; i += step) pts.push(ring[i]);
-    if (pts[pts.length - 1] !== ring[ring.length - 1]) {
-        pts.push(ring[ring.length - 1]);
-    }
-    return pts;
-}
-
-function computeRingCenter(ring, px, py) {
-    let area = 0,
-        sx = 0,
-        sy = 0;
-    for (let i = 0; i < ring.length; i++) {
-        const [x1, y1] = [px(ring[i][0]), py(ring[i][1])];
-        const j = (i + 1) % ring.length;
-        const [x2, y2] = [px(ring[j][0]), py(ring[j][1])];
-        area += x1 * y2 - x2 * y1;
-        sx += x1;
-        sy += y1;
-    }
-    return {
-        area: Math.abs(area) / 2,
-        centerX: sx / ring.length,
-        centerY: sy / ring.length,
-    };
+  labelsGroup.appendChild(text);
 }

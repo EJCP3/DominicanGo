@@ -10,7 +10,10 @@ function initApp() {
     // Si no estamos en la página del mapa, salir temprano.
     if (!document.getElementById('map-container')) return;
 
-    loadAndRenderMap().then(() => {
+    const svgElement = document.getElementById('rd-map');
+    if (!svgElement) return;
+
+    loadAndRenderMap(svgElement, 'map-container').then(() => {
         bindProvinceEvents();
     });
 
@@ -28,7 +31,7 @@ function initApp() {
 function bindProvinceEvents() {
     const tooltip = document.getElementById('province-tooltip');
     const tooltipText = document.getElementById('tooltip-text');
-    const allPaths = document.querySelectorAll('.province-path');
+    const allPaths = document.querySelectorAll('.map-province');
     const provinces = window.__PROVINCES__ || {};
 
     allPaths.forEach((path) => {
