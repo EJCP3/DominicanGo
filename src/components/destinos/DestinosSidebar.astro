@@ -1,6 +1,7 @@
 ---
 import { TYPE_LABELS, REGION_COLORS, TIPOS } from "../../data/poi-config.ts";
-import { provinces } from "../../data/provinces.js";
+import { getProvincesWithDestinations } from "../../services/api";
+const provinces = await getProvincesWithDestinations();
 
 const regiones = [
     ...new Set(Object.values(provinces).map((p: any) => p.region)),

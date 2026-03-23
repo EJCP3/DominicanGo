@@ -5,83 +5,32 @@ import BlogPostHero from "../../components/blog/BlogPostHero.astro";
 import BlogPostContent from "../../components/blog/BlogPostContent.astro";
 import BlogBentoGallery from "../../components/blog/BlogBentoGallery.astro";
 
-// Para el prototipo generaremos rutas estáticas para los 3 posts dummies.
-export function getStaticPaths() {
-    return [
-        { params: { slug: "amanecer-bahia-aguilas" } },
-        { params: { slug: "colores-carnaval-vegano" } },
-        { params: { slug: "acampando-valle-nuevo" } },
-    ];
-}
 
+
+import { getBlogs, getFavoriteIds } from "../../services/api";
+import BotonFavorito from "../../components/BotonFavorito.vue";
+
+const token = Astro.cookies.get('auth_token')?.value ?? '';
+const isLoggedIn = !!token;
 const { slug } = Astro.params;
 
-// Datos dummy de los posts dependiendo del slug
-const posts = {
-    "amanecer-bahia-aguilas": {
-        title: "Amanecer en Bahía de las Águilas",
-        author: "María Pérez",
-        date: "15 Mar, 2026",
-        images: [
-            "https://picsum.photos/seed/bahia-aguilas-post/1200/600",
-            "https://picsum.photos/seed/bahia-aguilas-2/800/600",
-            "https://picsum.photos/seed/bahia-aguilas-3/800/600",
-        ],
-        destinationId: "bahia-de-las-aguilas",
-        provinceId: "barahona",
-        destinationName: "Bahía de las Águilas",
-        content: `
-      <p class="mb-4 text-lg">Acampar en Bahía de las Águilas ha sido una de las experiencias más reveladoras de mi vida. Lejos del ruido de la ciudad, de la cobertura del celular y de cualquier distracción de la vida moderna, uno se encuentra cara a cara con la naturaleza cruda y majestuosa del suroeste dominicano.</p>
-      
-      <p class="mb-4 text-lg">Llegamos a Cabo Rojo al atardecer y tomamos el bote hacia la bahía. El contraste entre la tierra rida, los cactus y el mar turquesa es hipnótico. Montamos nuestra casa de campaña just antes de que el sol se ocultara, regalándonos un espectáculo de colores cálidos que pintaban el cielo de naranja y violeta.</p>
+// Fetch dynamically
+const { data } = await getBlogs({ slug: slug as string });
+const post = data && data.length > 0 ? data[0] : null;
 
-      <div class="my-10 border-l-4 border-primary pl-6 py-2 bg-base-200/50 rounded-r-lg">
-        <h3 class="font-bold text-xl text-primary mb-2">Pro Tip para Aventureros</h3>
-        <p class="italic text-base-content/80">Lleva suficiente agua, protector solar ecológico y asegúrate de regresar toda tu basura contigo. La belleza de la bahía depende de nuestro respeto por ella.</p>
-      </div>
+if (!post) {
+    return Astro.redirect("/blog");
+}
 
-      <p class="text-lg">La noche, sin embargo, fue el verdadero premio. Tumbados en la suave arena blanca, fuimos testigos de un cielo estrellado como pocos en el mundo. La Vía Láctea se dejaba ver claramente a simple vista. El silencio, interrumpido sólo por el suave oleaje, era abrumador. Despertar al amanecer con la primera luz filtrándose en la tienda y caminar descalza por los 8 kilómetros de playa virgen... es algo que las palabras no hacen justicia. Debes vivirlo.</p>
-    `,
-    },
-    "colores-carnaval-vegano": {
-        title: "Los colores del Carnaval Vegano",
-        author: "Carlos Gómez",
-        date: "28 Feb, 2026",
-        images: [
-            "https://picsum.photos/seed/carnaval-post/1200/600",
-            "https://picsum.photos/seed/carnaval-2/800/600",
-            "https://picsum.photos/seed/carnaval-3/800/600",
-        ],
-        destinationId: "carnaval-de-la-vega",
-        provinceId: "la-vega",
-        destinationName: "Carnaval de La Vega",
-        content: `
-      <p class="mb-4 text-lg">Sumergiéndome en la tradición, las máscaras y la alegría desbordante del carnaval más famoso de República Dominicana.</p>
-      <p class="mb-4 text-lg">El sonido ensordecedor de los vejigazos y la música resonando en las calles creando un ambiente de euforia que te contagia al instante. Ver de cerca la artesanía detrás de los trajes de los Diablos Cojuelos te hace apreciar el patrimonio inmaterial que poseemos.</p>
-    `,
-    },
-    "acampando-valle-nuevo": {
-        title: "Acampando en Valle Nuevo",
-        author: "Laura Castillo",
-        date: "10 Ene, 2026",
-        images: [
-            "https://picsum.photos/seed/valle-nuevo-post/1200/600",
-            "https://picsum.photos/seed/valle-nuevo-2/800/600",
-            "https://picsum.photos/seed/valle-nuevo-3/800/600",
-        ],
-        // Link "fake" just to show the UX.
-        destinationId: "jarabacoa",
-        provinceId: "la-vega",
-        destinationName: "Valle Nuevo / Jarabacoa",
-        content: `
-      <p class="mb-4 text-lg">Cero grados centígrados. Escarcha sobre la grama. Neblina espesa. No, no es otro país, es el corazón de la República Dominicana. Valle Nuevo es el paraíso frío que contrasta con nuestras cálidas playas.</p>
-      <p class="mb-4 text-lg">El Monumento a las Pirámides fue nuestro punto base. Preparamos chocolate caliente, encendimos una pequeña fogata (en el área permitida) y pasamos la noche contando estrellas envueltos en abrigos gruesos. Una experiencia mágica.</p>
-    `,
-    },
-};
+const dateToFormat = post.publishedAt || post.createdAt || new Date();
+const formattedDate = new Date(dateToFormat).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric' });
+const authorName = post.author?.name || 'Viajero DominicanGo';
+const destinationName = post.destination?.name || null;
+const provinceId = post.provinceId || null;
+const destinationSlug = post.destination?.slug || null;
 
-const post =
-    posts[slug as keyof typeof posts] || posts["amanecer-bahia-aguilas"];
+const { blogIds: favBlogIds } = await getFavoriteIds(token);
+const isFavorited = favBlogIds.has(post.id);
 ---
 
 <Layout title={`${post.title} — Blog DominicanGo`}>
@@ -97,41 +46,61 @@ const post =
 
             <BlogPostContent
                 title={post.title}
-                author={post.author}
-                date={post.date}
+                author={authorName}
+                date={formattedDate}
                 content={post.content}
-                destinationName={post.destinationName}
-                destinationId={post.destinationId}
-                provinceId={post.provinceId}
+                destinationName={destinationName}
+                destinationSlug={destinationSlug}
+                provinceId={provinceId}
                 slug={slug as string}
             />
 
             <BlogBentoGallery images={post.images} title={post.title} />
 
-            <div
-                class="max-w-3xl mx-auto mt-16 pt-8 border-t border-base-200 flex justify-between items-center"
-            >
+            <div class="max-w-3xl mx-auto mt-16 pt-8 border-t border-base-200">
                 <a
                     href="/blog"
-                    class="btn btn-ghost text-base-content/60 hover:text-base-content"
+                    class="btn btn-ghost text-base-content/60 hover:text-base-content mb-8"
                 >
                     ← Volver al blog
                 </a>
-                <div class="flex gap-2">
-                    <button class="btn btn-circle btn-ghost bg-base-200">
-                        <svg
-                            class="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            ><path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                            ></path></svg
-                        >
-                    </button>
+
+                <div class="bg-base-100 rounded-3xl p-6 shadow-sm border border-base-200">
+                    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                        <div>
+                            <h3 class="font-heading font-bold text-lg text-base-content">¿Te gustó esta historia?</h3>
+                            <p class="text-sm text-base-content/60">Guárdala en tus favoritos o compártela con otros viajeros.</p>
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <button class="btn btn-circle btn-ghost bg-base-200 hover:bg-white shadow-sm" onclick="if(navigator.share) navigator.share({ title: document.title, url: window.location.href }).catch(()=>{}); else alert('Comparte copiando la URL: ' + window.location.href);">
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    ><path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                                    ></path></svg
+                                >
+                            </button>
+
+                            {isLoggedIn && (
+                                <div class="relative w-12 h-12 flex items-center justify-center ">
+                                    <BotonFavorito
+                                        client:load
+                                        itemId={post.id}
+                                        type="blog"
+                                        isLoggedIn={isLoggedIn}
+                                        token={token}
+                                        initialState={isFavorited}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </article>

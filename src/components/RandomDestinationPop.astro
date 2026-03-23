@@ -59,7 +59,8 @@
 </style>
 
 <script>
-  import { provinces, slugify } from '../data/provinces.js';
+  import { getProvincesWithDestinations, slugify } from '../services/api';
+  const provinces = await getProvincesWithDestinations();
 
   // Define interfaces for type safety
   interface Destination {

@@ -1,0 +1,19 @@
+---
+// /auth/callback — Receives JWT from backend and saves it as a cookie
+const token = Astro.url.searchParams.get("token");
+
+if (!token) {
+    return Astro.redirect("/?error=auth_failed");
+}
+
+// Save the JWT as an HTTP cookie (7 days)
+Astro.cookies.set("auth_token", token, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,   // 7 days
+    httpOnly: false,              // Must be false so Astro SSR can read it via Astro.cookies
+    sameSite: "lax",
+    secure: false,                // false for localhost dev
+});
+
+return Astro.redirect("/");
+---

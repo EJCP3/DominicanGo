@@ -1,6 +1,8 @@
 ---
 // PoiSidebar.astro — sharing & quick-info sidebar
 import Icon from "../Icon.astro";
+import BotonFavorito from "../BotonFavorito.vue";
+
 interface Props {
     poi: any;
     province: any;
@@ -8,43 +10,85 @@ interface Props {
     website?: string | null;
     mapLink: string;
     showHours: boolean;
+    token: string;
+    isLoggedIn: boolean;
+    isFavorited: boolean;
 }
-const { poi, province, hours, website, mapLink, showHours } = Astro.props;
+const { poi, province, hours, website, mapLink, showHours, token, isLoggedIn, isFavorited } = Astro.props;
 const shareUrl = Astro.url.href;
 const priceLabel = poi.price === "gratis" ? "Gratuito" : "Tiene costo";
+const seed = poi.id || poi.poiSlug || '';
 ---
 
 <aside class="poi-sidebar">
-    <div class="sidebar-card">
-        <h3 class="sc-title">Información rápida</h3>
-        <ul class="info-list">
-            <li>
-             
-                    <strong>Provincia:</strong> {province.name}</span
-                >
-            </li>
-            <li>
-               
-                    <strong>Categoría:</strong> {poi.type}</span
-                >
-            </li>
-            <li>
-               
-                    <strong>Precio:</strong> {priceLabel}</span
-                >
-            </li>
-        </ul>
+    <!-- Main Info & Actions Card -->
+    <div class="sidebar-card overflow-hidden !p-0">
+        <div class="bg-primary/5 p-5 border-b border-primary/10">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-primary mb-4">Información del Destino</h3>
+            <ul class="flex flex-col gap-3.5">
+                <li class="flex items-center gap-3 text-sm font-medium text-base-content/80">
+                    <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-xs border border-base-200 shrink-0">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-tighter text-base-content/40">Provincia</span>
+                        {province.name}
+                    </div>
+                </li>
+                <li class="flex items-center gap-3 text-sm font-medium text-base-content/80">
+                    <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-xs border border-base-200 shrink-0">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-tighter text-base-content/40">Categoría</span>
+                        <span class="capitalize">{poi.type}</span>
+                    </div>
+                </li>
+                <li class="flex items-center gap-3 text-sm font-medium text-base-content/80">
+                    <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-xs border border-base-200 shrink-0">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-tighter text-base-content/40">Precio</span>
+                        {priceLabel}
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="p-5 flex gap-3 bg-white">
+            <button 
+                class="btn btn-primary flex-1 !rounded-xl !h-12 shadow-sm border-none bg-linear-to-r from-primary to-primary-focus text-white font-bold group"
+                onclick="if(navigator.share) navigator.share({ title: document.title, url: window.location.href }).catch(()=>{}); else alert('Comparte copiando la URL: ' + window.location.href);"
+            >
+                <svg class="w-5 h-5 mr-1 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                Compartir
+            </button>
+            {isLoggedIn && (
+                <div class="relative w-12 h-12 shrink-0 flex items-center justify-center bg-base-100 rounded-xl border border-base-200 shadow-xs hover:bg-base-50 transition-colors">
+                    <BotonFavorito
+                        client:load
+                        itemId={seed}
+                        type="destination"
+                        isLoggedIn={isLoggedIn}
+                        token={token}
+                        initialState={isFavorited}
+                    />
+                </div>
+            )}
+        </div>
     </div>
 
+    <!-- Tags Card -->
     {
         poi.tags && poi.tags.length > 0 && (
             <div class="sidebar-card">
-                <h3 class="sc-title">Etiquetas</h3>
-                <div class="tags-wrap">
+                <h3 class="sc-title">Experiencias</h3>
+                <div class="tags-wrap mt-1">
                     {poi.tags.map((t: string) => (
                         <span
                             class="tag-pill"
-                            style={`border-color:${province.color}44;color:${province.color}`}
+                            style={`border-color:${province.color}22; background-color:${province.color}08; color:${province.color}`}
                         >
                             {t}
                         </span>
@@ -54,50 +98,70 @@ const priceLabel = poi.price === "gratis" ? "Gratuito" : "Tiene costo";
         )
     }
 
+    <!-- Planning Card -->
     {
         showHours && (
             <div class="sidebar-card">
-                <h3 class="sc-title">Horarios</h3>
-                <ul class="info-list">
-                    <li>
-                        <>
-                            <span>Lunes a Viernes: {hours.weekdays}</span>
-                        </>
-                    </li>
-                    <li>
-                        <>
-                            <span>Fines de semana: {hours.weekend}</span>
-                        </>
-                    </li>
-                </ul>
+                <h3 class="sc-title">Planifica tu visita</h3>
+                <div class="flex flex-col gap-3 mt-1">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center text-warning shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] uppercase tracking-tighter text-base-content/40">Semana</span>
+                            <span class="text-sm font-medium">{hours.weekdays}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center text-warning shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] uppercase tracking-tighter text-base-content/40">Fin de semana</span>
+                            <span class="text-sm font-medium">{hours.weekend}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }
 
-    <div class="sidebar-card">
-        <h3 class="sc-title">Explorar más</h3>
-        <a
-            href={mapLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:underline text-error flex items-center gap-2"
-        >   
-     Ver en Google Maps<Icon name="arrow-right" />
-        </a>
-        {
-            website && (
+    <!-- Navigation Card -->
+    <div class="sidebar-card bg-base-300">
+        <h3 class="sc-title mb-4">Explorar más</h3>
+        <div class="flex flex-col gap-2">
+            <a
+                href={mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-ghost justify-start !rounded-xl !h-12 border border-base-200 shadow-xs group"
+            >   
+                <div class="w-8 h-8 rounded-lg bg-error/10 flex items-center justify-center text-error mr-2 group-hover:scale-110 transition-transform">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A2 2 0 013 15.485V5.414a2 2 0 012.553-1.907L10 5l5-2 5.447 2.724A2 2 0 0121 7.515v10.071a2 2 0 01-2.553 1.907L13 17l-4 3z"/></svg>
+                </div>
+                <span class="text-sm font-bold text-base-content/80">Ver en Google Maps</span>
+            </a>
+            
+            {website && (
                 <a
                     href={website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class=" flex items-center gap-2 hover:underline text-error"
+                    class="btn btn-ghost !justify-start !rounded-xl !h-12 bg-white border border-base-200 shadow-xs group"
                 >
-                   Sitio Web Oficial<Icon name="globe" />
+                    <div class="w-8 h-8 rounded-lg bg-info/10 flex items-center justify-center text-info mr-2 group-hover:scale-110 transition-transform">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+                    </div>
+                    <span class="text-sm font-bold text-base-content/80">Sitio Web Oficial</span>
                 </a>
-            )
-        }
-        <a href={`/destinos`} class=" flex items-center gap-2 hover:underline text-primary">
-             <Icon name="arrow-left" /> Todos los destinos</a>
+            )}
+
+            <a href={`/destinos`} class="flex items-center justify-center gap-2 mt-2 py-3 text-xs font-bold text-primary/60 hover:text-primary transition-colors no-underline">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Todos los destinos
+            </a>
+        </div>
     </div>
 </aside>
 

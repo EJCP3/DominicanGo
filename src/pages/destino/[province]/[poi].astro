@@ -1,28 +1,30 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
-import { provinces, slugify } from "../../../data/provinces.js";
+import { getProvincesWithDestinations, slugify } from "../../../services/api";
+const provinces = await getProvincesWithDestinations();
 import { DEFAULT_HOURS } from "../../../data/poi-config.ts";
 
 import PoiHero from "../../../components/poi/PoiHero.astro";
 import PoiBentoGrid from "../../../components/poi/PoiBentoGrid.astro";
 import PoiSidebar from "../../../components/poi/PoiSidebar.astro";
 import PoiRelated from "../../../components/poi/PoiRelated.astro";
+import BotonFavorito from "../../../components/BotonFavorito.vue";
+import ImageLightbox from "../../../components/ui/ImageLightbox.vue";
+import { getFavoriteIds } from "../../../services/api";
 
-export async function getStaticPaths() {
-    const paths = [];
-    for (const [provinceSlug, province] of Object.entries(provinces)) {
-        for (const poi of (province as any).pois) {
-            paths.push({
-                params: { province: provinceSlug, poi: slugify(poi.name) },
-                props: { poi, province, provinceSlug },
-            });
-        }
-    }
-    return paths;
+const { province: slugProvince, poi: slugPoi } = Astro.params;
+const provinceSlug = slugProvince as string;
+
+const province = (provinces as any)[provinceSlug];
+if (!province) {
+    return Astro.redirect('/destinos');
 }
 
-const { poi, province, provinceSlug } = Astro.props as any;
+const poi = province.pois.find((p: any) => p.name && slugify(p.name) === slugPoi);
+if (!poi) {
+    return Astro.redirect('/destinos');
+}
 
 // Related: same type OR same province, max 6
 const related = Object.entries(provinces)
@@ -63,6 +65,11 @@ const hours = poi.hours ??
 const website = poi.website ?? null;
 const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${poi.name}, ${province.name}, República Dominicana`)}`;
 const showHours = poi.type !== "playa";
+
+const token = Astro.cookies.get('auth_token')?.value ?? '';
+const isLoggedIn = !!token;
+const { destinationIds: favDestinationIds } = await getFavoriteIds(token);
+const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
 ---
 
 <Layout title={`${poi.name} — DominicanGo`} description={poi.description}>
@@ -216,6 +223,9 @@ const showHours = poi.type !== "playa";
                         website={website}
                         mapLink={mapLink}
                         showHours={showHours}
+                        token={token}
+                        isLoggedIn={isLoggedIn}
+                        isFavorited={isFavorited}
                     />
                 </div>
             </div>
@@ -223,4 +233,6 @@ const showHours = poi.type !== "playa";
 
         <PoiRelated related={related} />
     </article>
+
+    <ImageLightbox client:load />
 </Layout>

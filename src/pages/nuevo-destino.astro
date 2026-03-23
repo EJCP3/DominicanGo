@@ -2,9 +2,18 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import FormularioDestino from "../components/FormularioDestino.vue";
-import { provinces } from "../data/provinces.js";
+import { getProvincesWithDestinations, getUser } from "../services/api";
 import { TIPOS, TYPE_LABELS } from "../data/poi-config.ts";
 
+// ── Auth Guard ──────────────────────────────────────────────────────────────
+const token = Astro.cookies.get("auth_token")?.value;
+const user = await getUser(token);
+if (!user) {
+    return Astro.redirect("/?error=auth_required");
+}
+
+// ── Data ────────────────────────────────────────────────────────────────────
+const provinces = await getProvincesWithDestinations();
 const provinciasList = Object.entries(provinces)
     .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
     .map(([slug, prov]: any) => ({ slug, name: prov.name }));
@@ -26,12 +35,14 @@ const provinciasList = Object.entries(provinces)
                     ¿Conoces un lugar increíble en República Dominicana? Colabora con nuestra comunidad compartiendo este destino para que todos puedan descubrirlo.
                 </p>
             </div>
-            
+
             <FormularioDestino
                 client:load
                 provincias={provinciasList}
                 tipos={TIPOS}
                 typeLabels={TYPE_LABELS}
+                user={user}
+                token={token}
             />
         </div>
     </main>

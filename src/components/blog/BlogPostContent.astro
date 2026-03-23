@@ -6,7 +6,7 @@ interface Props {
     date: string;
     content: string;
     destinationName: string;
-    destinationId: string;
+    destinationSlug: string;
     provinceId: string;
     slug: string;
 }
@@ -17,7 +17,7 @@ const {
     date,
     content,
     destinationName,
-    destinationId,
+    destinationSlug,
     provinceId,
     slug,
 } = Astro.props;
@@ -28,7 +28,7 @@ const {
         <span class="text-primary">Destino vinculado</span>
         <span>•</span>
         <a
-            href={`/destino/${provinceId}/${destinationId}`}
+            href={`/destino/${provinceId}/${destinationSlug}`}
             class="hover:text-primary transition-colors hover:underline inline-flex items-center gap-1"
         >
             <svg

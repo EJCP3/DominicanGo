@@ -1,5 +1,5 @@
 ---
-import { TYPE_LABELS } from "../../data/poi-config.ts";
+import { TIPOS, TYPE_LABELS } from "../../data/poi-config.ts";
 
 interface DestinoItem {
     name: string;
@@ -15,11 +15,14 @@ interface DestinoItem {
     provinceColor: string;
     region: string;
     href: string;
+    id?: string;
 }
 interface Props {
     d: DestinoItem;
+    token?: string;
+    initialFavorited?: boolean;
 }
-const { d } = Astro.props;
+const { d, token = '', initialFavorited = false } = Astro.props;
 ---
 
 <a
@@ -69,8 +72,8 @@ const { d } = Astro.props;
                 {TYPE_LABELS[d.type] ?? d.type}
             </span>
         </div>
-        <!-- Price badge -->
-        <div class="absolute top-3 right-3 z-10 pointer-events-none">
+        <!-- Price badge (bottom-left to avoid overlapping heart) -->
+        <div class="absolute bottom-3 left-3 z-10 pointer-events-none">
             <span
                 class={`badge badge-sm font-bold shadow-sm ${d.price === "gratis" ? "badge-success" : "badge-warning"}`}
             >

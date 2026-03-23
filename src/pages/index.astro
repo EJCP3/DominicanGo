@@ -3,7 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import MapSection from "../components/MapSection.astro";
 import ProvinceModal from "../components/ProvinceModal.astro";
-import { provinces } from "../data/provinces.js";
+import { getProvincesWithDestinations } from "../services/api";
+const provinces = await getProvincesWithDestinations();
 ---
 
 <Layout>

@@ -43,12 +43,13 @@ const uniqueID = provinceSlug && poiSlug ? `${provinceSlug}-${poiSlug}` : null;
         </a>
 
         <figure
-            class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative"
+            class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative cursor-zoom-in group"
+            onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { img: '${image}', alt: '${name}' } }))`}
         >
             <img
                 src={image}
                 alt={name}
-                class="w-full h-full object-cover select-none"
+                class="w-full h-full object-cover select-none transition-transform duration-700 group-hover:scale-105"
                 transition:name={uniqueID
                     ? `img-destino-${uniqueID}`
                     : undefined}

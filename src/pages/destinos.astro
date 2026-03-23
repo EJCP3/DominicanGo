@@ -1,7 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
-import { provinces, slugify } from "../data/provinces.js";
+import { getProvincesWithDestinations, slugify, getFavoriteIds } from "../services/api";
+const provinces = await getProvincesWithDestinations();
 
 import DestinosHero from "../components/destinos/DestinosHero.astro";
 import FiltrosDestinos from "../components/FiltrosDestinos.vue";
@@ -31,6 +32,9 @@ const regiones = [
 const provinciasList = Object.entries(provinces)
     .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
     .map(([slug, prov]: any) => ({ slug, name: prov.name }));
+
+const token = Astro.cookies.get('auth_token')?.value ?? '';
+const { destinationIds: favDestinationIds } = await getFavoriteIds(token);
 ---
 
 <Layout
@@ -75,7 +79,7 @@ const provinciasList = Object.entries(provinces)
                     id="destinos-grid"
                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                 >
-                    {allDestinos.map((d: any) => <DestinoCard d={d} />)}
+                    {allDestinos.map((d: any) => <DestinoCard d={d} token={token} initialFavorited={favDestinationIds.has(d.id)} />)}
                 </div>
 
                 <!-- Empty state -->

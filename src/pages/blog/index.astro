@@ -3,39 +3,15 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import BlogFiltersPanel from "../../components/blog/BlogFiltersPanel.astro";
 
-// Dummy data for visual prototype
-const posts = [
-    {
-        title: "Amanecer en Bahía de las Águilas",
-        slug: "amanecer-bahia-aguilas",
-        excerpt:
-            "Nuestra experiencia acampando en la playa más prístina del país, rodeados de naturaleza virgen y un cielo estrellado inolvidable.",
-        author: "María Pérez",
-        date: "15 Mar, 2026",
-        category: "Aventura",
-        images: ["https://picsum.photos/seed/bahia-aguilas-post/800/600"],
-    },
-    {
-        title: "Los colores del Carnaval Vegano",
-        slug: "colores-carnaval-vegano",
-        excerpt:
-            "Sumergiéndome en la tradición, las máscaras y la alegría desbordante del carnaval más famoso de República Dominicana.",
-        author: "Carlos Gómez",
-        date: "28 Feb, 2026",
-        category: "Cultura",
-        images: ["https://picsum.photos/seed/carnaval-post/800/600"],
-    },
-    {
-        title: "Acampando en Valle Nuevo",
-        slug: "acampando-valle-nuevo",
-        excerpt:
-            "Sobreviviendo al frío del Caribe en Las Pirámides, una aventura de altura rodeada de pinos y neblina constante.",
-        author: "Laura Castillo",
-        date: "10 Ene, 2026",
-        category: "Naturaleza",
-        images: ["https://picsum.photos/seed/valle-nuevo-post/800/600"],
-    },
-];
+import { getBlogs, getFavoriteIds } from "../../services/api";
+
+const token = Astro.cookies.get('auth_token')?.value ?? '';
+const isLoggedIn = !!token;
+const { blogIds: favBlogIds } = await getFavoriteIds(token);
+const currentCategory = Astro.url.searchParams.get("category") || undefined;
+
+// Fetch dynamic data from backend API
+const { data: posts, success, message = '' } = await getBlogs({ category: currentCategory });
 ---
 
 <Layout
@@ -118,7 +94,7 @@ const posts = [
                             href={`/blog/${post.slug}`}
                             class="card bg-base-100 shadow-sm border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
                         >
-                            <figure class="aspect-[4/3] overflow-hidden relative">
+                            <figure class="aspect-4/3 overflow-hidden relative">
                                 <img
                                     src={post.images[0]}
                                     alt={post.title}
@@ -140,7 +116,7 @@ const posts = [
                                     {post.excerpt}
                                 </p>
                                 <div class="mt-auto flex items-center justify-between text-xs text-base-content/50 font-medium pt-4 border-t border-base-200">
-                                    <span>{post.date}</span>
+                                    <span>{new Date(post.publishedAt || post.createdAt || new Date()).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                                     <span class="flex items-center gap-1.5">
                                         <svg
                                             class="w-4 h-4 text-base-content/30"
@@ -162,6 +138,10 @@ const posts = [
                         </a>
                     ))
                 }
+            </div>
+            
+            <div class="hidden" id="ssr-debug">
+              DEBUG -- Category: {currentCategory} | Success: {success ? 'true' : 'false'} | Posts length: {posts?.length} | Message: {message}
             </div>
         </div>
     </main>

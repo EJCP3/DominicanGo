@@ -23,6 +23,8 @@ const CATEGORY_COLORS: Record<string, string> = {
     Fotografía: "#64748b", // slate
     Otro: "#94a3b8",
 };
+
+const currentCategory = Astro.url.searchParams.get("category") || "todas";
 ---
 
 <div
@@ -33,9 +35,10 @@ const CATEGORY_COLORS: Record<string, string> = {
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-extrabold text-[#2F3D4E]">Filtros</h3>
         <div class="flex items-center gap-1">
-            <button
+            <a
                 id="reset-blog-filters"
-                class="btn btn-sm btn-circle btn-ghost text-slate-400 hover:text-slate-700 transition-colors"
+                href="/blog"
+                class="btn btn-sm btn-circle btn-ghost text-slate-400 hover:text-slate-700 transition-colors inline-flex items-center justify-center flex-col shrink-0"
                 title="Limpiar filtros"
             >
                 <svg
@@ -50,7 +53,7 @@ const CATEGORY_COLORS: Record<string, string> = {
                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                     ></path></svg
                 >
-            </button>
+            </a>
             <button
                 class="btn btn-sm btn-circle btn-ghost text-slate-400 hover:text-slate-700 transition-colors"
                 onclick="document.getElementById('blog-filtros-panel').classList.remove('popup-open');"
@@ -82,26 +85,28 @@ const CATEGORY_COLORS: Record<string, string> = {
                 Categorías
             </h4>
             <div class="flex flex-wrap gap-2.5" id="blog-filter-category">
-                <button
+                <a
                     data-filter="category"
                     data-value="todas"
-                    class="filter-btn category-btn px-4 py-1.5 rounded-full text-[13px] font-bold border-[1.5px] border-[#DEE3EC] bg-white transition-all text-[#664634] active"
+                    href="/blog"
+                    class={`filter-btn category-btn inline-block text-center px-4 py-1.5 rounded-full text-[13px] font-bold border-[1.5px] border-[#DEE3EC] bg-white transition-all text-[#664634] ${currentCategory === 'todas' ? 'active' : 'hover:bg-base-200'}`}
                     style="--active-border:#3b82f6"
                 >
                     Todas las historias
-                </button>
+                </a>
                 {
                     categories.map((cat: string) => {
                         const activeColor = CATEGORY_COLORS[cat] ?? "#cbd5e1"; // Fallback
                         return (
-                            <button
+                            <a
                                 data-filter="category"
                                 data-value={cat}
-                                class="filter-btn category-btn px-4 py-1.5 rounded-full text-[13px] font-bold border-[1.5px] border-[#DEE3EC] bg-white transition-all text-[#664634]"
+                                href={`/blog?category=${encodeURIComponent(cat)}`}
+                                class={`filter-btn category-btn inline-block text-center px-4 py-1.5 rounded-full text-[13px] font-bold border-[1.5px] border-[#DEE3EC] bg-white transition-all text-[#664634] ${currentCategory === cat ? 'active' : 'hover:bg-base-200'}`}
                                 style={`--active-border:${activeColor}`}
                             >
                                 {cat}
-                            </button>
+                            </a>
                         );
                     })
                 }
@@ -128,30 +133,8 @@ const CATEGORY_COLORS: Record<string, string> = {
 <script>
     // Visual toggling only for prototype
     document.addEventListener("astro:page-load", () => {
-        const categoryBtns = document.querySelectorAll(
-            "#blog-filter-category .category-btn",
-        );
-        const resetBtn = document.getElementById("reset-blog-filters");
-        const panel = document.getElementById("blog-filtros-panel");
-        const btnAbrir = document.getElementById("btn-abrir-filtros");
-
-        if (categoryBtns) {
-            categoryBtns.forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    categoryBtns.forEach((b) => b.classList.remove("active"));
-                    btn.classList.add("active");
-                });
-            });
-        }
-
-        if (resetBtn) {
-            resetBtn.addEventListener("click", () => {
-                categoryBtns.forEach((b) => b.classList.remove("active"));
-                // Reset to default (Todas las historias)
-                if (categoryBtns[0]) categoryBtns[0].classList.add("active");
-            });
-        }
-
+        // Removed JS-based window redirection logic, it is now seamlessly handled by Astro anchors.
+        
         // Close panel when clicking outside
         // Add only once using an IIFE module scope logic OR just a simple check, but Astro scripts run once.
         document.addEventListener("click", (event) => {

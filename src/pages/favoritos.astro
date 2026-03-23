@@ -1,56 +1,17 @@
 ---
+export const prerender = false;
+
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import GuardadosDashboard from "../components/GuardadosDashboard.vue";
-import { provinces, slugify } from "../data/provinces.js";
+import { getUser } from "../services/api";
 
-// Prepare all destinations from provinces
-const allDestinos = Object.entries(provinces).flatMap(
-    ([provinceSlug, province]: any) =>
-        province.pois.map((poi: any) => ({
-            ...poi,
-            province: province.name,
-            provinceSlug,
-            region: province.region,
-            provinceColor: province.color,
-            poiSlug: slugify(poi.name),
-            href: `/destino/${provinceSlug}/${slugify(poi.name)}`,
-        })),
-);
-
-// Dummy blog data
-const allBlogs = [
-    {
-        title: "Amanecer en Bahía de las Águilas",
-        slug: "amanecer-bahia-aguilas",
-        excerpt:
-            "Nuestra experiencia acampando en la playa más prístina del país, rodeados de naturaleza virgen y un cielo estrellado inolvidable.",
-        author: "María Pérez",
-        date: "15 Mar, 2026",
-        category: "Aventura",
-        images: ["https://picsum.photos/seed/bahia-aguilas-post/800/600"],
-    },
-    {
-        title: "Los colores del Carnaval Vegano",
-        slug: "colores-carnaval-vegano",
-        excerpt:
-            "Sumergiéndome en la tradición, las máscaras y la alegría desbordante del carnaval más famoso de República Dominicana.",
-        author: "Carlos Gómez",
-        date: "28 Feb, 2026",
-        category: "Cultura",
-        images: ["https://picsum.photos/seed/carnaval-post/800/600"],
-    },
-    {
-        title: "Acampando en Valle Nuevo",
-        slug: "acampando-valle-nuevo",
-        excerpt:
-            "Sobreviviendo al frío del Caribe en Las Pirámides, una aventura de altura rodeada de pinos y neblina constante.",
-        author: "Laura Castillo",
-        date: "10 Ene, 2026",
-        category: "Naturaleza",
-        images: ["https://picsum.photos/seed/valle-nuevo-post/800/600"],
-    },
-];
+// Auth guard
+const token = Astro.cookies.get("auth_token")?.value ?? '';
+const user = await getUser(token);
+if (!user) {
+    return Astro.redirect("/?error=auth_required");
+}
 ---
 
 <Layout
@@ -63,8 +24,7 @@ const allBlogs = [
         <div class="max-w-[1400px] mx-auto px-4 sm:px-6">
             <GuardadosDashboard
                 client:only="vue"
-                destinos={allDestinos}
-                blogs={allBlogs}
+                token={token}
             />
         </div>
     </main>
