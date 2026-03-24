@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { reactive, ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { gsap } from 'gsap'
+import { Flip } from 'gsap/Flip'
+
+gsap.registerPlugin(Flip)
 
 /* ── Props from Astro ────────────────────────────────── */
 interface Provincia {
@@ -130,17 +134,81 @@ function removeFilter(key: string) {
   if (key === 'search') {
     state.search = ''
   } else {
-    ;(state as any)[key] = null
+    ; (state as any)[key] = null
   }
 }
 
 /* ── Panel Open/Close ─────────────────────────────────── */
+/* ── Panel Open/Close (GSAP FLIP) ─────────────────────── */
+async function animateToggle() {
+  const panelContent = document.querySelector('.panel-content')
+  const panelActions = document.querySelector('.panel-actions')
+
+  if (isOpen.value) {
+    // SECUENCIA DE CIERRE RAPIDA:
+    // 1. Desvanece el interior primero para que NO se deforme
+    if (panelContent || panelActions) {
+      gsap.to([panelContent, panelActions], { opacity: 0, duration: 0.1, ease: 'power2.out' })
+    }
+
+    // 2. Espera muy poco y luego FLIP a botón
+    await new Promise(resolve => setTimeout(resolve, 50))
+
+    const targets = gsap.utils.toArray<HTMLElement>('[data-flip-id]')
+    const state = Flip.getState(targets)
+
+    isOpen.value = false
+    await nextTick()
+
+    Flip.from(state, {
+      duration: 0.35, // Cierre más rápido y reactivo
+      ease: 'power3.inOut',
+      scale: true,
+      absolute: true,
+      nested: true,
+      props: 'boxShadow, borderRadius, borderColor, backgroundColor'
+    })
+  } else {
+    // SECUENCIA DE APERTURA:
+    const targets = gsap.utils.toArray<HTMLElement>('[data-flip-id]')
+    const state = Flip.getState(targets)
+
+    isOpen.value = true
+    await nextTick()
+
+    const newContent = document.querySelector('.panel-content')
+    const newActions = document.querySelector('.panel-actions')
+
+    // Ocultarlos antes del Flip
+    if (newContent || newActions) {
+      gsap.set([newContent, newActions], { opacity: 0, y: 10 })
+    }
+
+    Flip.from(state, {
+      duration: 0.5,
+      ease: 'power3.inOut',
+      scale: true,
+      absolute: true,
+      nested: true,
+      props: 'boxShadow, borderRadius, borderColor, backgroundColor',
+      onComplete: () => {
+        // Al terminar de abrirse, aparecen suavemente hacia arriba
+        if (newContent || newActions) {
+          gsap.to([newContent, newActions], { opacity: 1, y: 0, duration: 0.1, stagger: 0.05, ease: 'power2.out' })
+        }
+      }
+    })
+  }
+}
+
 function togglePanel() {
-  isOpen.value = !isOpen.value
+  animateToggle()
 }
 
 function closePanel() {
-  isOpen.value = false
+  if (isOpen.value) {
+    animateToggle()
+  }
 }
 
 /* ── Click Outside Handler ────────────────────────────── */
@@ -197,71 +265,50 @@ onUnmounted(() => {
 <template>
   <div class="relative z-50">
     <!-- Trigger Button -->
-    <button
-      ref="triggerRef"
-      class="btn btn-sm h-10 px-5 rounded-full bg-base-100 hover:bg-base-200 text-base-content border-base-300 shadow-sm flex items-center gap-2 shrink-0"
-      @click="togglePanel"
-    >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-        />
-      </svg>
-      Filtros
-    </button>
+    <div v-show="!isOpen" ref="triggerRef" data-flip-id="filter-container"
+      class="btn btn-sm h-10 px-5 rounded-full bg-[#fdfcfa]  text-base-content  shrink-0 origin-top-right"
+      @click="togglePanel">
+      <div data-flip-id="filter-header" class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+        <span class="hidden sm:inline font-heading font-extrabold text-[15px]">Filtros</span>
+      </div>
+    </div>
 
     <!-- Filter Panel -->
-    <div
-      ref="panelRef"
-      :class="[
-        'absolute top-0 right-0 w-[calc(100vw-2rem)] sm:w-[500px] z-50',
-        'bg-[#fdfcfa] border border-[#f0e6d2] shadow-2xl rounded-3xl p-6',
-        'transition-all duration-300 ease-out origin-top-right',
-        isOpen
-          ? 'visible opacity-100 scale-100 pointer-events-auto'
-          : 'invisible opacity-0 scale-95 pointer-events-none',
-      ]"
-    >
+    <div v-show="isOpen" ref="panelRef" data-flip-id="filter-container"
+      class="absolute top-0 right-0 w-[calc(100vw-2rem)] sm:w-[500px] z-50 bg-[#fdfcfa]  rounded-3xl p-6 origin-top-right overflow-hidden flex flex-col">
+
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <h3 class="font-heading font-extrabold text-xl text-base-content">Filtros</h3>
-        <div class="flex items-center gap-2">
-          <button
-            v-if="hasFilter"
-            class="btn btn-sm btn-circle btn-ghost text-base-content/60"
-            title="Limpiar filtros"
-            @click="resetAll"
-          >
+        <div data-flip-id="filter-header" class="flex items-center gap-2 origin-left">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg>
+          <h3 class="font-heading font-extrabold text-xl text-base-content m-0 py-0 leading-none">Filtros</h3>
+        </div>
+
+        <div class="flex items-center gap-2 panel-actions">
+          <button v-if="hasFilter" class="btn btn-sm btn-circle btn-ghost text-base-content/60" title="Limpiar filtros"
+            @click="resetAll">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           </button>
-          <button
-            class="btn btn-sm btn-circle btn-ghost text-base-content/60"
-            @click="closePanel"
-          >
+          <button class="btn btn-sm btn-circle btn-ghost text-base-content/60" @click="closePanel">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
       </div>
 
       <!-- Body Layout -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 panel-content">
         <!-- Left Column: Selects -->
         <div class="space-y-5">
           <!-- Categoría -->
@@ -269,10 +316,8 @@ onUnmounted(() => {
             <label class="text-sm text-base-content/60 font-medium block mb-2 px-1">
               Categoría del destino
             </label>
-            <select
-              v-model="state.tipo"
-              class="select select-bordered select-md w-full bg-base-200/50 border-none rounded-2xl text-base-content font-medium focus:ring-2 focus:ring-primary/20 focus:outline-none"
-            >
+            <select v-model="state.tipo"
+              class="select select-bordered select-md w-full bg-base-200/50 border-none rounded-2xl text-base-content font-medium focus:ring-2 focus:ring-primary/20 focus:outline-none">
               <option :value="null">Todos</option>
               <option v-for="tipo in props.tipos" :key="tipo" :value="tipo">
                 {{ props.typeLabels[tipo] }}
@@ -285,10 +330,8 @@ onUnmounted(() => {
             <label class="text-sm text-base-content/60 font-medium block mb-2 px-1">
               Provincia
             </label>
-            <select
-              v-model="state.provincia"
-              class="select select-bordered select-md w-full bg-base-200/50 border-none rounded-2xl text-base-content font-medium focus:ring-2 focus:ring-primary/20 focus:outline-none"
-            >
+            <select v-model="state.provincia"
+              class="select select-bordered select-md w-full bg-base-200/50 border-none rounded-2xl text-base-content font-medium focus:ring-2 focus:ring-primary/20 focus:outline-none">
               <option :value="null">Todas</option>
               <option v-for="prov in props.provincias" :key="prov.slug" :value="prov.slug">
                 {{ prov.name }}
@@ -305,18 +348,12 @@ onUnmounted(() => {
               Región
             </h4>
             <div class="flex flex-wrap gap-2.5">
-              <button
-                v-for="region in props.regiones"
-                :key="region"
-                :style="regionPillStyle(region)"
-                :class="[
-                  'px-4 py-1.5 rounded-full text-xs font-semibold border-2 transition-all',
-                  state.region === region
-                    ? 'shadow-md scale-105'
-                    : 'text-[#7A4B3A]',
-                ]"
-                @click="toggleRegion(region)"
-              >
+              <button v-for="region in props.regiones" :key="region" :style="regionPillStyle(region)" :class="[
+                'px-4 py-1.5 rounded-full text-xs font-semibold border-2 transition-all',
+                state.region === region
+                  ? 'shadow-md scale-105'
+                  : 'text-[#7A4B3A]',
+              ]" @click="toggleRegion(region)">
                 {{ region }}
               </button>
             </div>
@@ -328,22 +365,16 @@ onUnmounted(() => {
               Precio
             </h4>
             <div class="flex gap-3">
-              <button
-                :class="[
-                  'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
-                  precioPillClass('gratis'),
-                ]"
-                @click="togglePrecio('gratis')"
-              >
+              <button :class="[
+                'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
+                precioPillClass('gratis'),
+              ]" @click="togglePrecio('gratis')">
                 ✓ Gratis
               </button>
-              <button
-                :class="[
-                  'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
-                  precioPillClass('pagado'),
-                ]"
-                @click="togglePrecio('pagado')"
-              >
+              <button :class="[
+                'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
+                precioPillClass('pagado'),
+              ]" @click="togglePrecio('pagado')">
                 💳 Pagado
               </button>
             </div>
@@ -355,23 +386,16 @@ onUnmounted(() => {
 
   <!-- Active Chips (rendered outside the panel, inside the chips area) -->
   <Teleport to="#active-chips" v-if="isMounted">
-    <button
-      v-for="chip in activeFilters"
-      :key="chip.key"
+    <button v-for="chip in activeFilters" :key="chip.key"
       class="chip badge badge-neutral h-7 px-3 text-xs text-primary font-semibold uppercase tracking-wider gap-1.5 shrink-0 border-none bg-base-300 hover:bg-error hover:text-white transition-colors cursor-pointer group"
-      @click="removeFilter(chip.key)"
-    >
+      @click="removeFilter(chip.key)">
       {{ chip.label }}
       <span class="text-[14px] leading-none mb-px">×</span>
     </button>
 
     <!-- Reset button (outside panel) -->
-    <button
-      v-if="hasFilter"
-      id="reset-filters"
-      class="btn btn-xs btn-ghost text-error font-semibold rounded-full"
-      @click="resetAll"
-    >
+    <button v-if="hasFilter" id="reset-filters" class="btn btn-xs btn-ghost text-error font-semibold rounded-full"
+      @click="resetAll">
       Limpiar todo
     </button>
   </Teleport>

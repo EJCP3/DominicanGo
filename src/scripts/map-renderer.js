@@ -59,8 +59,8 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
       const rawProp = feature.properties ? (feature.properties.province_name || feature.properties.PROV || '') : '';
       const rawName = String(rawProp);
       const slug = nameToSlug[rawName] || nameToSlug[rawName.toUpperCase()] || rawName.toLowerCase();
-      const hasData = slug ? dataProvinces.has(slug) : false;
-      const color = slug ? (provinceColors[slug] || '#E5E7EB') : '#E5E7EB'; // Fallback a gris
+      const hasData = !!slug;
+      const color = slug ? (provinceColors[slug] || '#f44336') : '#f44336'; // Fallback a gris
 
       // 3. Create SVG Path element
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -68,22 +68,22 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
       path.setAttribute('fill', color);
       path.setAttribute('data-province', slug);
       path.setAttribute('data-name', rawName);
-      
+
       // Modern sleek stroke
       path.setAttribute('stroke', 'oklch(var(--b1))');
       path.setAttribute('stroke-width', '1.5');
       path.setAttribute('stroke-linejoin', 'round');
-      
+
       path.classList.add('transition-all', 'duration-300', 'origin-center');
       if (hasData) {
         path.classList.add('cursor-pointer', 'hover:brightness-95', 'focus:outline-none', 'map-province');
         // Agregamos tabIndex pasivo para mostrar estilo de teclado
         path.setAttribute('tabindex', '0');
-        
+
         if (onProvinceClick) {
           path.addEventListener('click', () => onProvinceClick(slug));
           path.addEventListener('keydown', (e) => {
-             if(e.key === 'Enter') onProvinceClick(slug);
+            if (e.key === 'Enter') onProvinceClick(slug);
           });
         }
       } else {
@@ -100,13 +100,13 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
         // crude bbox area for finding biggest ring
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         ring.forEach(c => {
-           if(c[0] < minX) minX=c[0]; if(c[0]>maxX) maxX=c[0];
-           if(c[1] < minY) minY=c[1]; if(c[1]>maxY) maxY=c[1];
+          if (c[0] < minX) minX = c[0]; if (c[0] > maxX) maxX = c[0];
+          if (c[1] < minY) minY = c[1]; if (c[1] > maxY) maxY = c[1];
         });
         const area = (maxX - minX) * (maxY - minY);
         if (area > maxArea) {
-           maxArea = area;
-           largestRing = ring;
+          maxArea = area;
+          largestRing = ring;
         }
       };
 
@@ -120,7 +120,7 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
       if (largestRing && labelText) {
         const projectedRing = largestRing.map(projection);
         const center = computeRingCenter(projectedRing);
-        
+
         // Render SVG label precisely over the SVG (for ALL provinces that have a display name)
         renderOverlays(document.getElementById('labels-group'), center, slug, color);
       }
@@ -183,7 +183,7 @@ function renderGeographicFeatures(projection) {
  */
 function renderOverlays(labelsGroup, center, slug, color) {
   const shortName = displayNames[slug] || slug.toUpperCase();
-  
+
   const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   text.setAttribute('x', center[0].toFixed(0));
   text.setAttribute('y', center[1].toFixed(0));

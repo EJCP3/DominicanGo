@@ -5,6 +5,8 @@
 import { loadAndRenderMap } from './map-renderer.js';
 import { openModal, closeModal } from './modal.js';
 import { provinceColors, displayNames } from './map-config.js';
+import { gsap } from 'gsap';
+
 
 function initApp() {
     // Si no estamos en la página del mapa, salir temprano.
@@ -14,7 +16,45 @@ function initApp() {
     if (!svgElement) return;
 
     loadAndRenderMap(svgElement, 'map-container').then(() => {
+        // Remove map loading text
+        document.getElementById('map-loading')?.remove();
+        
         bindProvinceEvents();
+
+        // Reveal Map Animation
+        gsap.from(".map-province", {
+            duration: 0.8,
+            scale: 0.5,
+            opacity: 0,
+            stagger: 0.015,
+            ease: "back.out(1.5)",
+            transformOrigin: "50% 50%"
+        });
+        
+        // Ensure SVG label text fades in after the map
+        gsap.from("#labels-group text", {
+            duration: 0.5,
+            opacity: 0,
+            delay: 1,
+            stagger: 0.01
+        });
+
+        // Floating Hero Elements
+        gsap.to("#map-compass", { 
+            y: -10, 
+            repeat: -1, 
+            yoyo: true, 
+            duration: 2.5, 
+            ease: "sine.inOut" 
+        });
+        
+        gsap.to("#hint-bar", { 
+            y: -6, 
+            repeat: -1, 
+            yoyo: true, 
+            duration: 2, 
+            ease: "sine.inOut" 
+        });
     });
 
     // ====== Smooth Scroll for Anchor Links ======

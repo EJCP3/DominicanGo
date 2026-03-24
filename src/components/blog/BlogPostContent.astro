@@ -9,6 +9,7 @@ interface Props {
     destinationSlug: string;
     provinceId: string;
     slug: string;
+    authorFoto?: string | null;
 }
 
 const {
@@ -20,6 +21,7 @@ const {
     destinationSlug,
     provinceId,
     slug,
+    authorFoto,
 } = Astro.props;
 ---
 
@@ -62,13 +64,22 @@ const {
     </h1>
 
     <div class="flex items-center gap-4 mb-12 border-b border-base-200 pb-8">
-        <div class="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg">
-            {author.charAt(0)}
+        <div class="w-12 h-12 rounded-full ring-2 ring-primary/20 ring-offset-2 overflow-hidden bg-primary/10 flex items-center justify-center">
+            {authorFoto ? (
+                <img 
+                    src={authorFoto} 
+                    alt={author} 
+                    class="w-full h-full object-cover"
+                    referrerpolicy="no-referrer"
+                />
+            ) : (
+                <span class="font-bold text-lg text-primary">{author.charAt(0)}</span>
+            )}
         </div>
         <div>
             <div class="font-bold text-base-content">{author}</div>
             <div class="text-sm text-base-content/50">
-                {date} • Lectura de 5 min
+                {date}
             </div>
         </div>
     </div>

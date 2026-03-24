@@ -70,44 +70,46 @@ import Icon from "./Icon.astro";
                         transform="translate(830, 400)"
                         class="pointer-events-none"
                     >
-                        <circle
-                            cx="0"
-                            cy="0"
-                            r="18"
-                            fill="none"
-                            stroke="#b8ccd6"
-                            stroke-width="1"></circle>
-                        <circle cx="0" cy="0" r="2" fill="#b8ccd6"></circle>
-                        <line
-                            x1="0"
-                            y1="-14"
-                            x2="0"
-                            y2="-6"
-                            stroke="#b8ccd6"
-                            stroke-width="1.5"></line>
-                        <line
-                            x1="0"
-                            y1="6"
-                            x2="0"
-                            y2="14"
-                            stroke="#b8ccd6"
-                            stroke-width="1"></line>
-                        <line
-                            x1="-14"
-                            y1="0"
-                            x2="-6"
-                            y2="0"
-                            stroke="#b8ccd6"
-                            stroke-width="1"></line>
-                        <line
-                            x1="6"
-                            y1="0"
-                            x2="14"
-                            y2="0"
-                            stroke="#b8ccd6"
-                            stroke-width="1"></line>
-                        <polygon points="0,-14 -3,-8 3,-8" fill="#b8ccd6"
-                        ></polygon>
+                        <g id="map-compass">
+                            <circle
+                                cx="0"
+                                cy="0"
+                                r="18"
+                                fill="none"
+                                stroke="#b8ccd6"
+                                stroke-width="1"></circle>
+                            <circle cx="0" cy="0" r="2" fill="#b8ccd6"></circle>
+                            <line
+                                x1="0"
+                                y1="-14"
+                                x2="0"
+                                y2="-6"
+                                stroke="#b8ccd6"
+                                stroke-width="1.5"></line>
+                            <line
+                                x1="0"
+                                y1="6"
+                                x2="0"
+                                y2="14"
+                                stroke="#b8ccd6"
+                                stroke-width="1"></line>
+                            <line
+                                x1="-14"
+                                y1="0"
+                                x2="-6"
+                                y2="0"
+                                stroke="#b8ccd6"
+                                stroke-width="1"></line>
+                            <line
+                                x1="6"
+                                y1="0"
+                                x2="14"
+                                y2="0"
+                                stroke="#b8ccd6"
+                                stroke-width="1"></line>
+                            <polygon points="0,-14 -3,-8 3,-8" fill="#b8ccd6"
+                            ></polygon>
+                        </g>
                     </g>
                 </svg>
             </div>
@@ -115,6 +117,7 @@ import Icon from "./Icon.astro";
 
         <!-- Bottom hint bar -->
         <div
+            id="hint-bar"
             class="flex items-center justify-center pb-28 md:pb-4 pt-2 relative z-10"
         >
             <div

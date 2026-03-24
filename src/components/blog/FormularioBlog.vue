@@ -16,13 +16,6 @@
         <input v-model="form.title" type="text" placeholder="Ej: Amanecer mágico en Bahía de las Águilas..." class="input input-bordered input-primary w-full focus:outline-none" required />
       </div>
 
-      <div class="form-control w-full">
-        <label class="label">
-          <span class="label-text font-bold text-base-content">Resumen (Excerpt)</span>
-        </label>
-        <textarea v-model="form.excerpt" placeholder="Un breve resumen de qué trata tu historia..." class="textarea textarea-bordered textarea-primary w-full focus:outline-none h-20" required minlength="20" maxlength="300"></textarea>
-      </div>
-
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="form-control w-full">
           <label class="label">
@@ -184,13 +177,16 @@ onMounted(() => {
 const submitForm = async () => {
   alert.value.show = false;
   
-  if (!form.value.title || !form.value.excerpt || !form.value.category) {
+  if (!form.value.title || !form.value.category) {
     alert.value = { show: true, type: 'error', message: 'Por favor, completa los campos requeridos.' };
     return;
   }
   
   if (quillInstance) {
     form.value.content = quillInstance.root.innerHTML;
+    // Generate excerpt from plain text
+    const plainText = quillInstance.getText().trim();
+    form.value.excerpt = plainText.substring(0, 180) + (plainText.length > 180 ? '...' : '');
   }
   
   // Clean content snippet for validation

@@ -166,8 +166,8 @@ function initModalStructure() {
           <h5 class="text-[10px] font-extrabold tracking-[0.15em] text-[#B58C73] uppercase mb-4 opacity-80">Precio</h5>
           <div class="flex gap-2">
             <button data-price="all" class="filter-pill flex-1 text-center active">Todos</button>
-            <button data-price="gratis" class="filter-pill flex-1 text-center">✓ Gratis</button>
-            <button data-price="pagado" class="filter-pill flex-1 text-center">💳 Pagado</button>
+            <button data-price="gratis" class="filter-pill flex-1 text-center"> Gratis</button>
+            <button data-price="pagado" class="filter-pill flex-1 text-center"> Pagado</button>
           </div>
         </div>
       </div>
@@ -243,7 +243,7 @@ function updatePOIList() {
 
   if (badge) badge.innerText = filteredPois.length;
 
-  list.innerHTML = filteredPois.length > 0 
+  list.innerHTML = filteredPois.length > 0
     ? filteredPois.map((poi) => `
       <div class="card card-side bg-base-100 shadow-sm border border-base-200 mb-4 hover:shadow-md transition-shadow duration-300 overflow-hidden group animate-in fade-in slide-in-from-bottom-2 duration-500">
         <figure class="w-1/3 sm:w-40 md:w-48 shrink-0 relative overflow-hidden">

@@ -169,6 +169,11 @@ export const baseProvinces: Record<string, any> = {
         name: "Sánchez Ramírez", region: "Norte",
         description: "Tierra del ámbar azul y la caoba, provincia central con ríos y tradiciones campesinas.",
         color: "#a8d8b0", pois: []
+    },
+    "salcedo": {
+        name: "Hermanas Mirabal", region: "Norte",
+        description: "Homenaje eterno a las Mariposas, tierra de cacao, naturaleza y memoria histórica.",
+        color: "#f47fb0", pois: []
     }
 };
 

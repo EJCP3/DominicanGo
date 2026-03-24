@@ -53,6 +53,7 @@ const isFavorited = favBlogIds.has(post.id);
                 destinationSlug={destinationSlug}
                 provinceId={provinceId}
                 slug={slug as string}
+                authorFoto={post.author?.foto}
             />
 
             <BlogBentoGallery images={post.images} title={post.title} />
