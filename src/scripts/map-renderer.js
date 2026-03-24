@@ -26,7 +26,21 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
 
   try {
     const response = await fetch(DR_GEOJSON_LINK);
-    const data = await response.json();
+    // Deep-clone the parsed JSON to prevent any mutation of the shared object
+    // across re-renders, which is a primary cause of non-deterministic color assignment.
+    const data = JSON.parse(JSON.stringify(await response.json()));
+
+    // 0. Clear previous SVG content to avoid duplicates on re-render
+    const provincesGroup = document.getElementById('provinces-group');
+    const labelsGroup = document.getElementById('labels-group');
+    if (provincesGroup) provincesGroup.innerHTML = '';
+    if (labelsGroup) labelsGroup.innerHTML = '';
+    
+    // Normalize mapping dictionary for comparison
+    const normalizedNameToSlug = {};
+    for (const [key, val] of Object.entries(nameToSlug)) {
+      normalizedNameToSlug[key.normalize('NFC').toUpperCase()] = val;
+    }
 
     const projection = computeProjection(data, SVG_WIDTH, SVG_HEIGHT);
     if (!projection) return;
@@ -55,12 +69,14 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
         });
       }
 
-      // 2. Map Name to Config
+      // 2. Map Name to Config — STRICT lookup, no invented slugs.
       const rawProp = feature.properties ? (feature.properties.province_name || feature.properties.PROV || '') : '';
-      const rawName = String(rawProp);
-      const slug = nameToSlug[rawName] || nameToSlug[rawName.toUpperCase()] || rawName.toLowerCase();
-      const hasData = !!slug;
-      const color = slug ? (provinceColors[slug] || '#f44336') : '#f44336'; // Fallback a gris
+      const rawName = String(rawProp).trim().normalize('NFC').toUpperCase();
+      const slug = normalizedNameToSlug[rawName] || null;
+
+      const hasData = slug !== null && dataProvinces.has(slug);
+      // Static fallback color — never dynamic, so unmapped provinces always render the same
+      const color = slug ? (provinceColors[slug] ?? '#CCCCCC') : '#CCCCCC';
 
       // 3. Create SVG Path element
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -122,12 +138,11 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
         const center = computeRingCenter(projectedRing);
 
         // Render SVG label precisely over the SVG (for ALL provinces that have a display name)
-        renderOverlays(document.getElementById('labels-group'), center, slug, color);
+        renderOverlays(labelsGroup, center, slug, color);
       }
     });
 
     // Add all paths to the correct SVG group to preserve z-index (labels on top)
-    const provincesGroup = document.getElementById('provinces-group');
     if (provincesGroup) provincesGroup.appendChild(fragment);
     else svgElement.appendChild(fragment);
 

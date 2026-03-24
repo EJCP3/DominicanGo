@@ -80,7 +80,7 @@ export const provinceColors = {
     'monte-cristi': '#FCA5A5',  // red-300
     'dajabon': '#FBBF24',       // amber-400
     'santiago-rodriguez': '#FACC15',// yellow-400
-    'valverde': '#FB923C',      // yellow-200 <-- Este es el color corregido para el mapa
+    'valverde': '#FDE047',      // yellow-300 (Garantizado diferente de Azua)
 
     // 🌿 SELVA / LLUVIOSO
     'maria-trinidad-sanchez': '#4ADE80', // green-400
@@ -95,8 +95,8 @@ export const provinceColors = {
 
     // 🏙️ METROPOLITANO
     'santiago': '#94A3B8',      // slate-400
-    'distrito-nacional': '#CBD5E1',// slate-300
-    'santo-domingo': '#E2E8F0', // slate-200
+    'distrito-nacional': '#93C5FD',// blue-300 (Más vibrante para DN)
+    'santo-domingo': '#ea899a', // pink-400 (Como solicitaste)
     'san-cristobal': '#9CA3AF', // gray-400
 };
 
@@ -115,7 +115,6 @@ export const dataProvinces = new Set([
     'distrito-nacional',
     'azua',
     'bahoruco',
-    'barahona',
     'dajabon',
     'duarte',
     'elias-pina',
@@ -141,6 +140,7 @@ export const dataProvinces = new Set([
 /** Short display names for map labels */
 export const displayNames = {
     'santo-domingo': 'SANTO DOMINGO',
+    'distrito-nacional': 'DN',
     'la-altagracia': 'LA ALTAGRACIA',
     'puerto-plata': 'PUERTO PLATA',
     'samana': 'SAMANÁ',

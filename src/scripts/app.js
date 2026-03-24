@@ -8,64 +8,77 @@ import { provinceColors, displayNames } from './map-config.js';
 import { gsap } from 'gsap';
 
 
+let isRendering = false;
+
 function initApp() {
     // Si no estamos en la página del mapa, salir temprano.
     if (!document.getElementById('map-container')) return;
 
     const svgElement = document.getElementById('rd-map');
-    if (!svgElement) return;
+    if (!svgElement || isRendering) return;
 
-    loadAndRenderMap(svgElement, 'map-container').then(() => {
-        // Remove map loading text
-        document.getElementById('map-loading')?.remove();
-        
-        bindProvinceEvents();
-
-        // Reveal Map Animation
-        gsap.from(".map-province", {
-            duration: 0.8,
-            scale: 0.5,
-            opacity: 0,
-            stagger: 0.015,
-            ease: "back.out(1.5)",
-            transformOrigin: "50% 50%"
-        });
-        
-        // Ensure SVG label text fades in after the map
-        gsap.from("#labels-group text", {
-            duration: 0.5,
-            opacity: 0,
-            delay: 1,
-            stagger: 0.01
-        });
-
-        // Floating Hero Elements
-        gsap.to("#map-compass", { 
-            y: -10, 
-            repeat: -1, 
-            yoyo: true, 
-            duration: 2.5, 
-            ease: "sine.inOut" 
-        });
-        
-        gsap.to("#hint-bar", { 
-            y: -6, 
-            repeat: -1, 
-            yoyo: true, 
-            duration: 2, 
-            ease: "sine.inOut" 
-        });
-    });
-
-    // ====== Smooth Scroll for Anchor Links ======
-    document.querySelectorAll('a[href^="#"]').forEach((link) => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.querySelector(link.getAttribute('href'));
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
-        });
+    isRendering = true;
+    
+    // Defer to next frame to ensure Astro DOM swap is complete
+    requestAnimationFrame(async () => {
+        try {
+            await loadAndRenderMap(svgElement, 'map-container');
+            
+            // Remove map loading text
+            document.getElementById('map-loading')?.remove();
+            
+            bindProvinceEvents();
+            animateMap();
+        } finally {
+            isRendering = false;
+        }
     });
 }
+
+function animateMap() {
+    // Reveal Map Animation
+    gsap.from(".map-province", {
+        duration: 0.8,
+        scale: 0.5,
+        opacity: 0,
+        stagger: 0.015,
+        ease: "back.out(1.5)",
+        transformOrigin: "50% 50%"
+    });
+    
+    // Ensure SVG label text fades in after the map
+    gsap.from("#labels-group text", {
+        duration: 0.5,
+        opacity: 0,
+        delay: 1,
+        stagger: 0.01
+    });
+
+    // Floating Hero Elements
+    gsap.to("#map-compass", { 
+        y: -10, 
+        repeat: -1, 
+        yoyo: true, 
+        duration: 2.5, 
+        ease: "sine.inOut" 
+    });
+    
+    gsap.to("#hint-bar", { 
+        y: -6, 
+        repeat: -1, 
+        yoyo: true, 
+        duration: 2, 
+        ease: "sine.inOut" 
+    });
+}
+// ====== Smooth Scroll for Anchor Links ======
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+});
 
 // ====== Province Hover & Click Events ======
 function bindProvinceEvents() {
