@@ -1,16 +1,14 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import Header from "../../components/Header.astro";
+import Header from "../../components/layout/Header.astro";
 import BlogPostHero from "../../components/blog/BlogPostHero.astro";
 import BlogPostContent from "../../components/blog/BlogPostContent.astro";
 import BlogBentoGallery from "../../components/blog/BlogBentoGallery.astro";
 
-
-
 import { getBlogs, getFavoriteIds } from "../../services/api";
-import BotonFavorito from "../../components/BotonFavorito.vue";
+import BotonFavorito from "../../components/ui/BotonFavorito.vue";
 
-const token = Astro.cookies.get('auth_token')?.value ?? '';
+const token = Astro.cookies.get("auth_token")?.value ?? "";
 const isLoggedIn = !!token;
 const { slug } = Astro.params;
 
@@ -23,8 +21,12 @@ if (!post) {
 }
 
 const dateToFormat = post.publishedAt || post.createdAt || new Date();
-const formattedDate = new Date(dateToFormat).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric' });
-const authorName = post.author?.name || 'Viajero DominicanGo';
+const formattedDate = new Date(dateToFormat).toLocaleDateString("es-DO", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+});
+const authorName = post.author?.name || "Viajero DominicanGo";
 const destinationName = post.destination?.name || null;
 const provinceId = post.provinceId || null;
 const destinationSlug = post.destination?.slug || null;
@@ -66,14 +68,28 @@ const isFavorited = favBlogIds.has(post.id);
                     ← Volver al blog
                 </a>
 
-                <div class="bg-base-100 rounded-3xl p-6 shadow-sm border border-base-200">
-                    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div
+                    class="bg-base-100 rounded-3xl p-6 shadow-sm border border-base-200"
+                >
+                    <div
+                        class="flex flex-col sm:flex-row gap-4 items-center justify-between"
+                    >
                         <div>
-                            <h3 class="font-heading font-bold text-lg text-base-content">¿Te gustó esta historia?</h3>
-                            <p class="text-sm text-base-content/60">Guárdala en tus favoritos o compártela con otros viajeros.</p>
+                            <h3
+                                class="font-heading font-bold text-lg text-base-content"
+                            >
+                                ¿Te gustó esta historia?
+                            </h3>
+                            <p class="text-sm text-base-content/60">
+                                Guárdala en tus favoritos o compártela con otros
+                                viajeros.
+                            </p>
                         </div>
                         <div class="flex gap-3 items-center">
-                            <button class="btn btn-circle btn-ghost bg-base-200 hover:bg-white shadow-sm" onclick="if(navigator.share) navigator.share({ title: document.title, url: window.location.href }).catch(()=>{}); else alert('Comparte copiando la URL: ' + window.location.href);">
+                            <button
+                                class="btn btn-circle btn-ghost bg-base-200 hover:bg-white shadow-sm"
+                                onclick="if(navigator.share) navigator.share({ title: document.title, url: window.location.href }).catch(()=>{}); else alert('Comparte copiando la URL: ' + window.location.href);"
+                            >
                                 <svg
                                     class="w-5 h-5"
                                     fill="none"
@@ -88,18 +104,20 @@ const isFavorited = favBlogIds.has(post.id);
                                 >
                             </button>
 
-                            {isLoggedIn && (
-                                <div class="relative w-12 h-12 flex items-center justify-center ">
-                                    <BotonFavorito
-                                        client:load
-                                        itemId={post.id}
-                                        type="blog"
-                                        isLoggedIn={isLoggedIn}
-                                        token={token}
-                                        initialState={isFavorited}
-                                    />
-                                </div>
-                            )}
+                            {
+                                isLoggedIn && (
+                                    <div class="relative w-12 h-12 flex items-center justify-center ">
+                                        <BotonFavorito
+                                            client:load
+                                            itemId={post.id}
+                                            type="blog"
+                                            isLoggedIn={isLoggedIn}
+                                            token={token}
+                                            initialState={isFavorited}
+                                        />
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
                 </div>

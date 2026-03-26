@@ -2,7 +2,7 @@
 dist/
 # generated types
 .astro/
-
+.git_disabled/
 # dependencies
 node_modules/
 

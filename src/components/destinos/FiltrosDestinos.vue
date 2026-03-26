@@ -161,12 +161,12 @@ async function animateToggle() {
     await nextTick()
 
     Flip.from(state, {
-      duration: 0.35, // Cierre más rápido y reactivo
+      duration: 0.35,
       ease: 'power3.inOut',
       scale: true,
       absolute: true,
       nested: true,
-      props: 'boxShadow, borderRadius, borderColor, backgroundColor'
+      props: 'boxShadow, borderRadius, backgroundColor'
     })
   } else {
     // SECUENCIA DE APERTURA:
@@ -190,7 +190,7 @@ async function animateToggle() {
       scale: true,
       absolute: true,
       nested: true,
-      props: 'boxShadow, borderRadius, borderColor, backgroundColor',
+      props: 'boxShadow, borderRadius, backgroundColor',
       onComplete: () => {
         // Al terminar de abrirse, aparecen suavemente hacia arriba
         if (newContent || newActions) {
@@ -263,10 +263,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative z-50">
+  <div class="relative z-50 h-10 shrink-0">
     <!-- Trigger Button -->
     <div v-show="!isOpen" ref="triggerRef" data-flip-id="filter-container"
-      class="btn btn-sm h-10 px-5 rounded-full bg-[#fdfcfa]  text-base-content  shrink-0 origin-top-right"
+      class="btn btn-sm h-10 px-5 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0"
       @click="togglePanel">
       <div data-flip-id="filter-header" class="flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,13 +369,13 @@ onUnmounted(() => {
                 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
                 precioPillClass('gratis'),
               ]" @click="togglePrecio('gratis')">
-                ✓ Gratis
+                Gratis
               </button>
               <button :class="[
                 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
                 precioPillClass('pagado'),
               ]" @click="togglePrecio('pagado')">
-                💳 Pagado
+                Pagado
               </button>
             </div>
           </div>
@@ -411,5 +411,11 @@ onUnmounted(() => {
   font-size: 0.6875rem;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* Suppress DaisyUI btn border that flashes during GSAP FLIP morphing */
+[data-flip-id="filter-container"] {
+  border: none !important;
+  outline: none !important;
 }
 </style>

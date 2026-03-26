@@ -1,9 +1,9 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Header from "../components/Header.astro";
-import FormularioDestino from "../components/FormularioDestino.vue";
-import { getProvincesWithDestinations, getUser } from "../services/api";
-import { TIPOS, TYPE_LABELS } from "../data/poi-config.ts";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/layout/Header.astro";
+import FormularioDestino from "../../components/destinos/FormularioDestino.vue";
+import { getProvincesWithDestinations, getUser } from "../../services/api";
+import { TIPOS, TYPE_LABELS } from "../../data/poi-config.ts";
 
 // ── Auth Guard ──────────────────────────────────────────────────────────────
 const token = Astro.cookies.get("auth_token")?.value;
@@ -22,6 +22,7 @@ const provinciasList = Object.entries(provinces)
 <Layout
     title="Comparte un Destino — DominicanGo"
     description="Agrega un nuevo destino a nuestro directorio turístico de República Dominicana."
+    showWidgets={false}
 >
     <Header />
 

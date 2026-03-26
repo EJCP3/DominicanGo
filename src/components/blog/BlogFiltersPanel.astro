@@ -89,7 +89,7 @@ const currentCategory = Astro.url.searchParams.get("category") || "todas";
                     data-filter="category"
                     data-value="todas"
                     href="/blog"
-                    class={`filter-btn category-btn inline-block text-center px-4 py-1.5 rounded-full text-[13px] font-bold border-[1.5px] border-[#DEE3EC] bg-white transition-all text-[#664634] ${currentCategory === 'todas' ? 'active' : 'hover:bg-base-200'}`}
+                    class={`filter-btn category-btn inline-block text-center px-4 py-1.5 rounded-full text-[13px] font-bold border-[1.5px] border-[#DEE3EC] bg-white transition-all text-[#664634] ${currentCategory === "todas" ? "active" : "hover:bg-base-200"}`}
                     style="--active-border:#3b82f6"
                 >
                     Todas las historias
@@ -102,7 +102,7 @@ const currentCategory = Astro.url.searchParams.get("category") || "todas";
                                 data-filter="category"
                                 data-value={cat}
                                 href={`/blog?category=${encodeURIComponent(cat)}`}
-                                class={`filter-btn category-btn inline-block text-center px-4 py-1.5 rounded-full text-[13px] font-bold border-[1.5px] border-[#DEE3EC] bg-white transition-all text-[#664634] ${currentCategory === cat ? 'active' : 'hover:bg-base-200'}`}
+                                class={`filter-btn category-btn inline-block text-center px-4 py-1.5 rounded-full text-[13px] font-bold border-[1.5px] border-[#DEE3EC] bg-white transition-all text-[#664634] ${currentCategory === cat ? "active" : "hover:bg-base-200"}`}
                                 style={`--active-border:${activeColor}`}
                             >
                                 {cat}
@@ -134,7 +134,7 @@ const currentCategory = Astro.url.searchParams.get("category") || "todas";
     // Visual toggling only for prototype
     document.addEventListener("astro:page-load", () => {
         // Removed JS-based window redirection logic, it is now seamlessly handled by Astro anchors.
-        
+
         // Close panel when clicking outside
         // Add only once using an IIFE module scope logic OR just a simple check, but Astro scripts run once.
         document.addEventListener("click", (event) => {

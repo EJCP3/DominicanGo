@@ -3,8 +3,8 @@
 import ThemeDropdown from "./header/ThemeDropdown.astro";
 import MobileMenu from "./header/MobileMenu.astro";
 import ThemeScript from "./header/ThemeScript.astro";
-import { getUser } from "../services/api";
-import Icon from "./Icon.astro";
+import { getUser } from "../../services/api";
+import Icon from "../ui/Icon.astro";
 
 const currentPath = Astro.url.pathname;
 const isHomeOrDestinos = currentPath === "/" || currentPath.startsWith("/destinos");
@@ -53,25 +53,15 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
             >
                 Blog
             </a>
-            {user && (
-                <a
-                    href="/favoritos"
-                    class={`nav-link relative z-10 no-underline px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300 ${
-                        currentPath.startsWith("/favoritos")
-                            ? "text-primary-content active-nav"
-                            : "text-base-content/60 hover:text-base-content"
-                    }`}
-                >
-                    Favoritos
-                </a>
-            )}
+           
         </nav>
 
         <!-- Right Side Actions -->
         <div class="flex items-center gap-2 sm:gap-3">
             {user ? (
                 <>
-                    
+                    <!-- Avatar dropdown: desktop only. Mobile uses MobileMenu -->
+                    <div class="hidden md:block">
                     <div class="dropdown dropdown-end z-100">
                         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                             <div class="w-9 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
@@ -93,7 +83,7 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
                                 </a>
                             </li>
                             <li>
-                                <a href="/nuevo-destino">
+                                <a href="/destinos/nuevo">
                                     <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                     Registrar Destino
                                 </a>
@@ -131,13 +121,14 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
                             </li>
                         </ul>
                     </div>
+                    </div>
                 </>
             ) : (
-                /* Logged out: Google Sign-In and ThemeDropdown */
+                /* Logged out: Google Sign-In (desktop only — mobile uses MobileMenu) */
                 <>
                     <a
                         href={`${API_BASE}/auth/google`}
-                        class="btn btn-primary btn-sm rounded-full shadow-sm gap-2"
+                        class="hidden md:inline-flex btn btn-primary btn-sm rounded-full shadow-sm gap-2"
                     >
                         <svg class="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -151,7 +142,7 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
                 </>
             )}
 
-            <MobileMenu />
+            <MobileMenu user={user} apiBase={API_BASE} />
         </div>
     </div>
 </header>

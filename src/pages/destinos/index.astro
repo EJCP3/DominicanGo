@@ -1,20 +1,20 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Header from "../components/Header.astro";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/layout/Header.astro";
 import {
     getProvincesWithDestinations,
     slugify,
     getFavoriteIds,
-} from "../services/api";
+} from "../../services/api";
 const provinces = await getProvincesWithDestinations();
 
-import DestinosHero from "../components/destinos/DestinosHero.astro";
-import FiltrosDestinos from "../components/FiltrosDestinos.vue";
-import DestinoCard from "../components/destinos/DestinoCard.astro";
-import DestinoModal from "../components/destinos/DestinoModal.astro";
-import DestinosFilterScript from "../components/destinos/DestinosFilterScript.astro";
+import DestinosHero from "../../components/destinos/DestinosHero.astro";
+import FiltrosDestinos from "../../components/destinos/FiltrosDestinos.vue";
+import DestinoCard from "../../components/destinos/DestinoCard.astro";
+import DestinoModal from "../../components/destinos/DestinoModal.astro";
+import DestinosFilterScript from "../../components/destinos/DestinosFilterScript.astro";
 
-import { TIPOS, TYPE_LABELS, REGION_COLORS } from "../data/poi-config.ts";
+import { TIPOS, TYPE_LABELS, REGION_COLORS } from "../../data/poi-config.ts";
 
 const allDestinos = Object.entries(provinces).flatMap(
     ([provinceSlug, province]: any) =>
@@ -25,7 +25,7 @@ const allDestinos = Object.entries(provinces).flatMap(
             region: province.region,
             provinceColor: province.color,
             poiSlug: slugify(poi.name),
-            href: `/destino/${provinceSlug}/${slugify(poi.name)}`,
+            href: `/destinos/${provinceSlug}/${slugify(poi.name)}`,
         })),
 );
 

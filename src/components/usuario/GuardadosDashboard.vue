@@ -111,7 +111,7 @@ onMounted(fetchFavorites);
       </div>
 
       <!-- Empty State -->
-      <div v-if="activeList.length === 0" class="py-24 text-center bg-white rounded-3xl border border-[#f0e6d2] shadow-sm max-w-3xl mx-auto">
+      <div v-if="activeList.length === 0" class="py-24 text-center max-w-3xl mx-auto">
         <div class="w-20 h-20 mx-auto bg-base-100/50 rounded-full flex items-center justify-center shadow-inner mb-6 border border-base-200">
           <svg class="w-10 h-10 text-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -136,7 +136,7 @@ onMounted(fetchFavorites);
           <a
             v-for="fav in activeList"
             :key="fav.id"
-            :href="`/destino/${fav.destination!.provinceId}/${fav.destination!.slug}`"
+            :href="`/destinos/${fav.destination!.provinceId}/${fav.destination!.slug}`"
             class="group block bg-white rounded-2xl overflow-hidden border border-[#f0e6d2] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative"
           >
             <!-- Remove button -->
@@ -175,7 +175,7 @@ onMounted(fetchFavorites);
             v-for="fav in activeList"
             :key="fav.id"
             :href="`/blog/${fav.blog!.slug}`"
-            class="group block bg-white rounded-2xl overflow-hidden border border-[#f0e6d2] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
+            class="group bg-white rounded-2xl overflow-hidden border border-[#f0e6d2] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
           >
             <!-- Remove button -->
             <button

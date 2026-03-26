@@ -1,11 +1,10 @@
-/**
- * Main App Entry Point
- * Wires together the map renderer, province events, modal, and smooth scrolling.
- */
-import { loadAndRenderMap } from './map-renderer.js';
-import { openModal, closeModal } from './modal.js';
-import { provinceColors, displayNames } from './map-config.js';
+import { loadAndRenderMap } from '../components/mapa/map-renderer.js';
+import { provinceColors, displayNames } from '../components/mapa/map-config.js';
 import { gsap } from 'gsap';
+
+// Proxy helpers — delegate to the Vue component mounted in ProvinceModal.astro
+const openModal  = (id, data) => window.__provinceModal?.openModal(id, data)
+const closeModal = ()         => window.__provinceModal?.closeModal()
 
 
 let isRendering = false;
@@ -72,7 +71,7 @@ function animateMap() {
     });
 }
 // ====== Smooth Scroll for Anchor Links ======
-document.querySelectorAll('a[href^="#"]').forEach((link) => {
+document.querySelectorAll('a[href^="#"]:not([data-no-smooth])').forEach((link) => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
         const target = document.querySelector(link.getAttribute('href'));

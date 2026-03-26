@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Header from "../components/Header.astro";
-import MapSection from "../components/MapSection.astro";
-import ProvinceModal from "../components/ProvinceModal.astro";
+import Header from "../components/layout/Header.astro";
+import MapSection from "../components/mapa/MapSection.astro";
+import ProvinceModal from "../components/mapa/ProvinceModal.astro";
 import { getProvincesWithDestinations } from "../services/api";
 const provinces = await getProvincesWithDestinations();
 ---
@@ -11,16 +11,13 @@ const provinces = await getProvincesWithDestinations();
 	<Header />
 	<MapSection />
 	<ProvinceModal />
-
-	<!-- Province data for JS -->
 	<script define:vars={{ provinces }}>
 		window.__PROVINCES__ = provinces;
 	</script>
 
-	<!-- App entry point -->
 	<script>
-		// Redirigir a vista Grid si viene de móvil (pantallas pequeñas) en la carga inicial
-		// Usamos sessionStorage para que solo ocurra 1 vez y permita ver el mapa si el usuario lo solicita.
+	// Redirigir a vista Grid si viene de móvil (pantallas pequeñas) en la carga inicial
+	// Usamos sessionStorage para que solo ocurra 1 vez y permita ver el mapa si el usuario lo solicita.
 		if (
 			window.innerWidth < 768 &&
 			!sessionStorage.getItem("mobile_redirect_done")
@@ -29,6 +26,6 @@ const provinces = await getProvincesWithDestinations();
 			window.location.replace("/destinos");
 		}
 
-		import "../scripts/app.js";
+		import "../composables/useApp.js";
 	</script>
 </Layout>

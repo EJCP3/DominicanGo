@@ -1,0 +1,152 @@
+---
+// RandomDestinationPop.astro
+import { getProvincesWithDestinations, slugify } from '../../services/api';
+
+const provinces = await getProvincesWithDestinations();
+
+// Flatten destinations server-side so no async fetch is needed in the browser
+const allDestinations: { nombre: string; desc: string; url: string }[] = [];
+try {
+  for (const [provId, provData] of Object.entries(provinces as any)) {
+    if (provData && (provData as any).pois) {
+      (provData as any).pois.forEach((poi: any) => {
+        if (poi && poi.name) {
+          allDestinations.push({
+            nombre: poi.name,
+            desc: poi.description || 'Un hermoso lugar por descubrir en República Dominicana.',
+            url: `/destinos/${provId}/${poi.slug || slugify(poi.name)}`
+          });
+        }
+      });
+    }
+  }
+} catch (e) {
+  console.error('Error building destinations list:', e);
+}
+---
+
+<div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+  <!-- Popover Tooltip -->
+  <div 
+    id="random-popover" 
+    class="mb-3 bg-base-100 rounded-3xl p-5 shadow-xl border border-base-200 w-72 invisible opacity-0 scale-95 transition-all duration-300 ease-out origin-bottom-right"
+  >
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold text-base-content/80">¿A dónde vamos hoy?</h3>
+      <button id="close-random-btn" class="btn btn-circle btn-ghost btn-xs text-base-content/50 hover:bg-base-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <p id="random-dest-desc" class="text-sm text-base-content/70 my-3 leading-snug line-clamp-3 italic">
+      Encontrando tu próxima aventura...
+    </p>
+    
+    <a 
+      id="random-dest-link" 
+      href="" 
+      data-no-smooth
+      class="flex flex-col items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-2xl p-4 text-center transition-colors group mt-2"
+    >
+      <span id="random-dest-name" class="text-lg leading-tight mb-1 text-balance">Descubriendo...</span>
+      <span class="text-xs font-medium opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all inline-flex items-center gap-1">
+        Explorar destino
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 inline-block" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </span>
+    </a>
+  </div>
+
+  <!-- Bolita Trigger — destinations injected as a data attribute -->
+  <button 
+    id="random-trigger" 
+    class="btn btn-circle btn-accent btn-lg shadow-2xl hover:scale-110 active:scale-95 transition-transform" 
+    aria-label="Destino Aleatorio"
+    data-destinations={JSON.stringify(allDestinations)}
+  >
+    <!-- Shuffle Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+    </svg>
+  </button>
+</div>
+
+<style>
+  #random-popover.popover-open {
+    visibility: visible;
+    opacity: 1;
+    transform: scale(1);
+  }
+</style>
+
+<script>
+  // Re-run on every page navigation (Astro View Transitions compatible)
+  function initRandomPop() {
+    const triggerBtn = document.getElementById('random-trigger') as HTMLButtonElement | null;
+    const popover    = document.getElementById('random-popover') as HTMLElement | null;
+    const linkEl     = document.getElementById('random-dest-link') as HTMLAnchorElement | null;
+    const nameEl     = document.getElementById('random-dest-name') as HTMLElement | null;
+    const descEl     = document.getElementById('random-dest-desc') as HTMLElement | null;
+    const closeBtn   = document.getElementById('close-random-btn') as HTMLButtonElement | null;
+
+    if (!triggerBtn || !popover || !linkEl || !nameEl || !descEl) return;
+
+    // Read destinations from the data attribute (populated server-side, no async needed)
+    let allDestinations: { nombre: string; desc: string; url: string }[] = [];
+    try {
+      allDestinations = JSON.parse(triggerBtn.dataset.destinations || '[]');
+    } catch {
+      return;
+    }
+
+    if (allDestinations.length === 0) return;
+
+    const rollDestination = () => {
+      const dest = allDestinations[Math.floor(Math.random() * allDestinations.length)];
+      nameEl.textContent = dest.nombre;
+      descEl.textContent = dest.desc;
+      linkEl.setAttribute('href', dest.url);
+
+      // Spin animation
+      const icon = triggerBtn.querySelector('svg') as SVGElement | null;
+      if (icon) {
+        icon.style.transition = 'transform 0.4s ease';
+        icon.style.transform  = `rotate(${Math.random() > 0.5 ? 180 : -180}deg)`;
+        setTimeout(() => { icon.style.transform = 'rotate(0deg)'; }, 400);
+      }
+    };
+
+    triggerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (popover.classList.contains('popover-open')) {
+        popover.classList.remove('popover-open');
+      } else {
+        rollDestination();
+        popover.classList.add('popover-open');
+      }
+    });
+
+    closeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popover.classList.remove('popover-open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!popover.classList.contains('popover-open')) return;
+      const t = e.target as Node;
+      if (!popover.contains(t) && !triggerBtn.contains(t)) {
+        popover.classList.remove('popover-open');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') popover.classList.remove('popover-open');
+    });
+  }
+
+  // Run on first load AND after every View Transition navigation
+  document.addEventListener('astro:page-load', initRandomPop);
+</script>

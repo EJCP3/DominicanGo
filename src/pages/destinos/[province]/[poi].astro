@@ -1,6 +1,6 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import Header from "../../../components/Header.astro";
+import Header from "../../../components/layout/Header.astro";
 import { getProvincesWithDestinations, slugify } from "../../../services/api";
 const provinces = await getProvincesWithDestinations();
 import { DEFAULT_HOURS } from "../../../data/poi-config.ts";
@@ -9,7 +9,7 @@ import PoiHero from "../../../components/poi/PoiHero.astro";
 import PoiBentoGrid from "../../../components/poi/PoiBentoGrid.astro";
 import PoiSidebar from "../../../components/poi/PoiSidebar.astro";
 import PoiRelated from "../../../components/poi/PoiRelated.astro";
-import BotonFavorito from "../../../components/BotonFavorito.vue";
+import BotonFavorito from "../../../components/ui/BotonFavorito.vue";
 import ImageLightbox from "../../../components/ui/ImageLightbox.vue";
 import { getFavoriteIds } from "../../../services/api";
 
@@ -18,12 +18,14 @@ const provinceSlug = slugProvince as string;
 
 const province = (provinces as any)[provinceSlug];
 if (!province) {
-    return Astro.redirect('/destinos');
+    return Astro.redirect("/destinos");
 }
 
-const poi = province.pois.find((p: any) => p.name && slugify(p.name) === slugPoi);
+const poi = province.pois.find(
+    (p: any) => p.name && slugify(p.name) === slugPoi,
+);
 if (!poi) {
-    return Astro.redirect('/destinos');
+    return Astro.redirect("/destinos");
 }
 
 // Related: same type OR same province, max 6
@@ -41,7 +43,7 @@ const related = Object.entries(provinces)
                 provinceSlug: slug,
                 provinceColor: (prov as any).color,
                 region: (prov as any).region,
-                href: `/destino/${slug}/${slugify(p.name)}`,
+                href: `/destinos/${slug}/${slugify(p.name)}`,
             })),
     )
     .slice(0, 6);
@@ -66,7 +68,7 @@ const website = poi.website ?? null;
 const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${poi.name}, ${province.name}, República Dominicana`)}`;
 const showHours = poi.type !== "playa";
 
-const token = Astro.cookies.get('auth_token')?.value ?? '';
+const token = Astro.cookies.get("auth_token")?.value ?? "";
 const isLoggedIn = !!token;
 const { destinationIds: favDestinationIds } = await getFavoriteIds(token);
 const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
@@ -97,19 +99,18 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                 <div class="grid md:grid-cols-[1fr_300px] gap-8 items-start">
                     <!-- Main column -->
                     <div class="space-y-6">
-
                         <!-- About -->
                         <div
                             class="bg-base-100 rounded-3xl shadow-sm border border-base-200 p-8"
                         >
                             <h2
-                                class="font-heading font-bold text-xl text-base-content mb-5 flex items-center gap-3"
+                                class="font-heading font-bold text-xl text-neutral mb-5 flex items-center gap-3"
                             >
                                 <span
                                     class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
                                 >
                                     <svg
-                                        class="w-4 h-4 text-primary"
+                                        class="w-4 h-4"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -134,10 +135,10 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                         {
                             poi.tags?.length > 0 && (
                                 <div class="bg-base-100 rounded-3xl shadow-sm border border-base-200 p-8">
-                                    <h2 class="font-heading font-bold text-xl text-base-content mb-5 flex items-center gap-3">
+                                    <h2 class="font-heading font-bold text-xl text-neutral mb-5 flex items-center gap-3">
                                         <span class="w-8 h-8 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
                                             <svg
-                                                class="w-4 h-4 text-secondary"
+                                                class="w-4 h-4"
                                                 fill="none"
                                                 stroke="currentColor"
                                                 viewBox="0 0 24 24"
@@ -154,9 +155,9 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                                     </h2>
                                     <div class="flex flex-wrap gap-2.5">
                                         {poi.tags.map((tag: string) => (
-                                            <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary/5 text-primary text-xs font-semibold border border-primary/20">
+                                            <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary/5 text-base-content text-xs font-semibold border border-primary">
                                                 <svg
-                                                    class="w-2.5 h-2.5 text-secondary"
+                                                    class="w-2.5 h-2.5"
                                                     fill="currentColor"
                                                     viewBox="0 0 8 8"
                                                 >
@@ -197,7 +198,7 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                                         Provincia
                                     </p>
                                     <h3
-                                        class="font-heading font-bold text-xl text-base-content mb-1"
+                                        class="font-heading font-bold text-xl text-neutral mb-1"
                                     >
                                         {province.name}
                                     </h3>
