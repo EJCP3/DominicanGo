@@ -10,7 +10,6 @@ import PoiBentoGrid from "../../../components/poi/PoiBentoGrid.astro";
 import PoiSidebar from "../../../components/poi/PoiSidebar.astro";
 import PoiRelated from "../../../components/poi/PoiRelated.astro";
 import BotonFavorito from "../../../components/ui/BotonFavorito.vue";
-import ImageLightbox from "../../../components/ui/ImageLightbox.vue";
 import { getFavoriteIds } from "../../../services/api";
 
 const { province: slugProvince, poi: slugPoi } = Astro.params;
@@ -235,5 +234,5 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
         <PoiRelated related={related} />
     </article>
 
-    <ImageLightbox client:load />
+
 </Layout>

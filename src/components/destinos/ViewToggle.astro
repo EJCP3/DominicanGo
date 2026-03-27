@@ -20,7 +20,7 @@ const showToggle = currentPath === '/' || currentPath === '/index' || currentPat
         id="toggle-btn-map"
         class={`toggle-btn relative z-10 flex items-center justify-center gap-2 px-8 py-2.5 rounded-full text-sm font-bold transition-colors duration-300 ${
             isMapActive 
-            ? 'text-white' 
+            ? 'text-base-content' 
             : 'text-base-content/40 hover:text-base-content/70'
         }`}
         aria-label="Vista de Mapa"
@@ -35,7 +35,7 @@ const showToggle = currentPath === '/' || currentPath === '/index' || currentPat
         id="toggle-btn-grid"
         class={`toggle-btn relative z-10 flex items-center justify-center gap-2 px-8 py-2.5 rounded-full text-sm font-bold transition-colors duration-300 ${
             isGridActive 
-            ? 'text-white' 
+            ? 'text-base-content' 
             : 'text-base-content/40 hover:text-base-content/70'
         }`}
         aria-label="Vista de Cuadrícula"

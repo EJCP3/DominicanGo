@@ -147,8 +147,9 @@ async function animateToggle() {
   if (isOpen.value) {
     // SECUENCIA DE CIERRE RAPIDA:
     // 1. Desvanece el interior primero para que NO se deforme
-    if (panelContent || panelActions) {
-      gsap.to([panelContent, panelActions], { opacity: 0, duration: 0.1, ease: 'power2.out' })
+    const header = document.querySelector('[data-flip-id="filter-header"]')
+    if (panelContent || panelActions || header) {
+      gsap.to([panelContent, panelActions, header], { opacity: 0, duration: 0.1, ease: 'power2.out' })
     }
 
     // 2. Espera muy poco y luego FLIP a botón
@@ -180,8 +181,9 @@ async function animateToggle() {
     const newActions = document.querySelector('.panel-actions')
 
     // Ocultarlos antes del Flip
-    if (newContent || newActions) {
-      gsap.set([newContent, newActions], { opacity: 0, y: 10 })
+    const oldHeader = document.querySelector('[data-flip-id="filter-header"]')
+    if (newContent || newActions || oldHeader) {
+      gsap.set([newContent, newActions, oldHeader], { opacity: 0, y: 10 })
     }
 
     Flip.from(state, {
@@ -193,8 +195,9 @@ async function animateToggle() {
       props: 'boxShadow, borderRadius, backgroundColor',
       onComplete: () => {
         // Al terminar de abrirse, aparecen suavemente hacia arriba
-        if (newContent || newActions) {
-          gsap.to([newContent, newActions], { opacity: 1, y: 0, duration: 0.1, stagger: 0.05, ease: 'power2.out' })
+        const finalHeader = document.querySelector('[data-flip-id="filter-header"]')
+        if (newContent || newActions || finalHeader) {
+          gsap.to([newContent, newActions, finalHeader], { opacity: 1, y: 0, duration: 0.2, stagger: 0.05, ease: 'power2.out' })
         }
       }
     })
@@ -264,17 +267,38 @@ onUnmounted(() => {
 
 <template>
   <div class="relative z-50 h-10 shrink-0">
-    <!-- Trigger Button -->
+    <!-- Trigger Button & Search -->
     <div v-show="!isOpen" ref="triggerRef" data-flip-id="filter-container"
-      class="btn btn-sm h-10 px-5 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0"
-      @click="togglePanel">
-      <div data-flip-id="filter-header" class="flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-        </svg>
-        <span class="hidden sm:inline font-heading font-extrabold text-[15px]">Filtros</span>
+      class="flex items-center h-10 px-4 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0 cursor-text shadow-sm ring-1 ring-base-content/5">
+      
+      <!-- Search Icon -->
+      <svg class="w-4 h-4 text-base-content/40 shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      
+      <!-- Search Input -->
+      <div data-flip-id="filter-header" class="flex-1 flex items-center">
+        <input 
+          type="text" 
+          v-model="state.search" 
+          placeholder="Buscar destino..." 
+          class="bg-transparent border-none outline-none text-sm w-32 sm:w-48 placeholder:text-base-content/40 text-base-content font-medium p-0"
+        />
       </div>
+      
+      <div class="w-px h-4 bg-base-content/10 mx-3 shrink-0"></div>
+      
+      <!-- Filter Toggle -->
+      <button 
+        @click.stop="togglePanel"
+        class="flex items-center gap-1.5 text-base-content hover:text-primary transition-colors cursor-pointer group shrink-0"
+        title="Opciones de filtro"
+      >
+        <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+        <span class="hidden sm:inline font-heading font-extrabold text-[14px]">Filtros</span>
+      </button>
     </div>
 
     <!-- Filter Panel -->
@@ -283,17 +307,21 @@ onUnmounted(() => {
 
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <div data-flip-id="filter-header" class="flex items-center gap-2 origin-left">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        <div data-flip-id="filter-header" class="flex items-center gap-2 origin-left flex-1 min-w-0 mr-4 border-b border-base-200/50 pb-1">
+          <svg class="w-5 h-5 text-base-content/40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <h3 class="font-heading font-extrabold text-xl text-base-content m-0 py-0 leading-none">Filtros</h3>
+          <input 
+            type="text" 
+            v-model="state.search" 
+            placeholder="Buscar destino..." 
+            class="bg-transparent border-none outline-none text-lg w-full placeholder:text-base-content/30 font-heading font-extrabold text-base-content p-0 mb-0.5"
+          />
         </div>
 
         <div class="flex items-center gap-2 panel-actions">
           <button v-if="hasFilter" class="btn btn-sm btn-circle btn-ghost text-base-content/60" title="Limpiar filtros"
-            @click="resetAll">
+            @click.stop="resetAll">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

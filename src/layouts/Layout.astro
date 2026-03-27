@@ -5,6 +5,7 @@ import IconSprite from "../components/ui/IconSprite.astro";
 import { ClientRouter } from "astro:transitions";
 import ViewToggle from "../components/destinos/ViewToggle.astro";
 import RandomDestinationPop from "../components/destinos/RandomDestinationPop.astro";
+import ImageLightbox from "../components/ui/ImageLightbox.vue";
 
 interface Props {
     title?: string;
@@ -66,5 +67,6 @@ const {
                 </>
             )
         }
+        <ImageLightbox client:load />
     </body>
 </html>
