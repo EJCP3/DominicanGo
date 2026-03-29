@@ -2,6 +2,7 @@
 // PoiSidebar.astro — sharing & quick-info sidebar
 import Icon from "../ui/Icon.astro";
 import BotonFavorito from "../ui/BotonFavorito.vue";
+import Reactions from "../interactions/Reactions.vue";
 
 interface Props {
     poi: any;
@@ -32,7 +33,7 @@ const seed = poi.id || poi.poiSlug || "";
 
 <aside class="poi-sidebar">
     <!-- Main Info & Actions Card -->
-    <div class="sidebar-card overflow-hidden !p-0">
+    <div class="sidebar-card overflow-hidden p-0!">
         <div class="bg-primary/5 p-5 border-b border-primary/10">
             <h3
                 class="text-xs font-bold uppercase tracking-widest text-neutral mb-4"
@@ -131,7 +132,7 @@ const seed = poi.id || poi.poiSlug || "";
 
         <div class="p-5 flex gap-3 bg-white">
             <button
-                class="btn btn-info flex-1 !rounded-xl !h-12 shadow-sm border-none text-info-context font-bold group"
+                class="btn btn-info flex-1 rounded-xl! h-12! shadow-sm border-none text-info-context font-bold group"
                 onclick="if(navigator.share) navigator.share({ title: document.title, url: window.location.href }).catch(()=>{}); else alert('Comparte copiando la URL: ' + window.location.href);"
             >
                 <svg
@@ -264,7 +265,7 @@ const seed = poi.id || poi.poiSlug || "";
                         href={website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="btn btn-ghost !justify-start !rounded-xl !h-12  border border-base-200 group"
+                        class="btn btn-ghost justify-start! rounded-xl! h-12!  border border-base-200 group"
                     >
                         <div class="w-8 h-8 rounded-lg bg-info/10 flex items-center justify-center text-info mr-2 group-hover:scale-110 transition-transform">
                             <svg
@@ -303,8 +304,15 @@ const seed = poi.id || poi.poiSlug || "";
                         stroke-width="2"
                         d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg
                 >
-                Todos los destinos
             </a>
+        </div>
+    </div>
+
+    <!-- Mini Reactions Card -->
+    <div class="sidebar-card p-4! bg-primary/5 border-primary/20">
+        <div class="flex flex-col gap-1 items-center text-center">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-primary/60">¿Recomiendas este lugar?</span>
+            <Reactions client:load targetType="DESTINATION" targetId={poi.id} token={token} />
         </div>
     </div>
 </aside>

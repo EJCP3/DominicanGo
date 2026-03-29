@@ -19,6 +19,8 @@ import PoiBentoGrid from "../../../components/poi/PoiBentoGrid.astro";
 import PoiSidebar from "../../../components/poi/PoiSidebar.astro";
 import PoiRelated from "../../../components/poi/PoiRelated.astro";
 import BotonFavorito from "../../../components/ui/BotonFavorito.vue";
+import Reactions from "../../../components/interactions/Reactions.vue";
+import Comments from "../../../components/interactions/Comments.vue";
 
 const { province: slugProvince, poi: slugPoi } = Astro.params;
 const provinceSlug = slugProvince as string;
@@ -153,6 +155,7 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                             <p
                                 class="text-base-content/80 text-base leading-relaxed"
                             >
+                                {poi.description}
                             </p>
                         </section>
 
@@ -239,6 +242,8 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                             </div>
                         </div>
                         <PoiBentoGrid images={bentoImages} name={poi.name} />
+                        
+                        <Comments client:visible targetType="DESTINATION" targetId={poi.id} token={token} />
                     </div>
 
                     <!-- Sidebar -->
