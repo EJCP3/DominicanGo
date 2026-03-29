@@ -1,21 +1,25 @@
 ---
 import "../styles/app.css";
+import "@fontsource-variable/gluten/wght.css";
 import IconSprite from "../components/ui/IconSprite.astro";
 
 import { ClientRouter } from "astro:transitions";
 import ViewToggle from "../components/destinos/ViewToggle.astro";
 import RandomDestinationPop from "../components/destinos/RandomDestinationPop.astro";
 import ImageLightbox from "../components/ui/ImageLightbox.vue";
+import Footer from "@layout/Footer.astro";
 
 interface Props {
     title?: string;
     description?: string;
+    image?: string;
     showWidgets?: boolean;
 }
 
 const {
     title = "DominicanGo — Mapa Interactivo de República Dominicana",
     description = "Explora República Dominicana provincia por provincia. Guía turística interactiva con mapa, playas, montañas, cultura y aventura.",
+    image = "/og-image.jpg",
     showWidgets = true,
 } = Astro.props;
 ---
@@ -27,12 +31,21 @@ const {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content={description} />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet"
-        />
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={Astro.url} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={new URL(image, Astro.url)} />
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={Astro.url} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={new URL(image, Astro.url)} />
+       
         <script is:inline>
             // Evita el flashazo blanco/oscuro aplicando el tema antes del render
             (function () {
@@ -68,5 +81,6 @@ const {
             )
         }
         <ImageLightbox client:load />
+        <Footer />
     </body>
 </html>

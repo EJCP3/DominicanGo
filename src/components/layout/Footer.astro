@@ -17,15 +17,9 @@ const datoVibra = datosRD[Math.floor(Math.random() * datosRD.length)];
 // Obtención dinámica de destinos para el carrusel
 const destinations = await getDestinations();
 
-// Fallback en caso de que la API falle o no haya datos
-const fallBackFotos = [
-    { url: "https://images.unsplash.com/photo-1589330273594-fade1ee91647?q=80&w=300&h=300&auto=format&fit=crop", label: "Bahía de las Águilas" },
-    { url: "https://images.unsplash.com/photo-1570737197266-4d707c05c4af?q=80&w=300&h=300&auto=format&fit=crop", label: "Samaná" },
-    { url: "https://images.unsplash.com/photo-1544971587-b842c27f8e14?q=80&w=300&h=300&auto=format&fit=crop", label: "Zona Colonial" },
-];
 ---
 
-<footer class="relative z-40 w-full mt-24">
+<footer class="relative z-40 w-full">
     <!-- Seccion Superior: DaisyUI Base Color -->
     <div class="bg-base-200 py-16 px-6 sm:px-12 border-t border-base-300">
         <div class="max-w-[1400px] mx-auto">
@@ -33,7 +27,7 @@ const fallBackFotos = [
                 
                 <!-- Columna Izquierda: Logo Gigante -->
                 <div class="flex-1">
-                    <h2 class="font-heading font-black text-6xl md:text-8xl leading-[0.9] tracking-tighter mb-8 max-w-sm">
+                    <h2 class="font-heading font-black text-6xl md:text-6xl tracking-tighter mb-8 max-w-sm">
                         Dominican <br/> 
                         <span class="text-primary inline-block">Go</span>
                     </h2>
@@ -43,9 +37,9 @@ const fallBackFotos = [
                         <span class="inline-block px-3 py-1 bg-neutral text-neutral-content text-[10px] font-bold uppercase tracking-widest rounded-sm">Descubre</span>
                         <span class="inline-block px-3 py-1 bg-neutral text-neutral-content text-[10px] font-bold uppercase tracking-widest rounded-sm">Vive</span>
 
-                        <p class="text-sm font-medium leading-relaxed max-w-xs text-base-content/80">
+                        <p class="text-sm font-medium leading-relaxed max-w-xs text-base-content">
                             República Dominicana, <br/>
-                            Desde la Zona Colonial hasta el Pico Duarte.
+                            Desde la <span class="text-base-content font-black">Zona Colonial</span> hasta el <span class="text-base-content font-black">Pico Duarte</span>.
                         </p>
                         
                     </div>
@@ -53,7 +47,7 @@ const fallBackFotos = [
 
                 <!-- Columna Centro: Navegación -->
                 <div class="flex gap-16 md:gap-24">
-                    <div>
+                    <nav aria-label="Navegación del pie de página">
                         <h4 class="text-[10px] font-bold uppercase tracking-widest text-base-content/40 mb-6 font-heading">Explora</h4>
                         <ul class="grid grid-cols-3 gap-2">
                             <li class="badge badge-outline text-sm font-bold no-underline transition-all">Playas</li>
@@ -66,36 +60,41 @@ const fallBackFotos = [
                             <li class="badge badge-outline text-sm font-bold no-underline transition-all">compras</li>
                             <li class="badge badge-outline text-sm font-bold no-underline transition-all">Montaña</li>
                         </ul>
-                    </div>
+                    </nav>
                 </div>
 
                 <!-- Columna Derecha: Widget interactivo (estilo Spotify) -->
-                <div class="lg:w-[400px]">
+                <aside class="lg:w-[400px] h-full " aria-label="Dato Curioso">
                     <div class="bg-neutral text-neutral-content rounded-3xl p-6 shadow-2xl relative overflow-hidden group">
                         <div class="flex items-center justify-between mb-8">
                            <div class="flex items-center gap-3">
-                             <div class="w-10 h-10 rounded-lg bg-success flex items-center justify-center font-bold text-success-content text-xl">D</div>
+                             <div class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-success-content text-xl">
+                                <img src="/RD.svg" alt="RD" class="size-10"/>
+                             </div>
                              <div>
-                                <p class="text-[10px] font-bold uppercase tracking-widest opacity-60">Vibra del Día</p>
-                                <p class="text-sm font-bold">República Dominicana</p>
+                                <p class="text-[14px] font-bold uppercase tracking-widest ">Sabias que...</p>
                              </div>
                            </div>
-                           <Icon name="spotify" class="w-6 h-6 opacity-40"/>
+                          
                         </div>
                         
                         <div class="space-y-6 relative z-10">
-                            <h3 class="text-2xl font-black italic leading-tight">"{datoVibra}"</h3>
+                            <div class="min-h-[90px] flex items-center">
+                                <h3 id="dato-vibra-text" class="text-2xl font-light leading-tight">{datoVibra}</h3>
+                            </div>
                             
                             <div class="flex items-center justify-between pt-4">
                                 <div class="flex items-center gap-4">
-                                    <button class="hover:scale-110 transition-transform"><Icon name="prev" class="w-4 h-4"/></button>
-                                    <div class="w-12 h-12 bg-success text-success-content rounded-full flex items-center justify-center hover:scale-105 transition-transform cursor-pointer shadow-lg shadow-success/20">
-                                        <Icon name="play" class="ml-1 w-5 h-5"/>
-                                    </div>
-                                    <button class="hover:scale-110 transition-transform"><Icon name="next" class="w-4 h-4"/></button>
+                                    <button class="hover:scale-110 transition-transform" aria-label="Dato anterior"><Icon name="prev" class="w-4 h-4"/></button>
+                                    <button id="play-btn" class="w-12 h-12 bg-success text-success-content border-none rounded-full flex items-center justify-center hover:scale-105 transition-transform cursor-pointer shadow-lg shadow-success/20" aria-label="Volar">
+                                        <span id="play-icon" class="flex items-center justify-center w-5 h-5">
+                                            <Icon name="plane" class="w-5 h-5 animate-[spin_4s_linear_infinite]"/>
+                                        </span>
+                                    </button>
+                                    <button class="hover:scale-110 transition-transform" aria-label="Siguiente dato"><Icon name="next" class="w-4 h-4"/></button>
                                 </div>
-                                <div class="text-[10px] font-black uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-md">
-                                    En Vivo
+                                <div id="en-vivo-badge" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-md relative overflow-hidden">
+                                    <span id="en-vivo-text">En Vivo</span>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +102,7 @@ const fallBackFotos = [
                         <!-- Fondo decorativo sutil -->
                         <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-success/10 rounded-full blur-3xl group-hover:bg-success/20 transition-colors"></div>
                     </div>
-                </div>
+                </aside>
 
             </div>
         </div>
@@ -115,7 +114,7 @@ const fallBackFotos = [
     </div>
 
     <!-- Seccion Inferior: Dark Footer -->
-    <div class="bg-neutral py-10 px-6 sm:px-12 text-[10px] font-bold uppercase tracking-[0.1em]">
+    <div class="bg-neutral py-10 px-6 sm:px-12 text-[10px] font-bold uppercase tracking-widest">
          <div
         class="px-4 md:px-6 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-0 text-center md:text-left text-[10px] text-neutral-content/50 tracking-widest uppercase max-w-[1400px] w-full mx-auto"
     >
@@ -127,4 +126,154 @@ const fallBackFotos = [
     </div>
     </div>
 </footer>
+
+<script>
+    import { gsap } from "gsap";
+
+    // Datos para la actualización dinámica del widget
+    const datosRD = [
+        "La Catedral de Santo Domingo es la más antigua de América.",
+        "El Pico Duarte es el punto más alto del Caribe (3,087m).",
+        "El Larimar solo se encuentra en República Dominicana.",
+        "Tenemos el lago más grande del Caribe (Lago Enriquillo).",
+        "La primera ciudad fundada en el Nuevo Mundo fue La Isabela.",
+        "El merengue fue declarado Patrimonio de la Humanidad.",
+        "República Dominicana es el mayor exportador de tabaco orgánico."
+    ];
+
+    const initAnimation = () => {
+        const playBtn = document.getElementById('play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const badge = document.getElementById('en-vivo-badge');
+        const badgeText = document.getElementById('en-vivo-text');
+        const factText = document.getElementById('dato-vibra-text');
+
+        if (!playBtn || !playIcon || !badge || !badgeText || !factText) return;
+
+        let isAnimating = false;
+
+        playBtn.addEventListener('click', () => {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const useElement = playIcon.querySelector('use');
+            if (!useElement) return;
+
+            // 0. Actualizar texto de dato curioso aleatorio
+            const randomFact = datosRD[Math.floor(Math.random() * datosRD.length)];
+            gsap.to(factText, { 
+                opacity: 0.3, 
+                duration: 0.3, 
+                yoyo: true, 
+                repeat: 1, 
+                onStart: () => {
+                    setTimeout(() => { factText.innerText = randomFact; }, 300);
+                }
+            });
+
+            // 1. Obtener posiciones iniciales y finales
+            const btnRect = playBtn.getBoundingClientRect();
+            const badgeRect = badge.getBoundingClientRect();
+
+            // Desplazamiento relativo
+            const dX = badgeRect.left - btnRect.left;
+            const dY = badgeRect.top - btnRect.top;
+
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    // Esperar 3 segundos en el destino
+                    setTimeout(() => {
+                        // VUELO DE REGRESO
+                        const returnTl = gsap.timeline({
+                            onComplete: () => {
+                                isAnimating = false;
+                            }
+                        });
+
+                        returnTl.to(playBtn, {
+                            x: dX / 2,
+                            y: dY - 60, // Sube un poco al despegar de vuelta
+                            rotation: -180, // Giro dramático
+                            scale: 0.8,
+                            duration: 0.8,
+                            ease: "power2.inOut"
+                        })
+                        .to(playBtn, {
+                            x: 0,
+                            y: 0,
+                            rotation: -360,
+                            scale: 1,
+                            duration: 0.7,
+                            ease: "back.out(2)",
+                            onStart: () => {
+                                // Restaurar estilos a mitad del regreso
+                                gsap.to(playBtn, { 
+                                    backgroundColor: "", 
+                                    boxShadow: "", 
+                                    color: "", 
+                                    duration: 0.4 
+                                });
+                                gsap.to(badgeText, { 
+                                    opacity: 0, 
+                                    duration: 0.2, 
+                                    onComplete: () => {
+                                        badgeText.innerText = "En Vivo";
+                                        gsap.to(badgeText, { opacity: 1, duration: 0.2 });
+                                    }
+                                });
+                            },
+                            onComplete: () => {
+                                // El icono ya es un avión, se mantiene rotando por CSS
+                            }
+                        });
+                    }, 3000);
+                }
+            });
+
+            // Animación de despegue y vuelo
+            tl.to(playBtn, { scale: 0.8, duration: 0.2 })
+            .to(playBtn, {
+                onStart: () => {
+                    // El icono ya es un avión por defecto
+                    gsap.to(playBtn, { 
+                        backgroundColor: "transparent", 
+                        boxShadow: "none",
+                        color: "white",
+                        duration: 0.2 
+                    });
+                },
+                duration: 0.1
+            })
+            .to(playBtn, {
+                x: dX,
+                y: dY - 50, 
+                rotation: 15, 
+                scale: 1.2,
+                duration: 0.8,
+                ease: "power2.out"
+            })
+            .to(playBtn, {
+                y: dY, 
+                rotation: 0,
+                scale: 1,
+                duration: 0.4,
+                ease: "bounce.out",
+                onStart: () => {
+                    gsap.to(badgeText, { 
+                        opacity: 0, 
+                        duration: 0.1, 
+                        onComplete: () => {
+                            badgeText.innerText = "¡Buen Viaje!";
+                            gsap.to(badgeText, { opacity: 1, duration: 0.1 });
+                        }
+                    });
+                    gsap.to(badge, { scale: 1.2, duration: 0.2, yoyo: true, repeat: 1 });
+                }
+            });
+        });
+    };
+
+    // Soporte para View Transitions de Astro
+    document.addEventListener('astro:page-load', initAnimation);
+</script>
 

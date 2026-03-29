@@ -5,15 +5,16 @@ import FormularioDestino from "../../components/destinos/FormularioDestino.vue";
 import { getProvincesWithDestinations, getUser } from "../../services/api";
 import { TIPOS, TYPE_LABELS } from "../../data/poi-config.ts";
 
-// ── Auth Guard ──────────────────────────────────────────────────────────────
+// ── Auth Guard & Data Fetching ──────────────────────────────────────────────
 const token = Astro.cookies.get("auth_token")?.value;
-const user = await getUser(token);
+const [user, provinces] = await Promise.all([
+    getUser(token),
+    getProvincesWithDestinations()
+]);
+
 if (!user) {
     return Astro.redirect("/?error=auth_required");
 }
-
-// ── Data ────────────────────────────────────────────────────────────────────
-const provinces = await getProvincesWithDestinations();
 const provinciasList = Object.entries(provinces)
     .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
     .map(([slug, prov]: any) => ({ slug, name: prov.name }));

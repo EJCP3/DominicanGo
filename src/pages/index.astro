@@ -5,17 +5,46 @@ import MapSection from "../components/mapa/MapSection.astro";
 import ProvinceModal from "../components/mapa/ProvinceModal.astro";
 import { getProvincesWithDestinations } from "../services/api";
 const provinces = await getProvincesWithDestinations();
+const error = Astro.url.searchParams.get("error");
 ---
 
 <Layout>
 	<Header />
-	<MapSection />
-	<ProvinceModal />
+	<main>
+		<MapSection />
+		<ProvinceModal />
+	
+	{error === 'auth_required' && (
+		<div id="auth-toast" class="toast toast-top toast-center mt-20 z-100">
+			<div class="alert alert-warning shadow-lg rounded-2xl flex gap-3 text-warning-content">
+				<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+				<div class="mr-4">
+					<h3 class="font-bold text-sm">Acción denegada</h3>
+					<div class="text-xs">Debes iniciar sesión para acceder a esa página.</div>
+				</div>
+				<button class="btn btn-sm btn-ghost btn-circle" onclick="document.getElementById('auth-toast').remove()">✕</button>
+			</div>
+		</div>
+	)}
+	</main>
+
 	<script define:vars={{ provinces }}>
 		window.__PROVINCES__ = provinces;
 	</script>
 
 	<script>
+		// Remover el toast automáticamente después de 5 segundos
+		const toast = document.getElementById('auth-toast');
+		if (toast) {
+			setTimeout(() => {
+				if (document.body.contains(toast)) toast.remove();
+			}, 5000);
+			// Quitar el param de la url
+			const url = new URL(window.location.href);
+			url.searchParams.delete('error');
+			window.history.replaceState({}, '', url);
+		}
+
 	// Redirigir a vista Grid si viene de móvil (pantallas pequeñas) en la carga inicial
 	// Usamos sessionStorage para que solo ocurra 1 vez y permita ver el mapa si el usuario lo solicita.
 		if (

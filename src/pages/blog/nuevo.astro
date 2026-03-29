@@ -6,17 +6,16 @@ import Header from "../../components/layout/Header.astro";
 import FormularioBlog from "../../components/blog/FormularioBlog.vue";
 import { getProvincesWithDestinations, getUser } from "../../services/api";
 
-// ── Auth Guard ──────────────────────────────────────────────────────────────
+// ── Auth Guard & Data Fetching ──────────────────────────────────────────────
 const token = Astro.cookies.get("auth_token")?.value;
-const user = await getUser(token);
+const [user, provinces] = await Promise.all([
+    getUser(token),
+    getProvincesWithDestinations()
+]);
+
 if (!user) {
     return Astro.redirect("/?error=auth_required");
 }
-
-// Obtenemos los destinos para pasarlos al frontend script.
-const provinces = await getProvincesWithDestinations();
-
-// (Removed legacy destinationsList mapping)
 ---
 
 

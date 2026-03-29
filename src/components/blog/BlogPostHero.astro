@@ -6,20 +6,31 @@ interface Props {
     slug: string;
 }
 
+import { Image } from "astro:assets";
+
 const { title, image, slug } = Astro.props;
 ---
 
-<figure
-    class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative"
+<button
+    class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative cursor-zoom-in group bg-base-300 appearance-none border-none p-0 inline-block text-left"
+    onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { img: '${image}', alt: '${title}' } }))`}
+    aria-label={`Ampliar imagen del blog: ${title}`}
+    tabindex="0"
 >
-    <img
-        src={image}
-        alt={title}
-        class="w-full h-full object-cover"
-        transition:name={`img-blog-${slug}`}
-    />
+    <figure class="w-full h-full m-0 pointer-events-none">
+        <Image
+            src={image}
+            alt={title}
+            width={1200}
+            height={600}
+            format="webp"
+            loading="eager"
+            class="w-full h-full object-cover select-none transition-transform duration-700 group-hover:scale-105"
+            transition:name={`img-blog-${slug}`}
+        />
+    </figure>
     <div
-        class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent"
+        class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none"
     >
     </div>
-</figure>
+</button>

@@ -1,8 +1,17 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/layout/Header.astro";
-import { getProvincesWithDestinations, slugify } from "../../../services/api";
-const provinces = await getProvincesWithDestinations();
+import { getProvincesWithDestinations, slugify, getFavoriteIds } from "../../../services/api";
+
+const token = Astro.cookies.get("auth_token")?.value ?? "";
+const isLoggedIn = !!token;
+
+// Parallelize API calls
+const [provinces, { destinationIds: favDestinationIds }] = await Promise.all([
+    getProvincesWithDestinations(),
+    getFavoriteIds(token)
+]);
+
 import { DEFAULT_HOURS } from "../../../data/poi-config.ts";
 
 import PoiHero from "../../../components/poi/PoiHero.astro";
@@ -10,7 +19,6 @@ import PoiBentoGrid from "../../../components/poi/PoiBentoGrid.astro";
 import PoiSidebar from "../../../components/poi/PoiSidebar.astro";
 import PoiRelated from "../../../components/poi/PoiRelated.astro";
 import BotonFavorito from "../../../components/ui/BotonFavorito.vue";
-import { getFavoriteIds } from "../../../services/api";
 
 const { province: slugProvince, poi: slugPoi } = Astro.params;
 const provinceSlug = slugProvince as string;
@@ -28,24 +36,44 @@ if (!poi) {
 }
 
 // Related: same type OR same province, max 6
-const related = Object.entries(provinces)
+let related = Object.entries(provinces)
     .flatMap(([slug, prov]) =>
         (prov as any).pois
             .filter(
                 (p: any) =>
                     p.name !== poi.name &&
-                    (p.type === poi.type || slug === provinceSlug),
+                    (p.type?.toLowerCase() === poi.type?.toLowerCase() || slug === provinceSlug),
             )
             .map((p: any) => ({
                 ...p,
+                type: p.type?.toLowerCase(),
                 province: (prov as any).name,
                 provinceSlug: slug,
                 provinceColor: (prov as any).color,
                 region: (prov as any).region,
                 href: `/destinos/${slug}/${slugify(p.name)}`,
             })),
-    )
-    .slice(0, 6);
+    );
+
+// Fallback: if no direct matches found, just take some other destinations
+if (related.length === 0) {
+    related = Object.entries(provinces)
+        .flatMap(([slug, prov]) =>
+            (prov as any).pois
+                .filter((p: any) => p.name !== poi.name)
+                .map((p: any) => ({
+                    ...p,
+                    type: p.type?.toLowerCase(),
+                    province: (prov as any).name,
+                    provinceSlug: slug,
+                    provinceColor: (prov as any).color,
+                    region: (prov as any).region,
+                    href: `/destinos/${slug}/${slugify(p.name)}`,
+                })),
+        );
+}
+
+related = related.slice(0, 6);
 
 // Bento images
 const seed = slugify(poi.name);
@@ -67,15 +95,13 @@ const website = poi.website ?? null;
 const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${poi.name}, ${province.name}, República Dominicana`)}`;
 const showHours = poi.type !== "playa";
 
-const token = Astro.cookies.get("auth_token")?.value ?? "";
-const isLoggedIn = !!token;
-const { destinationIds: favDestinationIds } = await getFavoriteIds(token);
 const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
 ---
 
 <Layout title={`${poi.name} — DominicanGo`} description={poi.description}>
     <Header />
 
+    <main>
     <article>
         <PoiHero
             name={poi.name}
@@ -93,14 +119,15 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
             poiSlug={seed}
         />
 
-        <div class="bg-base-200">
+        <div class="bg-base-300">
             <div class="max-w-6xl mx-auto px-4 md:px-8 py-12">
                 <div class="grid md:grid-cols-[1fr_300px] gap-8 items-start">
                     <!-- Main column -->
                     <div class="space-y-6">
                         <!-- About -->
-                        <div
+                        <section
                             class="bg-base-100 rounded-3xl shadow-sm border border-base-200 p-8"
+                            aria-label="Sobre este lugar"
                         >
                             <h2
                                 class="font-heading font-bold text-xl text-neutral mb-5 flex items-center gap-3"
@@ -126,14 +153,13 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                             <p
                                 class="text-base-content/80 text-base leading-relaxed"
                             >
-                                {poi.description}
                             </p>
-                        </div>
+                        </section>
 
                         <!-- Tags -->
                         {
                             poi.tags?.length > 0 && (
-                                <div class="bg-base-100 rounded-3xl shadow-sm border border-base-200 p-8">
+                                <section class="bg-base-100 rounded-3xl shadow-sm border border-base-200 p-8" aria-label="Etiquetas">
                                     <h2 class="font-heading font-bold text-xl text-neutral mb-5 flex items-center gap-3">
                                         <span class="w-8 h-8 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
                                             <svg
@@ -170,7 +196,7 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                                             </span>
                                         ))}
                                     </div>
-                                </div>
+                                </section>
                             )
                         }
 
@@ -232,7 +258,8 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
         </div>
 
         <PoiRelated related={related} />
+        
     </article>
-
+    </main>
 
 </Layout>

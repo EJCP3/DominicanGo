@@ -16,6 +16,8 @@ interface Props {
     poiSlug?: string;
 }
 
+import { Image } from "astro:assets";
+
 const { name, image, slug, provinceSlug, poiSlug } = Astro.props;
 
 // Identificador único para enlazar la transición con la tarjeta
@@ -42,23 +44,33 @@ const uniqueID = provinceSlug && poiSlug ? `${provinceSlug}-${poiSlug}` : null;
             Volver a destinos
         </a>
 
-        <figure
-            class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative cursor-zoom-in group"
+        <button
+            class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative cursor-zoom-in group bg-base-300 appearance-none border-none p-0 inline-block text-left"
             onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { img: '${image}', alt: '${name}' } }))`}
+            aria-label={`Ampliar imagen de ${name}`}
+            tabindex="0"
         >
-            <img
-                src={image}
-                alt={name}
-                class="w-full h-full object-cover select-none transition-transform duration-700 group-hover:scale-105"
-                transition:name={uniqueID
-                    ? `img-destino-${uniqueID}`
-                    : undefined}
-            />
+            <figure class="w-full h-full m-0 pointer-events-none">
+                <Image
+                    src={image}
+                    alt={name}
+                    width={1200}
+                    height={600}
+                    widths={[400, 800, 1200]}
+                    sizes="(max-width: 640px) 400px, (max-width: 1024px) 800px, 1200px"
+                    format="webp"
+                    loading="eager"
+                    class="w-full h-full object-cover select-none transition-transform duration-700 group-hover:scale-105"
+                    transition:name={uniqueID
+                        ? `img-destino-${uniqueID}`
+                        : undefined}
+                />
+            </figure>
             <div
                 class="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent pointer-events-none"
             >
             </div>
-        </figure>
+        </button>
 
         <div class="max-w-4xl">
             <h1

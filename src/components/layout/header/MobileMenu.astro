@@ -17,11 +17,11 @@ const { user, apiBase = "http://localhost:3000" } = Astro.props;
 
 <!-- Only show hamburger on mobile (hidden on md+) when not logged in, OR always show on mobile -->
 <!-- When logged in on mobile, the avatar dropdown handles things — so we hide MobileMenu -->
-<div class={`dropdown dropdown-end ${user ? "md:hidden" : "md:hidden"}`}>
-    <div
+<nav aria-label="Menú móvil" class={`dropdown dropdown-end ${user ? "md:hidden" : "md:hidden"}`}>
+    <button
         tabindex="0"
-        role="button"
         class="btn btn-ghost btn-circle"
+        aria-label="Toggle menú móvil"
     >
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +35,7 @@ const { user, apiBase = "http://localhost:3000" } = Astro.props;
                 stroke-width="2"
                 d="M4 6h16M4 12h16M4 18h7"></path></svg
         >
-    </div>
+    </button>
     <ul
         tabindex="0"
         class="dropdown-content menu bg-base-100/95 backdrop-blur-md rounded-2xl z-50 w-64 p-4 mt-3 shadow-2xl border border-base-200"
@@ -49,15 +49,15 @@ const { user, apiBase = "http://localhost:3000" } = Astro.props;
                 <div class="divider my-1"></div>
                 <!-- Nav links (always needed) -->
                 <li>
-                    <a href="/" class="font-medium px-4 py-2">Destinos</a>
+                    <a href="/" data-astro-prefetch="hover" class="font-medium px-4 py-2">Destinos</a>
                 </li>
                 <li>
-                    <a href="/blog" class="font-medium px-4 py-2">Blog</a>
+                    <a href="/blog" data-astro-prefetch="hover" class="font-medium px-4 py-2">Blog</a>
                 </li>
                 <div class="divider my-1"></div>
                 <!-- User actions -->
                 <li>
-                    <a href="/favoritos" class="font-medium px-4 py-2">
+                    <a href="/favoritos" data-astro-prefetch="hover" class="font-medium px-4 py-2">
                         <svg class="w-4 h-4 text-error" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
@@ -65,7 +65,7 @@ const { user, apiBase = "http://localhost:3000" } = Astro.props;
                     </a>
                 </li>
                 <li>
-                    <a href="/destinos/nuevo" class="font-medium px-4 py-2">
+                    <a href="/destinos/nuevo" data-astro-prefetch="hover" class="font-medium px-4 py-2">
                         <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -80,10 +80,10 @@ const { user, apiBase = "http://localhost:3000" } = Astro.props;
         {!user && (
             <>
                 <li>
-                    <a href="/" class="font-medium px-4 py-2">Destinos</a>
+                    <a href="/" data-astro-prefetch="hover" class="font-medium px-4 py-2">Destinos</a>
                 </li>
                 <li>
-                    <a href="/blog" class="font-medium px-4 py-2">Blog</a>
+                    <a href="/blog" data-astro-prefetch="hover" class="font-medium px-4 py-2">Blog</a>
                 </li>
                 <div class="divider my-1"></div>
             </>
@@ -156,4 +156,4 @@ const { user, apiBase = "http://localhost:3000" } = Astro.props;
             </li>
         )}
     </ul>
-</div>
+</nav>

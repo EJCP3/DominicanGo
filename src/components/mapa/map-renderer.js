@@ -12,9 +12,9 @@ import {
 } from './map-config';
 
 // Import projection, simplification and centroid utilities
-import { computeProjection, simplifyRing, computeRingCenter } from './map-projection';
+import { computeProjection, computeRingCenter } from './map-projection';
 
-const DR_GEOJSON_LINK = 'https://raw.githubusercontent.com/jeasoft/provinces_geojson/master/provinces_municipality_summary.geojson';
+const DR_GEOJSON_LINK = '/dr-optimized.geojson.json';
 
 export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinceClick = null) {
   if (!svgElement) return;
@@ -28,14 +28,14 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
     const response = await fetch(DR_GEOJSON_LINK);
     // Deep-clone the parsed JSON to prevent any mutation of the shared object
     // across re-renders, which is a primary cause of non-deterministic color assignment.
-    const data = JSON.parse(JSON.stringify(await response.json()));
 
+    const data = await response.json();
     // 0. Clear previous SVG content to avoid duplicates on re-render
-    const provincesGroup = document.getElementById('provinces-group');
-    const labelsGroup = document.getElementById('labels-group');
+    const provincesGroup = svgElement.querySelector('#provinces-group');
+    const labelsGroup = svgElement.querySelector('#labels-group');
     if (provincesGroup) provincesGroup.innerHTML = '';
     if (labelsGroup) labelsGroup.innerHTML = '';
-    
+
     // Normalize mapping dictionary for comparison
     const normalizedNameToSlug = {};
     for (const [key, val] of Object.entries(nameToSlug)) {
@@ -54,17 +54,13 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
       if (feature.geometry.type === 'Polygon') {
         feature.geometry.coordinates.forEach((ring) => {
           const projectedRing = ring.map(projection);
-          const simpleRing = simplifyRing(projectedRing, 1.5); // Tune tolerance
-          d +=
-            'M' + simpleRing.map((c) => `${c[0].toFixed(1)},${c[1].toFixed(1)}`).join('L') + 'Z ';
+          d += 'M' + projectedRing.map((c) => `${c[0].toFixed(1)},${c[1].toFixed(1)}`).join('L') + 'Z ';
         });
       } else if (feature.geometry.type === 'MultiPolygon') {
         feature.geometry.coordinates.forEach((polygon) => {
           polygon.forEach((ring) => {
             const projectedRing = ring.map(projection);
-            const simpleRing = simplifyRing(projectedRing, 1.5);
-            d +=
-              'M' + simpleRing.map((c) => `${c[0].toFixed(1)},${c[1].toFixed(1)}`).join('L') + 'Z ';
+            d += 'M' + projectedRing.map((c) => `${c[0].toFixed(1)},${c[1].toFixed(1)}`).join('L') + 'Z ';
           });
         });
       }
@@ -82,6 +78,7 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', d.trim());
       path.setAttribute('fill', color);
+      // path.setAttribute('fill-rule', 'evenodd');
       path.setAttribute('data-province', slug);
       path.setAttribute('data-name', rawName);
 
@@ -90,7 +87,7 @@ export async function loadAndRenderMap(svgElement, overlayContainerId, onProvinc
       path.setAttribute('stroke-width', '1.5');
       path.setAttribute('stroke-linejoin', 'round');
 
-      path.classList.add('transition-all', 'duration-300', 'origin-center');
+      path.classList.add('transition-colors', 'duration-300');
       if (hasData) {
         path.classList.add('cursor-pointer', 'hover:brightness-95', 'focus:outline-none', 'map-province');
         // Agregamos tabIndex pasivo para mostrar estilo de teclado

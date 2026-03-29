@@ -4,8 +4,13 @@
 }
 
 @theme {
-  --font-heading: "Outfit", sans-serif;
+  --font-heading: "Gluten Variable", sans-serif;
   --font-body: "Poppins", sans-serif;
+  --font-gluten: "Gluten Variable", sans-serif;
+}
+
+body {
+  font-family: 'Gluten Variable', system-ui;
 }
 
 /* Premium Global Scrollbar */

@@ -31,11 +31,14 @@ Es una página web que permite a los usuarios explorar los diferentes destinos t
 
 - 
 
-- backend: https://github.com/Euddy22/DominicanGo-api
+- backend: https://github.com/EJCP3/DominicanGo-api
 
 ## Tecnologías
 
 - Astro
+- Vue
+- GASP
+- DaisyUI
 - Tailwind CSS
 - TypeScript
 

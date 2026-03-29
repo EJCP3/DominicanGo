@@ -29,31 +29,38 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
         </div>
 
         <!-- Nav links (Desktop) -->
-        <nav class="hidden md:flex items-center gap-1 relative px-1 py-1 rounded-full" id="desktop-nav">
-            <!-- Sliding Highlighter -->
-            <div id="header-highlighter" class="absolute h-[calc(100%-8px)] top-1 left-1 bg-primary rounded-full z-0 pointer-events-none shadow-[0_4px_12px_rgba(var(--p),0.3)] opacity-0 transition-opacity"></div>
+        <nav id="desktop-nav" aria-label="Navegación principal">
+            <ul class="hidden md:flex items-center gap-1 relative px-1 py-1 rounded-full">
+                <!-- Sliding Highlighter -->
+                <li id="header-highlighter" class="absolute h-[calc(100%-8px)] top-1 left-1 bg-primary rounded-full z-0 pointer-events-none shadow-[0_4px_12px_rgba(var(--p),0.3)] opacity-0 transition-opacity" aria-hidden="true"></li>
 
-            <a
-                href="/"
-                class={`nav-link relative z-10 no-underline px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300 ${
-                    isHomeOrDestinos
-                        ? "text-primary-content active-nav"
-                        : "text-base-content/60 hover:text-base-content"
-                }`}
-            >
-                Destinos
-            </a>
-            <a
-                href="/blog"
-                class={`nav-link relative z-10 no-underline px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300 ${
-                    currentPath.startsWith("/blog")
-                        ? "text-primary-content active-nav"
-                        : "text-base-content/60 hover:text-base-content"
-                }`}
-            >
-                Blog
-            </a>
-           
+                <li>
+                    <a
+                        href="/"
+                        data-astro-prefetch="hover"
+                        class={`nav-link relative z-10 no-underline px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300 ${
+                            isHomeOrDestinos
+                                ? "text-primary-content active-nav"
+                                : "text-base-content/60 hover:text-base-content"
+                        }`}
+                    >
+                        Destinos
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="/blog"
+                        data-astro-prefetch="hover"
+                        class={`nav-link relative z-10 no-underline px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300 ${
+                            currentPath.startsWith("/blog")
+                                ? "text-primary-content active-nav"
+                                : "text-base-content/60 hover:text-base-content"
+                        }`}
+                    >
+                        Blog
+                    </a>
+                </li>
+            </ul>
         </nav>
 
         <!-- Right Side Actions -->
@@ -61,29 +68,29 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
             {user ? (
                 <>
                     <!-- Avatar dropdown: desktop only. Mobile uses MobileMenu -->
-                    <div class="hidden md:block">
+                    <nav class="hidden md:block" aria-label="Menú de usuario">
                     <div class="dropdown dropdown-end z-100">
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                        <button tabindex="0" class="btn btn-ghost btn-circle avatar" aria-haspopup="true" aria-expanded="false">
                             <div class="w-9 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
                                 {user.foto
                                     ? <img alt={user.name} src={user.foto} referrerpolicy="no-referrer" />
                                     : <div class="bg-primary text-primary-content flex items-center justify-center w-full h-full text-sm font-bold rounded-full select-none">{user.name?.charAt(0).toUpperCase()}</div>
                                 }
                             </div>
-                        </div>
+                        </button>
                         <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-100 p-2 shadow-xl bg-base-100 rounded-2xl w-60 border border-base-200">
                             <li class="menu-title px-2 py-1">
                                 <span class="font-semibold text-sm text-base-content truncate">{user.name}</span>
                             </li>
                             <div class="divider my-0.5"></div>
                             <li>
-                                <a href="/favoritos">
+                                <a href="/favoritos" data-astro-prefetch="hover">
                                     <svg class="w-4 h-4 text-error" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                                     Mis Favoritos
                                 </a>
                             </li>
                             <li>
-                                <a href="/destinos/nuevo">
+                                <a href="/destinos/nuevo" data-astro-prefetch="hover">
                                     <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                     Registrar Destino
                                 </a>
@@ -121,7 +128,7 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
                             </li>
                         </ul>
                     </div>
-                    </div>
+                    </nav>
                 </>
             ) : (
                 /* Logged out: Google Sign-In (desktop only — mobile uses MobileMenu) */
@@ -239,5 +246,15 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
              }
         }
         setupHeaderTransitions();
+
+        // Cerrar menú / dropdown al hacer clic en un enlace interior
+        const dropdownLinks = document.querySelectorAll('.dropdown-content a');
+        dropdownLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (document.activeElement) {
+                    document.activeElement.blur();
+                }
+            });
+        });
     });
 </script>

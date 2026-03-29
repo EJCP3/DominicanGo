@@ -148,8 +148,8 @@ async function animateToggle() {
     // SECUENCIA DE CIERRE RAPIDA:
     // 1. Desvanece el interior primero para que NO se deforme
     const header = document.querySelector('[data-flip-id="filter-header"]')
-    if (panelContent || panelActions || header) {
-      gsap.to([panelContent, panelActions, header], { opacity: 0, duration: 0.1, ease: 'power2.out' })
+    if (panelContent || panelActions) {
+      gsap.to([panelContent, panelActions], { opacity: 0, duration: 0.1, ease: 'power2.out' })
     }
 
     // 2. Espera muy poco y luego FLIP a botón
@@ -161,13 +161,28 @@ async function animateToggle() {
     isOpen.value = false
     await nextTick()
 
+    const divider = triggerRef.value?.querySelector('.trigger-divider')
+    const filterBtn = triggerRef.value?.querySelector('.trigger-filter-btn')
+    gsap.set([divider, filterBtn], { opacity: 0 })
+
     Flip.from(state, {
       duration: 0.35,
       ease: 'power3.inOut',
       scale: true,
       absolute: true,
       nested: true,
-      props: 'boxShadow, borderRadius, backgroundColor'
+      props: 'boxShadow, borderRadius, backgroundColor',
+      onComplete: () => {
+        // Reset opacity of the header when closed (it was faded out at start of close sequence)
+        // const closedHeader = document.querySelector('[data-flip-id="filter-header"]')
+        // if (closedHeader) {
+        //   gsap.to(closedHeader, { opacity: 1, duration: 0.2, ease: 'power2.out' })
+        gsap.to(
+          [, divider, filterBtn],
+          { opacity: 1, duration: 0.2, ease: 'power2.out' }
+        )
+        // }
+      }
     })
   } else {
     // SECUENCIA DE APERTURA:
@@ -269,33 +284,31 @@ onUnmounted(() => {
   <div class="relative z-50 h-10 shrink-0">
     <!-- Trigger Button & Search -->
     <div v-show="!isOpen" ref="triggerRef" data-flip-id="filter-container"
-      class="flex items-center h-10 px-4 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0 cursor-text shadow-sm ring-1 ring-base-content/5">
-      
+      class=" flex items-center h-10 px-4 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0 cursor-text shadow-sm ring-1 ring-base-content/5">
+
       <!-- Search Icon -->
       <svg class="w-4 h-4 text-base-content/40 shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
-      
+
       <!-- Search Input -->
       <div data-flip-id="filter-header" class="flex-1 flex items-center">
-        <input 
-          type="text" 
-          v-model="state.search" 
-          placeholder="Buscar destino..." 
-          class="bg-transparent border-none outline-none text-sm w-32 sm:w-48 placeholder:text-base-content/40 text-base-content font-medium p-0"
-        />
+        <input type="text" v-model="state.search" placeholder="Buscar destino..."
+          class="bg-transparent border-none outline-none text-sm w-32 sm:w-48 placeholder:text-base-content/40 text-base-content font-medium p-0" />
       </div>
-      
-      <div class="w-px h-4 bg-base-content/10 mx-3 shrink-0"></div>
-      
+
+      <div class="trigger-divider w-px h-4 bg-base-content/10 mx-3 shrink-0"></div>
+
       <!-- Filter Toggle -->
-      <button 
-        @click.stop="togglePanel"
-        class="flex items-center gap-1.5 text-base-content hover:text-primary transition-colors cursor-pointer group shrink-0"
-        title="Opciones de filtro"
-      >
-        <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+      <button @click.stop="togglePanel"
+        class="trigger-filter-btn flex items-center gap-1.5 text-base-content hover:text-primary transition-colors cursor-pointer group shrink-0"
+        title="Opciones de filtro">
+
+        <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
         </svg>
         <span class="hidden sm:inline font-heading font-extrabold text-[14px]">Filtros</span>
       </button>
@@ -307,16 +320,14 @@ onUnmounted(() => {
 
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <div data-flip-id="filter-header" class="flex items-center gap-2 origin-left flex-1 min-w-0 mr-4 border-b border-base-200/50 pb-1">
+        <div data-flip-id="filter-header"
+          class="flex items-center gap-2 origin-left flex-1 min-w-0 mr-4 border-b border-base-200/50 pb-1">
           <svg class="w-5 h-5 text-base-content/40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input 
-            type="text" 
-            v-model="state.search" 
-            placeholder="Buscar destino..." 
-            class="bg-transparent border-none outline-none text-lg w-full placeholder:text-base-content/30 font-heading font-extrabold text-base-content p-0 mb-0.5"
-          />
+          <input type="text" v-model="state.search" placeholder="Buscar destino..."
+            class="bg-transparent border-none outline-none text-lg w-full placeholder:text-base-content/30 font-heading font-extrabold text-base-content p-0 mb-0.5" />
         </div>
 
         <div class="flex items-center gap-2 panel-actions">
@@ -371,10 +382,10 @@ onUnmounted(() => {
         <!-- Right Column: Pill Buttons -->
         <div class="space-y-5">
           <!-- Región -->
-          <div class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA]">
-            <h4 class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4">
+          <fieldset class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA] m-0">
+            <legend class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4 w-full">
               Región
-            </h4>
+            </legend>
             <div class="flex flex-wrap gap-2.5">
               <button v-for="region in props.regiones" :key="region" :style="regionPillStyle(region)" :class="[
                 'px-4 py-1.5 rounded-full text-xs font-semibold border-2 transition-all',
@@ -385,13 +396,13 @@ onUnmounted(() => {
                 {{ region }}
               </button>
             </div>
-          </div>
+          </fieldset>
 
           <!-- Precio -->
-          <div class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA]">
-            <h4 class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4">
+          <fieldset class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA] m-0">
+            <legend class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4 w-full">
               Precio
-            </h4>
+            </legend>
             <div class="flex gap-3">
               <button :class="[
                 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
@@ -406,7 +417,7 @@ onUnmounted(() => {
                 Pagado
               </button>
             </div>
-          </div>
+          </fieldset>
         </div>
       </div>
     </div>

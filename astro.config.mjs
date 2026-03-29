@@ -9,6 +9,13 @@ export default defineConfig({
     output: 'server',
     adapter: node({ mode: 'standalone' }),
     integrations: [vue()],
+    image: {
+        remotePatterns: [
+            { protocol: 'http', hostname: 'localhost' },
+            { protocol: 'https', hostname: 'picsum.photos' },
+            { protocol: 'https', hostname: 'lh3.googleusercontent.com' }
+        ],
+    },
     vite: {
         plugins: [tailwindcss()],
     },

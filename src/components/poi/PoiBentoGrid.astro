@@ -1,23 +1,26 @@
 ---
-// PoiBentoGrid.astro
-interface Props {
-    images: string[];
-    name: string;
-}
+import { Image } from "astro:assets";
+
 const { images, name } = Astro.props;
 ---
 
 <div
-    class="grid grid-cols-3 grid-rows-2 gap-2.5 h-[340px] rounded-3xl overflow-hidden shadow-sm"
+    class="grid grid-cols-3 grid-rows-2 gap-2.5 h-[340px] rounded-3xl overflow-hidden shadow-sm bg-base-200"
 >
     <!-- Large: col-span-2, row-span-2 -->
-    <div 
-        class="col-span-2 row-span-2 relative overflow-hidden bento-item cursor-zoom-in group"
+    <button 
+        type="button"
+        class="block w-full h-full p-0 border-none appearance-none col-span-2 row-span-2 relative overflow-hidden bento-item cursor-zoom-in group text-left"
         onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { img: '${images[0]}', alt: '${name} - Vista 1' } }))`}
+        aria-label={`Ampliar imagen: ${name} - Vista 1`}
     >
-        <img
+        <Image
             src={images[0]}
             alt={`${name} - vista 1`}
+            width={800}
+            height={600}
+            format="webp"
+            loading="lazy"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div
@@ -28,15 +31,21 @@ const { images, name } = Astro.props;
                 >Vista 1</span
             >
         </div>
-    </div>
+    </button>
     <!-- Small top-right -->
-    <div 
-        class="col-span-1 row-span-1 relative overflow-hidden bento-item cursor-zoom-in group"
+    <button 
+        type="button"
+        class="block w-full h-full p-0 border-none appearance-none col-span-1 row-span-1 relative overflow-hidden bento-item cursor-zoom-in group text-left"
         onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { img: '${images[1]}', alt: '${name} - Vista 2' } }))`}
+        aria-label={`Ampliar imagen: ${name} - Vista 2`}
     >
-        <img
+        <Image
             src={images[1]}
             alt={`${name} - vista 2`}
+            width={400}
+            height={300}
+            format="webp"
+            loading="lazy"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div
@@ -47,15 +56,21 @@ const { images, name } = Astro.props;
                 >Vista 2</span
             >
         </div>
-    </div>
+    </button>
     <!-- Small bottom-right -->
-    <div 
-        class="col-span-1 row-span-1 relative overflow-hidden bento-item cursor-zoom-in group"
+    <button 
+        type="button"
+        class="block w-full h-full p-0 border-none appearance-none col-span-1 row-span-1 relative overflow-hidden bento-item cursor-zoom-in group text-left"
         onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { img: '${images[2]}', alt: '${name} - Vista 3' } }))`}
+        aria-label={`Ampliar imagen: ${name} - Vista 3`}
     >
-        <img
+        <Image
             src={images[2]}
             alt={`${name} - vista 3`}
+            width={400}
+            height={300}
+            format="webp"
+            loading="lazy"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div
@@ -66,7 +81,7 @@ const { images, name } = Astro.props;
                 >Vista 3</span
             >
         </div>
-    </div>
+    </button>
 </div>
 <style>
     .bento-item:hover .bento-hover {

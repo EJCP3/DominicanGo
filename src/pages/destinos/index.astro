@@ -6,13 +6,18 @@ import {
     slugify,
     getFavoriteIds,
 } from "../../services/api";
-const provinces = await getProvincesWithDestinations();
+const token = Astro.cookies.get("auth_token")?.value ?? "";
+
+// Parallelize API calls
+const [provinces, { destinationIds: favDestinationIds }] = await Promise.all([
+    getProvincesWithDestinations(),
+    getFavoriteIds(token)
+]);
 
 import DestinosHero from "../../components/destinos/DestinosHero.astro";
 import FiltrosDestinos from "../../components/destinos/FiltrosDestinos.vue";
 import DestinoCard from "../../components/destinos/DestinoCard.astro";
 import DestinoModal from "../../components/destinos/DestinoModal.astro";
-import DestinosFilterScript from "../../components/destinos/DestinosFilterScript.astro";
 
 import { TIPOS, TYPE_LABELS, REGION_COLORS } from "../../data/poi-config.ts";
 
@@ -36,9 +41,6 @@ const regiones = [
 const provinciasList = Object.entries(provinces)
     .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
     .map(([slug, prov]: any) => ({ slug, name: prov.name }));
-
-const token = Astro.cookies.get("auth_token")?.value ?? "";
-const { destinationIds: favDestinationIds } = await getFavoriteIds(token);
 ---
 
 <Layout

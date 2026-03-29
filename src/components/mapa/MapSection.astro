@@ -1,7 +1,6 @@
 ---
-// Full-page interactive map section — light pastel theme
-import Footer from "../layout/Footer.astro";
-import Icon from "../ui/Icon.astro";
+
+
 ---
 
 <section
@@ -12,10 +11,9 @@ import Icon from "../ui/Icon.astro";
     <div
         class="flex-1 relative max-w-[1400px] w-full mx-auto px-4 sm:px-6 flex flex-col"
     >
-        <!-- Map container -->
+     
         <div class="flex-1 relative" id="map-wrapper">
             <div class="map-container w-full h-full" id="map-container">
-                <!-- Province tooltip -->
                 <div
                     id="province-tooltip"
                     class="fixed pointer-events-none z-50 opacity-0 transition-opacity duration-200 px-4 py-2 rounded-xl bg-base-100/95 backdrop-blur-md border border-base-200 shadow-lg text-sm font-heading font-semibold text-base-content"
@@ -23,7 +21,6 @@ import Icon from "../ui/Icon.astro";
                     <span id="tooltip-text"></span>
                 </div>
 
-                <!-- SVG Map -->
                 <svg
                     viewBox="0 0 960 500"
                     class="w-full h-full"
@@ -31,7 +28,6 @@ import Icon from "../ui/Icon.astro";
                     xmlns="http://www.w3.org/2000/svg"
                     preserveAspectRatio="xMidYMid meet"
                 >
-                    <!-- Loading indicator -->
                     <text
                         id="map-loading"
                         x="480"
@@ -41,7 +37,6 @@ import Icon from "../ui/Icon.astro";
                         text-anchor="middle">Cargando mapa...</text
                     >
 
-                    <!-- Water labels -->
                     <text
                         x="620"
                         y="50"
@@ -57,15 +52,10 @@ import Icon from "../ui/Icon.astro";
                         text-anchor="middle">Mar Caribe</text
                     >
 
-                    <!-- Province paths rendered from GeoJSON -->
                     <g id="provinces-group"></g>
-                    <!-- Province labels rendered by JS -->
                     <g id="labels-group"></g>
-
-                    <!-- Extra overlays injected by JS (water bodies, islands, etc.) -->
                     <g id="overlays-group"></g>
 
-                    <!-- Compass icon -->
                     <g
                         transform="translate(830, 400)"
                         class="pointer-events-none"
@@ -115,7 +105,7 @@ import Icon from "../ui/Icon.astro";
             </div>
         </div>
 
-        <!-- Bottom hint bar -->
+        
         <div
             id="hint-bar"
             class="flex items-center justify-center pb-28 md:pb-4 pt-2 relative z-10"
@@ -150,5 +140,184 @@ import Icon from "../ui/Icon.astro";
         </div>
     </div>
 
-    <Footer />
 </section>
+
+
+<script>
+    // 1. Importamos SOLO Panzoom (nada de map-renderer aquí)
+    import Panzoom from '@panzoom/panzoom';
+
+    function initPanzoom() {
+        const svgElement = document.getElementById('rd-map');
+        const container = document.getElementById('map-panzoom-container');
+
+        if (!svgElement || !container) return;
+
+        // 2. Activamos el Zoom interactivo en el SVG
+        const panzoom = Panzoom(svgElement, {
+            maxScale: 6,
+            minScale: 1, 
+            contain: 'outside',
+            step: 0.3
+        });
+
+        // 3. Habilitar zoom con rueda del ratón
+        container.addEventListener('wheel', panzoom.zoomWithWheel);
+
+        // 4. Cambiar el cursor al arrastrar
+        svgElement.addEventListener('panzoomstart', () => {
+            container.classList.remove('cursor-grab');
+            container.classList.add('cursor-grabbing');
+        });
+
+        svgElement.addEventListener('panzoomend', () => {
+            container.classList.remove('cursor-grabbing');
+            container.classList.add('cursor-grab');
+        });
+    }
+
+    // Inicializar de forma segura con Astro
+    document.addEventListener('astro:page-load', initPanzoom);
+    
+    // Por si acaso carga directo
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        initPanzoom();
+    } else {
+        window.addEventListener('DOMContentLoaded', initPanzoom);
+    }
+</script>
+<!-- ---
+import Footer from "../layout/Footer.astro";
+import Icon from "../ui/Icon.astro";
+---
+
+<section
+    id="mapa"
+    class="relative w-full h-screen pt-14 flex flex-col overflow-hidden touch-none"
+    style="background: linear-gradient(180deg, #e8f4f8 0%, #d4eef7 30%, #e2f0e8 60%, #eef6fa 100%);"
+>
+    <div class="flex-1 relative max-w-[1400px] w-full mx-auto flex flex-col h-full">
+        
+        <div class="flex-1 relative w-full h-full overflow-hidden cursor-grab" id="map-panzoom-container">
+            
+            <div
+                id="province-tooltip"
+                class="fixed pointer-events-none z-50 opacity-0 transition-opacity duration-200 px-4 py-2 rounded-xl bg-base-100/95 backdrop-blur-md border border-base-200 shadow-lg text-sm font-heading font-semibold text-base-content"
+            >
+                <span id="tooltip-text"></span>
+            </div>
+
+            <svg
+                viewBox="0 0 960 500"
+                class="w-full h-full min-w-[800px] md:min-w-0" 
+                id="rd-map"
+                xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="xMidYMid meet"
+            >
+                <text
+                    id="map-loading"
+                    x="480"
+                    y="250"
+                    class="text-[14px] font-heading pointer-events-none"
+                    fill="#94a3b8"
+                    text-anchor="middle">Cargando mapa...</text>
+
+                <text
+                    x="620"
+                    y="50"
+                    class="text-[11px] italic font-body pointer-events-none tracking-[0.3em] uppercase"
+                    fill="#a3c9d9"
+                    text-anchor="middle">Océano Atlántico</text>
+                
+                <text
+                    x="400"
+                    y="470"
+                    class="text-[11px] italic font-body pointer-events-none tracking-[0.3em] uppercase"
+                    fill="#a3c9d9"
+                    text-anchor="middle">Mar Caribe</text>
+
+                <g id="provinces-group"></g>
+                
+                <g id="labels-group"></g>
+
+                <g id="overlays-group"></g>
+
+                <g transform="translate(830, 400)" class="pointer-events-none">
+                    <g id="map-compass">
+                        <circle cx="0" cy="0" r="18" fill="none" stroke="#b8ccd6" stroke-width="1"></circle>
+                        <circle cx="0" cy="0" r="2" fill="#b8ccd6"></circle>
+                        <line x1="0" y1="-14" x2="0" y2="-6" stroke="#b8ccd6" stroke-width="1.5"></line>
+                        <line x1="0" y1="6" x2="0" y2="14" stroke="#b8ccd6" stroke-width="1"></line>
+                        <line x1="-14" y1="0" x2="-6" y2="0" stroke="#b8ccd6" stroke-width="1"></line>
+                        <line x1="6" y1="0" x2="14" y2="0" stroke="#b8ccd6" stroke-width="1"></line>
+                        <polygon points="0,-14 -3,-8 3,-8" fill="#b8ccd6"></polygon>
+                    </g>
+                </g>
+            </svg>
+        </div>
+
+        <div id="hint-bar" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+            <div class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-base-100/90 backdrop-blur-sm border border-base-200 shadow-sm text-sm text-base-content/70">
+                <span class="w-2 h-2 rounded-full bg-info animate-pulse"></span>
+                <span class="overflow-hidden h-5 inline-flex flex-col relative font-medium text-rotate animate-text-slide duration-15000">
+                    <span class="animate-text-slide flex flex-col items-start">
+                        <span class="h-5 flex items-center">Haz clic en una provincia</span>
+                        <span class="h-5 flex items-center">Descubre lugares únicos</span>
+                        <span class="h-5 flex items-center">Planifica tu aventura</span>
+                        <span class="h-5 flex items-center">Encuentra tu destino</span>
+                        <span class="h-5 flex items-center">Explora el paraíso</span>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // 1. Importamos Panzoom y tu función renderizadora
+    import Panzoom from '@panzoom/panzoom';
+    // ⚠️ IMPORTANTE: Asegúrate de que esta ruta apunte a tu archivo map-renderer.js
+    import { loadAndRenderMap } from './map-renderer.js'; 
+
+    // Función principal
+    async function initMap() {
+        const svgElement = document.getElementById('rd-map');
+        const container = document.getElementById('map-panzoom-container');
+
+        if (!svgElement || !container) return;
+
+        // 2. PRIMERO: Dibujamos las provincias
+        // Pasamos el SVG, el ID del tooltip, y una función para cuando hagan clic
+        await loadAndRenderMap(svgElement, 'province-tooltip', (slug) => {
+            console.log("Hiciste clic en la provincia:", slug);
+        });
+
+        // 3. SEGUNDO: Activamos el Zoom interactivo
+        const panzoom = Panzoom(svgElement, {
+            maxScale: 5,
+            minScale: 1, 
+            contain: 'outside',
+            step: 0.3
+        });
+
+        // Habilitar zoom con rueda del ratón
+        container.addEventListener('wheel', panzoom.zoomWithWheel);
+
+        // Cambiar el cursor al arrastrar para que se sienta como una App nativa
+        svgElement.addEventListener('panzoomstart', () => {
+            container.classList.remove('cursor-grab');
+            container.classList.add('cursor-grabbing');
+        });
+
+        svgElement.addEventListener('panzoomend', () => {
+            container.classList.remove('cursor-grabbing');
+            container.classList.add('cursor-grab');
+        });
+    }
+
+    // Inicializar la primera vez que carga
+    initMap();
+
+    // Re-inicializar si navegas a otra página y vuelves (por Astro ViewTransitions)
+    document.addEventListener('astro:page-load', initMap);
+</script> -->
