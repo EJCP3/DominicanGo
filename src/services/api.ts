@@ -178,22 +178,30 @@ export const baseProvinces: Record<string, any> = {
 };
 
 /**
- * Realiza el fetch de destinos a la API backend.
+ * Realiza el fetch de destinos a la API backend con soporte para paginación y filtros.
  */
-export const getDestinations = async () => {
+export const getDestinations = async (params: Record<string, string | number | undefined> = {}) => {
     try {
-        const url = import.meta.env.PUBLIC_API_URL 
-            ? `${import.meta.env.PUBLIC_API_URL}/destinations?limit=50` 
-            : 'http://localhost:3000/api/destinations?limit=50';
-            
-        const res = await fetch(url);
+        const url = new URL(
+            import.meta.env.PUBLIC_API_URL 
+                ? `${import.meta.env.PUBLIC_API_URL}/destinations` 
+                : 'http://localhost:3000/api/destinations'
+        );
+
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                url.searchParams.append(key, String(value));
+            }
+        });
+
+        const res = await fetch(url.toString());
         if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
         
         const json = await res.json();
-        return json.success ? json.data : [];
+        return json.success ? json : { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 0 } };
     } catch (error) {
         console.error("Error fetching destinations:", error);
-        return [];
+        return { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 0 } };
     }
 };
 
@@ -229,20 +237,19 @@ export const getBlogs = async (params: Record<string, string | number> = {}) => 
  * Devuelve un objeto idéntico al antiguo provinces.js combinando
  * las provincias base con los destinos dinámicos.
  */
-export const getProvincesWithDestinations = async () => {
+export const getProvincesWithDestinations = async (params: Record<string, any> = {}) => {
     // 1. Clona la base para no mutar el original y crea arreglos limpios
     const mapped = JSON.parse(JSON.stringify(baseProvinces));
     
-    // 2. Obtiene los destinos de la API
-    const destinations = await getDestinations();
+    // 2. Obtiene los destinos de la API (ahora devuelve { data, meta })
+    const response = await getDestinations(params);
+    const destinations = response.data || [];
     
     // 3. Los inserta en su respectiva provincia
     destinations.forEach((dest: any) => {
-        // En la BD de la API (Prisma), el ID de la provincia suele ser su slug
         const provSlug = dest.provinceId || dest.province?.id;
         
         if (provSlug && mapped[provSlug]) {
-            // Mapeamos el destino de Prisma al formato de Vue (poi)
             mapped[provSlug].pois.push({
                 id: dest.id,
                 name: dest.name,
@@ -257,12 +264,14 @@ export const getProvincesWithDestinations = async () => {
                     weekend: dest.hoursWeekend || "" 
                 },
                 website: dest.website || null,
-                slug: dest.slug // Added id and slug since Vue apps often need unique keys
+                slug: dest.slug,
+                authorId: dest.authorId,
+                createdAt: dest.createdAt,
             });
         }
     });
     
-    return mapped;
+    return { provinces: mapped, meta: response.meta };
 };
 
 /**
@@ -277,10 +286,20 @@ export const getUser = async (token: string | undefined | null) => {
         const res = await fetch(`${apiBase}/users/me`, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) return null;
+        if (!res.ok) {
+            console.warn(`[API] getUser failed with status ${res.status}`);
+            return null;
+        }
         const json = await res.json();
-        return json.success ? json.data : null;
-    } catch {
+        const userData = json.success ? json.data : null;
+        
+        if (userData) {
+            console.log(`[API] Logged in user: ${userData.email} | Role: ${userData.role}`);
+        }
+        
+        return userData;
+    } catch (e: any) {
+        console.error(`[API] getUser exception: ${e.message}`);
         return null;
     }
 };

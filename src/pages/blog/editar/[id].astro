@@ -1,0 +1,82 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/layout/Header.astro";
+import EditarBlog from "../../../components/blog/EditarBlog.vue";
+import { getUser } from "../../../services/api";
+
+const token = Astro.cookies.get("auth_token")?.value;
+const user = await getUser(token);
+
+if (!user) {
+    return Astro.redirect("/?error=auth_required");
+}
+
+const { id } = Astro.params;
+
+// Fetch the blog from the API
+let blog: any = null;
+try {
+    const apiBase = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:3000/api';
+    const res = await fetch(`${apiBase}/blogs/${id}`);
+    if (res.ok) {
+        const json = await res.json();
+        blog = json.data || json;
+    }
+} catch (e) {
+    // blog stays null
+}
+
+if (!blog) {
+    return Astro.redirect("/blog");
+}
+
+// Check ownership / admin
+const isOwner = user.id === blog.authorId;
+const isAdmin = user.role === 'ADMIN';
+const canAccess = isOwner || isAdmin;
+
+if (!canAccess) {
+    return Astro.redirect("/blog");
+}
+
+// Check 1-hour edit window (non-admin users only)
+const oneHour = 60 * 60 * 1000;
+const withinEditWindow = isAdmin || (Date.now() - new Date(blog.createdAt).getTime() < oneHour);
+
+if (!withinEditWindow) {
+    return Astro.redirect(`/blog?error=edit_expired`);
+}
+---
+
+<Layout
+    title={`Editar: ${blog.title} — DominicanGo`}
+    description="Edita los detalles de este blog."
+    showWidgets={false}
+>
+    <Header />
+
+    <main class="min-h-screen pt-24 pb-16 bg-[#FDFBF7]">
+        <div class="max-w-[800px] mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <h1 class="font-heading font-extrabold text-4xl md:text-5xl text-base-content mb-3">
+                    Editar <span class="text-secondary">Blog</span>
+                </h1>
+                <p class="text-base-content/70 max-w-xl text-lg mx-auto">
+                    Actualiza tu historia de viaje.
+                    {!isAdmin && (
+                        <span class="block text-sm text-warning mt-1">
+                            ⏱ Solo puedes editar en los primeros 60 minutos desde su creación.
+                        </span>
+                    )}
+                </p>
+            </div>
+
+            <EditarBlog
+                client:load
+                blog={blog}
+                token={token}
+                isAdmin={isAdmin}
+            />
+        </div>
+    </main>
+</Layout>

@@ -1,0 +1,95 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/layout/Header.astro";
+import EditarDestino from "../../../components/destinos/EditarDestino.vue";
+import { getUser, baseProvinces } from "../../../services/api";
+import { TIPOS, TYPE_LABELS } from "../../../data/poi-config.ts";
+
+const token = Astro.cookies.get("auth_token")?.value;
+const user = await getUser(token);
+
+if (!user) {
+    return Astro.redirect("/?error=auth_required");
+}
+
+const { id } = Astro.params;
+
+// Fetch the destination from the API
+let destination: any = null;
+try {
+    const apiBase = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000/api';
+    const res = await fetch(`${apiBase}/destinations/${id}`);
+    if (res.ok) {
+        const json = await res.json();
+        destination = json.data || json;
+    }
+} catch (e) {
+    // destination stays null
+}
+
+if (!destination) {
+    return Astro.redirect("/destinos");
+}
+
+// Check ownership / admin
+const isOwner = user.id === destination.authorId;
+const isAdmin = user.role?.toUpperCase() === 'ADMIN';
+const canAccess = isOwner || isAdmin;
+
+if (!canAccess) {
+    return Astro.redirect("/destinos");
+}
+
+// Check 1-hour edit window (non-admin users only)
+const oneHour = 60 * 60 * 1000;
+const withinEditWindow = isAdmin || (Date.now() - new Date(destination.createdAt).getTime() < oneHour);
+
+if (!withinEditWindow) {
+    return Astro.redirect(`/destinos?error=edit_expired`);
+}
+
+// Fetch provinces for the select (diagnostic/unused here but keeping structure)
+const provinceRes = await fetch(import.meta.env.PUBLIC_API_URL 
+    ? `${import.meta.env.PUBLIC_API_URL}/destinations?limit=1` 
+    : 'http://localhost:3000/api/destinations?limit=1');
+
+const provinciasList = Object.entries(baseProvinces)
+    .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
+    .map(([slug, prov]: any) => ({ slug, name: prov.name }));
+---
+
+<Layout
+    title={`Editar: ${destination.name} — DominicanGo`}
+    description="Edita los detalles de este destino."
+    showWidgets={false}
+>
+    <Header />
+
+    <main class="min-h-screen pt-24 pb-16 bg-[#FDFBF7]">
+        <div class="max-w-[800px] mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <h1 class="font-heading font-extrabold text-4xl md:text-5xl text-base-content mb-3">
+                    Editar <span class="text-secondary">Destino</span>
+                </h1>
+                <p class="text-base-content/70 max-w-xl text-lg mx-auto">
+                    Actualiza los detalles de <strong>{destination.name}</strong>.
+                    {!isAdmin && (
+                        <span class="block text-sm text-warning mt-1">
+                            ⏱ Solo puedes editar en los primeros 60 minutos desde su creación.
+                        </span>
+                    )}
+                </p>
+            </div>
+
+            <EditarDestino
+                client:load
+                destination={destination}
+                provincias={provinciasList}
+                tipos={TIPOS}
+                typeLabels={TYPE_LABELS}
+                token={token}
+                isAdmin={isAdmin}
+            />
+        </div>
+    </main>
+</Layout>

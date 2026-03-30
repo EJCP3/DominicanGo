@@ -36,9 +36,15 @@ const displayedImages = computed(() => {
     return [...repeated, ...repeated];
 });
 
-const openLightbox = (img: any) => {
+const openLightbox = (index: number) => {
+    const urls = baseImages.value.map(img => img.url);
+    const item = baseImages.value[index % baseImages.value.length];
     window.dispatchEvent(new CustomEvent('open-lightbox', {
-        detail: { img: img.url, alt: img.name }
+        detail: { 
+            images: urls, 
+            currentIndex: index % baseImages.value.length, 
+            alt: item.name 
+        }
     }));
 };
 
@@ -60,7 +66,7 @@ const isPaused = ref(false);
                 v-for="(img, index) in displayedImages" 
                 :key="index"
                 class="relative h-60 aspect-square overflow-hidden cursor-pointer group/item rounded-lg border border-white/10 shrink-0 shadow-lg"
-                @click="openLightbox(img)"
+                @click="openLightbox(index)"
             >
                 <img 
                     :src="img.url" 

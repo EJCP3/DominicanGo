@@ -154,23 +154,40 @@ const handleFileUpload = async (event) => {
 };
 
 onMounted(() => {
-  if (window.Quill && quillEditor.value) {
-    quillInstance = new window.Quill(quillEditor.value, {
-      theme: 'snow',
-      modules: {
-        toolbar: [
-           [{ header: [2, 3, false] }],
-           ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-           [{ list: 'ordered' }, { list: 'bullet' }],
-           ['link'],
-           ['clean']
-        ]
-      },
-      placeholder: 'Érase una vez...'
-    });
-  } else {
-    // Si no cargó Quill (ej: network issue), fall-back silente
-    console.error("Quill not loaded on window.");
+  const initQuill = () => {
+    if (window.Quill && quillEditor.value && !quillInstance) {
+      quillInstance = new window.Quill(quillEditor.value, {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+             [{ header: [2, 3, false] }],
+             ['bold', 'italic', 'underline', 'strike'],
+             [{ list: 'ordered' }, { list: 'bullet' }],
+             ['blockquote', 'link'],
+             ['clean']
+          ]
+        },
+        placeholder: 'Cuenta tu historia, aventuras y secretos del viaje...'
+      });
+
+      if (form.value.content) {
+        quillInstance.root.innerHTML = form.value.content;
+      }
+    }
+  };
+
+  initQuill();
+
+  if (!quillInstance) {
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      initQuill();
+      if (quillInstance || attempts > 25) {
+        clearInterval(interval);
+        if (!quillInstance) console.error("Quill failed to load after 5s.");
+      }
+    }, 200);
   }
 });
 
@@ -184,15 +201,13 @@ const submitForm = async () => {
   
   if (quillInstance) {
     form.value.content = quillInstance.root.innerHTML;
-    // Generate excerpt from plain text
     const plainText = quillInstance.getText().trim();
     form.value.excerpt = plainText.substring(0, 180) + (plainText.length > 180 ? '...' : '');
   }
   
-  // Clean content snippet for validation
   const textContent = quillInstance ? quillInstance.getText().trim() : '';
-  if (textContent.length < 100) {
-    alert.value = { show: true, type: 'error', message: 'El contenido es muy corto. Debe tener al menos 100 caracteres.' };
+  if (!textContent || textContent.length < 50) {
+    alert.value = { show: true, type: 'error', message: 'El contenido es muy corto. Cuenta un poco más de tu experiencia.' };
     return;
   }
   
@@ -212,12 +227,10 @@ const submitForm = async () => {
       images: previewImages.value,
     };
     
-    // Attach province mapping via destination id
     if (form.value.destinationId) {
       payload.destinationId = form.value.destinationId;
       for (const prov of Object.values(props.provinces)) {
         if (prov.pois.find(p => p.id === form.value.destinationId)) {
-          // Send original slug or id
           payload.provinceId = Object.keys(props.provinces).find(key => props.provinces[key] === prov);
           break;
         }
@@ -234,7 +247,6 @@ const submitForm = async () => {
     });
 
     const data = await res.json();
-
     alert.value = { show: true, type: 'success', message: '¡Tu historia ha sido publicada exitosamente!' };
     
     setTimeout(() => {
@@ -273,7 +285,6 @@ const verifyOtp = async () => {
     alert.value = { show: true, type: 'success', message: '¡Tu historia ha sido publicada exitosamente!' };
     showOtpModal.value = false;
     
-    // Redirect to the new blog post after success
     setTimeout(() => {
       window.location.href = `/blog/${data.data.slug}`;
     }, 1500);
@@ -287,17 +298,111 @@ const verifyOtp = async () => {
 </script>
 
 <style>
-/* Estilos extra para Quill dentro del componente Vue */
+/* Estilos premium para Quill dentro del componente Vue */
 .ql-toolbar.ql-snow {
-    border: 1px solid oklch(var(--p));
-    border-bottom: none;
-    background: oklch(var(--b2));
-    border-radius: 0.75rem 0.75rem 0 0;
+    border: 1px solid oklch(var(--p) / 0.2) !important;
+    border-bottom: none !important;
+    background: oklch(var(--b2) / 0.5) !important;
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    padding: 0.75rem !important;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
 }
+
 .ql-container.ql-snow {
-    border: 1px solid oklch(var(--p));
-    border-radius: 0 0 0.75rem 0.75rem;
-    font-family: inherit;
-    font-size: 1rem;
+    border: 1px solid oklch(var(--p) / 0.2) !important;
+    border-radius: 0 0 1.5rem 1.5rem !important;
+    font-family: inherit !important;
+    font-size: 1.1rem !important;
+    min-height: 300px;
+}
+
+.ql-editor {
+    min-height: 250px;
+    padding: 1.5rem !important;
+    line-height: 1.7;
+    color: oklch(var(--bc));
+}
+
+.ql-editor.ql-blank::before {
+    color: oklch(var(--bc) / 0.4);
+    font-style: normal;
+    left: 1.5rem !important;
+}
+
+/* Fix para los Selects (Pickers) bugeados */
+.ql-snow .ql-picker {
+    height: 32px !important;
+    color: oklch(var(--bc)) !important;
+    background: oklch(var(--b1)) !important;
+    border-radius: 0.75rem !important;
+    border: 1px solid oklch(var(--bc) / 0.1) !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+.ql-snow .ql-picker-label {
+    padding-left: 12px !important;
+    padding-right: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    border: none !important;
+    outline: none !important;
+}
+
+.ql-snow .ql-picker-options {
+    background: oklch(var(--b1)) !important;
+    border: 1px solid oklch(var(--p) / 0.2) !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.5rem !important;
+    margin-top: 4px !important;
+}
+
+.ql-snow .ql-picker-item {
+    border-radius: 0.5rem !important;
+    padding: 4px 8px !important;
+}
+
+/* Hovers y Activos */
+.ql-snow .ql-picker:hover {
+    border-color: oklch(var(--p)) !important;
+    background: oklch(var(--b2)) !important;
+}
+
+.ql-snow.ql-toolbar button:hover,
+.ql-snow.ql-toolbar button:focus,
+.ql-snow.ql-toolbar button.ql-active,
+.ql-snow.ql-toolbar .ql-picker-label:hover,
+.ql-snow.ql-toolbar .ql-picker-label.ql-active,
+.ql-snow.ql-toolbar .ql-picker-item:hover,
+.ql-snow.ql-toolbar .ql-picker-item.ql-selected {
+    color: oklch(var(--p)) !important;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke {
+    stroke: oklch(var(--p)) !important;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill,
+.ql-snow.ql-toolbar .ql-picker-label:hover .ql-fill,
+.ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-fill {
+    fill: oklch(var(--p)) !important;
+}
+
+/* Ocultar svgs default de los pickers si causan ruido visual */
+.ql-snow .ql-picker-label svg {
+    right: 8px !important;
+    width: 14px !important;
+    height: 14px !important;
 }
 </style>

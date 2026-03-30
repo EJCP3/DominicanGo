@@ -18,7 +18,7 @@ interface Props {
 
 import { Image } from "astro:assets";
 
-const { name, image, slug, provinceSlug, poiSlug } = Astro.props;
+const { name, image, images, slug, provinceSlug, poiSlug } = Astro.props;
 
 // Identificador único para enlazar la transición con la tarjeta
 const uniqueID = provinceSlug && poiSlug ? `${provinceSlug}-${poiSlug}` : null;
@@ -46,7 +46,7 @@ const uniqueID = provinceSlug && poiSlug ? `${provinceSlug}-${poiSlug}` : null;
 
         <button
             class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative cursor-zoom-in group bg-base-300 appearance-none border-none p-0 inline-block text-left"
-            onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { img: '${image}', alt: '${name}' } }))`}
+            onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify([image, ...(images || [])])}, currentIndex: 0, alt: '${name}' } }))`}
             aria-label={`Ampliar imagen de ${name}`}
             tabindex="0"
         >

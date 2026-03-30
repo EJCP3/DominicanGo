@@ -3,17 +3,19 @@
 interface Props {
     title: string;
     image: string;
+    images?: string[];
     slug: string;
 }
 
 import { Image } from "astro:assets";
 
-const { title, image, slug } = Astro.props;
+const { title, image, images = [], slug } = Astro.props;
+const lightboxImages = images.length > 0 ? images : [image];
 ---
 
 <button
     class="w-full aspect-video md:aspect-21/9 rounded-3xl overflow-hidden shadow-xl mb-10 relative cursor-zoom-in group bg-base-300 appearance-none border-none p-0 inline-block text-left"
-    onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { img: '${image}', alt: '${title}' } }))`}
+    onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(lightboxImages)}, currentIndex: 0, alt: '${title}' } }))`}
     aria-label={`Ampliar imagen del blog: ${title}`}
     tabindex="0"
 >

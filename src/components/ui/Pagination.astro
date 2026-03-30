@@ -1,0 +1,83 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string;
+  searchParams?: URLSearchParams;
+}
+
+const { currentPage, totalPages, baseUrl, searchParams = new URLSearchParams() } = Astro.props;
+
+// Helper to generate the URL for a specific page
+const getPageUrl = (page: number) => {
+  const params = new URLSearchParams(searchParams.toString());
+  params.set('page', page.toString());
+  return `${baseUrl}?${params.toString()}`;
+};
+
+// Generate an array of page numbers to show (e.g. 1, 2, 3...)
+const maxVisiblePages = 5;
+let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+if (endPage - startPage + 1 < maxVisiblePages) {
+  startPage = Math.max(1, endPage - maxVisiblePages + 1);
+}
+
+const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+---
+
+{totalPages > 1 && (
+  <div class="flex justify-center mt-12 mb-8">
+    <nav class="join bg-white/50 backdrop-blur-sm border border-base-200 p-1 shadow-sm rounded-2xl" aria-label="Navegación de páginas">
+      
+      <!-- Previous Button -->
+      <a 
+        href={currentPage > 1 ? getPageUrl(currentPage - 1) : '#'} 
+        class={`join-item btn btn-ghost btn-sm md:btn-md px-3 md:px-4 ${currentPage === 1 ? 'btn-disabled opacity-30' : 'hover:bg-primary/10 hover:text-primary transition-all pointer-events-auto'}`}
+        aria-label="Página anterior"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+        </svg>
+      </a>
+
+      <!-- Page Numbers -->
+      {startPage > 1 && (
+        <>
+          <a href={getPageUrl(1)} class="join-item btn btn-ghost btn-sm md:btn-md px-3 md:px-4 hover:bg-primary/10 hover:text-primary transition-all">1</a>
+          {startPage > 2 && <button class="join-item btn btn-ghost btn-disabled btn-sm md:btn-md px-1 opacity-50">...</button>}
+        </>
+      )}
+
+      {pages.map((page) => (
+        <a 
+          href={getPageUrl(page)} 
+          class={`join-item btn btn-sm md:btn-md px-3 md:px-4 transition-all duration-300 ${page === currentPage ? 'btn-primary shadow-lg shadow-primary/25 pointer-events-none' : 'btn-ghost hover:bg-primary/10 hover:text-primary'}`}
+          aria-current={page === currentPage ? 'page' : undefined}
+        >
+          {page}
+        </a>
+      ))}
+
+      {endPage < totalPages && (
+        <>
+          {endPage < totalPages - 1 && <button class="join-item btn btn-ghost btn-disabled btn-sm md:btn-md px-1 opacity-50">...</button>}
+          <a href={getPageUrl(totalPages)} class="join-item btn btn-ghost btn-sm md:btn-md px-3 md:px-4 hover:bg-primary/10 hover:text-primary transition-all">{totalPages}</a>
+        </>
+      )}
+
+      <!-- Next Button -->
+      <a 
+        href={currentPage < totalPages ? getPageUrl(currentPage + 1) : '#'} 
+        class={`join-item btn btn-ghost btn-sm md:btn-md px-3 md:px-4 ${currentPage === totalPages ? 'btn-disabled opacity-30' : 'hover:bg-primary/10 hover:text-primary transition-all pointer-events-auto'}`}
+        aria-label="Página siguiente"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+
+    </nav>
+  </div>
+)}

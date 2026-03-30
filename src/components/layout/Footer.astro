@@ -15,7 +15,7 @@ const datosRD = [
 const datoVibra = datosRD[Math.floor(Math.random() * datosRD.length)];
 
 // Obtención dinámica de destinos para el carrusel
-const destinations = await getDestinations();
+const { data: destinations } = await getDestinations({ limit: 12 });
 
 ---
 

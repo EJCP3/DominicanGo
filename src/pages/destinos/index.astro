@@ -1,16 +1,34 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/layout/Header.astro";
+import Pagination from "../../components/ui/Pagination.astro";
 import {
     getProvincesWithDestinations,
     slugify,
     getFavoriteIds,
 } from "../../services/api";
+
 const token = Astro.cookies.get("auth_token")?.value ?? "";
 
+// Handle Pagination and Filters from search params
+const page = Number(Astro.url.searchParams.get("page") || 1);
+const type = (Astro.url.searchParams.get("type") as any) || undefined;
+const provinceId = Astro.url.searchParams.get("provinceId") || undefined;
+const region = Astro.url.searchParams.get("region") || undefined;
+const price = (Astro.url.searchParams.get("price") as any) || undefined;
+const search = Astro.url.searchParams.get("search") || undefined;
+
 // Parallelize API calls
-const [provinces, { destinationIds: favDestinationIds }] = await Promise.all([
-    getProvincesWithDestinations(),
+const [{ provinces, meta }, { destinationIds: favDestinationIds }] = await Promise.all([
+    getProvincesWithDestinations({ 
+        page, 
+        limit: 12,
+        type,
+        provinceId,
+        region,
+        price,
+        search
+    }),
     getFavoriteIds(token)
 ]);
 
@@ -51,7 +69,7 @@ const provinciasList = Object.entries(provinces)
 
     <main class="min-h-screen pt-14">
         <DestinosHero
-            totalCount={allDestinos.length}
+            totalCount={meta.total}
             provinceCount={Object.keys(provinces).length}
         />
 
@@ -67,7 +85,7 @@ const provinciasList = Object.entries(provinces)
                         <span
                             id="result-count"
                             class="text-sm text-base-content/70 font-medium"
-                            >{allDestinos.length} destinos</span
+                            >{meta.total} destinos</span
                         >
                     </div>
 
@@ -96,8 +114,16 @@ const provinciasList = Object.entries(provinces)
                     }
                 </div>
 
+                <!-- Pagination -->
+                <Pagination 
+                    currentPage={meta.page} 
+                    totalPages={meta.totalPages} 
+                    baseUrl="/destinos" 
+                    searchParams={Astro.url.searchParams}
+                />
+
                 <!-- Empty state -->
-                <div id="empty-state" class="hidden text-center py-24">
+                <div id="empty-state" class={`${allDestinos.length === 0 ? 'block' : 'hidden'} text-center py-24`}>
                     <div
                         class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center"
                     >

@@ -7,7 +7,7 @@ import { TIPOS, TYPE_LABELS } from "../../data/poi-config.ts";
 
 // ── Auth Guard & Data Fetching ──────────────────────────────────────────────
 const token = Astro.cookies.get("auth_token")?.value;
-const [user, provinces] = await Promise.all([
+const [user, { provinces }] = await Promise.all([
     getUser(token),
     getProvincesWithDestinations()
 ]);

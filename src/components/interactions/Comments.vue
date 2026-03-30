@@ -8,7 +8,7 @@
     </h3>
 
     <!-- Comment Form -->
-    <form @submit.prevent="submitComment" class="mb-8 relative z-10">
+    <form @submit.prevent="submitComment" class="mb-12 relative z-10">
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="avatar shrink-0 hidden sm:flex">
           <div class="w-12 h-12 rounded-full bg-neutral text-neutral-content flex items-center justify-center overflow-hidden border border-base-200 shadow-inner">
@@ -21,6 +21,7 @@
         </div>
         <div class="flex-1 filter drop-shadow-sm">
           <textarea 
+            v-on="!props.token ? { focus: () => window.location.href = props.loginUrl || '/api/auth/google' } : {}"
             v-model="newComment"
             class="textarea textarea-bordered w-full resize-none h-24 focus:border-primary transition-colors bg-base-100/80 backdrop-blur-sm placeholder:text-base-content/40 text-base" 
             placeholder="Escribe tu opinión o experiencia..."
@@ -32,7 +33,7 @@
             <button 
               type="submit" 
               class="btn btn-primary rounded-2xl px-8 shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-transform"
-              :disabled="submitting || !newComment.trim()"
+              :disabled="submitting || (!props.token ? false : !newComment.trim())"
             >
               <span v-if="submitting" class="loading loading-spinner"></span>
               Comentar
@@ -112,6 +113,7 @@ const props = defineProps<{
   targetType: 'DESTINATION' | 'BLOG';
   targetId: string;
   token?: string;
+  loginUrl?: string;
 }>();
 
 const comments = ref<any[]>([]);
@@ -160,7 +162,7 @@ const submitComment = async () => {
     });
 
     if (res.status === 401) {
-      window.location.href = '/?error=auth_required';
+      window.location.href = props.loginUrl || '/api/auth/google';
       return;
     }
 
@@ -181,7 +183,7 @@ const submitComment = async () => {
 
 const toggleCommentReaction = async (comment: any, type: 'LIKE' | 'DISLIKE') => {
   if (!props.token) {
-    window.location.href = '/?error=auth_required';
+    window.location.href = props.loginUrl || '/api/auth/google';
     return;
   }
 
@@ -222,7 +224,7 @@ const toggleCommentReaction = async (comment: any, type: 'LIKE' | 'DISLIKE') => 
     });
 
     if (res.status === 401) {
-      window.location.href = '/?error=auth_required';
+      window.location.href = props.loginUrl || '/api/auth/google';
       return;
     }
 

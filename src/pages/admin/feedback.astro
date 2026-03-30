@@ -1,0 +1,31 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/layout/Header.astro";
+import { getUser } from "../../services/api";
+import AdminFeedbackPanel from "../../components/admin/AdminFeedbackPanel.vue";
+
+const token = Astro.cookies.get("auth_token")?.value;
+const user = await getUser(token);
+
+if (!user || user.role?.toUpperCase() !== "ADMIN") {
+    return Astro.redirect("/");
+}
+
+const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:3000/api';
+---
+
+<Layout title="Administración de Sugerencias - DominicanGo">
+    <Header />
+    <main class="min-h-screen pt-24 pb-16 bg-base-200/30">
+        <div class="max-w-[1200px] mx-auto px-4 py-8">
+            <header class="mb-8">
+                <h1 class="text-3xl font-heading font-bold text-base-content mb-2">Panel de Moderación</h1>
+                <p class="text-base-content/70">Revisa los reportes de error, sugerencias de usuarios y peticiones de eliminación de contenido.</p>
+            </header>
+
+            <section class="bg-base-100/50 backdrop-blur-md border border-base-200 rounded-3xl p-6 shadow-sm">
+                <AdminFeedbackPanel client:load apiBase={API_BASE} />
+            </section>
+        </div>
+    </main>
+</Layout>

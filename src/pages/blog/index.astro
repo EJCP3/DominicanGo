@@ -2,21 +2,31 @@
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/layout/Header.astro";
 import BlogFiltersPanel from "../../components/blog/BlogFiltersPanel.astro";
+import Pagination from "../../components/ui/Pagination.astro";
 import { Image } from "astro:assets";
 
 import { getBlogs, getFavoriteIds } from "../../services/api";
 
 const token = Astro.cookies.get("auth_token")?.value ?? "";
 const isLoggedIn = !!token;
+
+// Handle Pagination and Filters from search params
+const page = Number(Astro.url.searchParams.get("page") || 1);
 const currentCategory = Astro.url.searchParams.get("category") || undefined;
+const search = Astro.url.searchParams.get("search") || undefined;
 
 // Parallelize API calls to improve load times
 const [
     { blogIds: favBlogIds },
-    { data: posts, success, message = "" }
+    { data: posts, meta, success, message = "" }
 ] = await Promise.all([
     getFavoriteIds(token),
-    getBlogs(currentCategory ? { category: currentCategory } : {})
+    getBlogs({ 
+        category: currentCategory, 
+        search, 
+        page, 
+        limit: 9 // Show 9 blogs per page to fill the 3x3 grid perfectly
+    })
 ]);
 ---
 
@@ -151,12 +161,19 @@ const [
                         </article>
                     ))
                 }
-            </div>
+            </section>
+
+            <Pagination 
+                currentPage={meta.page} 
+                totalPages={meta.totalPages} 
+                baseUrl="/blog" 
+                searchParams={Astro.url.searchParams}
+            />
 
             <div class="hidden" id="ssr-debug">
                 DEBUG -- Category: {currentCategory} | Success: {
                     success ? "true" : "false"
-                } | Posts length: {posts?.length} | Message: {message}
+                } | Posts length: {posts?.length} | Message: {message} | Page: {meta.page} / {meta.totalPages}
             </div>
         </div>
     </main>
