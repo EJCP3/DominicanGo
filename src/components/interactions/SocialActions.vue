@@ -73,11 +73,19 @@
       </button>
 
     </div>
+
+    <!-- Login Required Modal -->
+    <LoginRequiredModal 
+      :isOpen="showLoginModal" 
+      :loginUrl="props.loginUrl || '/api/auth/google'" 
+      @close="showLoginModal = false" 
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import LoginRequiredModal from '../ui/LoginRequiredModal.vue';
 
 const props = defineProps<{
   targetType: 'DESTINATION' | 'BLOG';
@@ -99,6 +107,9 @@ const loading = ref(true);
 // Favorite State
 const isFavorited = ref(props.initialFavorited || false);
 const favLoading = ref(false);
+
+// Login Modal State
+const showLoginModal = ref(false);
 
 const apiBase = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -128,7 +139,7 @@ onMounted(() => {
 // Toggle Reaction Logic
 const toggleReaction = async (type: 'LIKE' | 'DISLIKE') => {
   if (!props.token) {
-    window.location.href = props.loginUrl || '/api/auth/google';
+    showLoginModal.value = true;
     return;
   }
   
@@ -162,7 +173,7 @@ const toggleReaction = async (type: 'LIKE' | 'DISLIKE') => {
     });
 
     if (res.status === 401) {
-      window.location.href = props.loginUrl || '/api/auth/google';
+      showLoginModal.value = true;
     }
     if (!res.ok) throw new Error('Reaction failed');
   } catch (e) {
@@ -182,7 +193,7 @@ const toggleReaction = async (type: 'LIKE' | 'DISLIKE') => {
 const toggleFavorite = async (e: MouseEvent) => {
   e.preventDefault();
   if (!props.token) {
-    window.location.href = props.loginUrl || '/api/auth/google';
+    showLoginModal.value = true;
     return;
   }
 
@@ -206,7 +217,7 @@ const toggleFavorite = async (e: MouseEvent) => {
       body: JSON.stringify(body),
     });
 
-    if (res.status === 401) window.location.href = props.loginUrl || '/api/auth/google';
+    if (res.status === 401) showLoginModal.value = true;
     if (!res.ok) throw new Error('Favorite failed');
   } catch (err) {
     isFavorited.value = prevFav;

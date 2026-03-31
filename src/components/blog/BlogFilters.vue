@@ -2,6 +2,7 @@
 import { ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { Flip } from 'gsap/Flip'
+import { navigate } from 'astro:transitions/client'
 
 gsap.registerPlugin(Flip)
 
@@ -130,6 +131,18 @@ function handleClickOutside(event: MouseEvent) {
   }
 }
 
+/* ── Navigation ───────────────────────────────────── */
+function applyFilter(category: string) {
+  state.selectedCategory = category
+  closePanel()
+  setTimeout(() => {
+    navigate(category === 'todas' 
+      ? '/blog' 
+      : `/blog?category=${encodeURIComponent(category)}`
+    )
+  }, 200) // Small delay to let the GSAP close animation start feels smoother
+}
+
 /* ── Lifecycle ────────────────────────────────────── */
 onMounted(() => {
   isMounted.value = true
@@ -212,7 +225,7 @@ onUnmounted(() => {
                   ? 'border-[#3b82f6] bg-[#EFF6FF] text-[#1e40af] shadow-sm scale-105'
                   : 'border-[#DEE3EC] bg-white text-[#664634] hover:bg-base-200'
               ]"
-              @click.prevent="state.selectedCategory = 'todas'; closePanel()">
+              @click.prevent="applyFilter('todas')">
               Todas las historias
             </a>
 
@@ -235,7 +248,7 @@ onUnmounted(() => {
                   boxShadow: `0 2px 8px -2px ${categoryColors[cat] ?? '#cbd5e1'}80`
                 } : {})
               }"
-              @click.prevent="state.selectedCategory = cat; closePanel()">
+              @click.prevent="applyFilter(cat)">
               {{ cat }}
             </a>
           </div>

@@ -69,7 +69,7 @@ if (!user) {
 
             <div class="card bg-base-100 shadow-xl border border-base-200">
                 <div class="card-body p-6 md:p-10">
-                    <FormularioBlog client:load provinces={provinces} token={token} />
+                    <FormularioBlog client:load provinces={provinces} token={token} isAdmin={user.role === 'ADMIN'} />
                 </div>
             </div>
 

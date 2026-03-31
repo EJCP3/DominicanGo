@@ -13,7 +13,9 @@ export default defineConfig({
         remotePatterns: [
             { protocol: 'http', hostname: 'localhost' },
             { protocol: 'https', hostname: 'picsum.photos' },
-            { protocol: 'https', hostname: 'lh3.googleusercontent.com' }
+            { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+            { protocol: 'http', hostname: 'vps23812.cubepath.net' },
+            { protocol: 'https', hostname: 'vps23812.cubepath.net' }
         ],
     },
     vite: {

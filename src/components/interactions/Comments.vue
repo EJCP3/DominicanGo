@@ -21,7 +21,7 @@
         </div>
         <div class="flex-1 filter drop-shadow-sm">
           <textarea 
-            v-on="!props.token ? { focus: () => window.location.href = props.loginUrl || '/api/auth/google' } : {}"
+            v-on="!props.token ? { focus: () => showLoginModal = true } : {}"
             v-model="newComment"
             class="textarea textarea-bordered w-full resize-none h-24 focus:border-primary transition-colors bg-base-100/80 backdrop-blur-sm placeholder:text-base-content/40 text-base" 
             placeholder="Escribe tu opinión o experiencia..."
@@ -103,11 +103,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Login Required Modal -->
+    <LoginRequiredModal 
+      :isOpen="showLoginModal" 
+      :loginUrl="props.loginUrl || '/api/auth/google'" 
+      @close="showLoginModal = false" 
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import LoginRequiredModal from '../ui/LoginRequiredModal.vue';
 
 const props = defineProps<{
   targetType: 'DESTINATION' | 'BLOG';
@@ -122,6 +130,7 @@ const loading = ref(true);
 const submitting = ref(false);
 const reactingCommentId = ref<string | null>(null);
 const newComment = ref('');
+const showLoginModal = ref(false);
 const apiBase = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000/api';
 
 const fetchComments = async () => {
@@ -162,7 +171,7 @@ const submitComment = async () => {
     });
 
     if (res.status === 401) {
-      window.location.href = props.loginUrl || '/api/auth/google';
+      showLoginModal.value = true;
       return;
     }
 
@@ -183,7 +192,7 @@ const submitComment = async () => {
 
 const toggleCommentReaction = async (comment: any, type: 'LIKE' | 'DISLIKE') => {
   if (!props.token) {
-    window.location.href = props.loginUrl || '/api/auth/google';
+    showLoginModal.value = true;
     return;
   }
 
@@ -224,7 +233,7 @@ const toggleCommentReaction = async (comment: any, type: 'LIKE' | 'DISLIKE') => 
     });
 
     if (res.status === 401) {
-      window.location.href = props.loginUrl || '/api/auth/google';
+      showLoginModal.value = true;
       return;
     }
 

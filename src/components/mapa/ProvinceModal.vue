@@ -151,7 +151,7 @@ async function animateToggleFilter(force?: boolean) {
                 })
               }
               // Inicializar flechas de scroll
-              nextTick(() => handleScroll())
+              setTimeout(() => handleScroll(), 100)
             }
           })
         } else {
@@ -410,11 +410,11 @@ onMounted(() => {
 
                 <div id="prov-filter-content" class="p-6 pb-20 relative z-10 shrink-0">
                   <!-- Category Horizontal Slider -->
-                  <fieldset class="mb-6 border-none p-0 m-0">
+                  <fieldset class="mb-6 border-none p-0 m-0 min-w-0 w-full">
                     <legend class="text-[10px] font-extrabold tracking-[0.15em] text-[#B58C73] uppercase mb-4 opacity-80">
                       Categorías
                     </legend>
-                    <div class="relative group/scroll">
+                    <div class="relative group/scroll w-full min-w-0">
                       <!-- Left Fade & Arrow -->
                       <div v-show="canScrollLeft" 
                         class="absolute left-0 top-0 bottom-2 w-12 bg-linear-to-r from-[#fdfcfa] to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center">
@@ -445,7 +445,7 @@ onMounted(() => {
 
                       <!-- Scroll Container -->
                       <div ref="scrollContainer" @scroll="handleScroll"
-                        class="flex items-center gap-2 overflow-x-auto pb-2 -mx-1 px-1 custom-scrollbar-hide snap-x scroll-smooth">
+                        class="flex items-center gap-2 overflow-x-auto pb-4 -mx-1 px-1 custom-scrollbar-x snap-x scroll-smooth whitespace-nowrap flex-nowrap w-full">
                         <button class="filter-pill snap-start whitespace-nowrap px-5 focus:ring-2 focus:ring-primary focus:outline-none" 
                           :class="{ active: currentCategory === 'all' }"
                           @click="currentCategory = 'all'"
@@ -530,6 +530,7 @@ onMounted(() => {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
+  flex-shrink: 0;
   border: 1px solid #e5e7eb;
   background: white;
   color: #7A4B3A;
@@ -573,5 +574,34 @@ onMounted(() => {
 
 .custom-scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+  margin: 0 10px;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar-thumb {
+  background: #B58C73;
+  border-radius: 10px;
+  border: 1px solid #f1f1f1;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar-thumb:hover {
+  background: #7A4B3A;
+}
+
+/* Ensure the arrows container doesn't block clicks */
+.group\/scroll .absolute {
+  pointer-events: none;
+}
+.group\/scroll .absolute button {
+  pointer-events: auto;
 }
 </style>
