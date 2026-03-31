@@ -19,11 +19,11 @@ Esta biblioteca te permite ver fotografías, ubicaciones en mapas e historias a 
 
 ## imagenes 
 
-![mapa](image.png)
+![mapa](/public/page1.jpg)
 
-![destinos](image-1.png)
+![destinos](/public/page2.jpg)
 
-![blogs](image-2.png)
+![blogs](/public/page3.jpg)
 
 
 ## Links
@@ -50,4 +50,4 @@ Esta biblioteca te permite ver fotografías, ubicaciones en mapas e historias a 
 - **Node.js**
 
 ## Final
-- Proyecto desarrollado para el Hackathon de Mdidudev utilizado CubePath como parte del reto
+- Proyecto desarrollado para el Hackathon de Mdidudev utilizado CubePath como parte del reto y con mucho &heart; y musica de fondo  

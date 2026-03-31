@@ -15,5 +15,6 @@ Astro.cookies.set("auth_token", token, {
     secure: false,    // false porque corremos HTTP sin SSL en el VPS por ahora
 });
 
-return Astro.redirect("/");
+// data-astro-reload forces a full server-side reload so the Header SSR re-reads the cookie
+return Astro.redirect("/", 302);
 ---
