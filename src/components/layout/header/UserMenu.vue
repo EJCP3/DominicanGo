@@ -51,10 +51,30 @@
 
         <div class="divider my-0.5"></div>
         <li class="menu-title px-2"><span class="text-xs">Estaciones (Tema)</span></li>
-        <li><button data-theme-btn="pastel" class="theme-btn"><span>🌸</span> Primavera</button></li>
-        <li><button data-theme-btn="cupcake" class="theme-btn"><span>☀️</span> Verano</button></li>
-        <li><button data-theme-btn="caramellatte" class="theme-btn"><span>🍂</span> Otoño</button></li>
-        <li><button data-theme-btn="nord" class="theme-btn"><span>❄️</span> Invierno</button></li>
+        <li>
+          <button data-theme-btn="pastel" class="theme-btn">
+            <svg class="w-4 h-4 opacity-70" aria-hidden="true" focusable="false"><use href="#icon-spring"></use></svg>
+            Primavera
+          </button>
+        </li>
+        <li>
+          <button data-theme-btn="cupcake" class="theme-btn">
+            <svg class="w-4 h-4 opacity-70" aria-hidden="true" focusable="false"><use href="#icon-summer"></use></svg>
+            Verano
+          </button>
+        </li>
+        <li>
+          <button data-theme-btn="caramellatte" class="theme-btn">
+            <svg class="w-4 h-4 opacity-70" aria-hidden="true" focusable="false"><use href="#icon-autumn"></use></svg>
+            Otoño
+          </button>
+        </li>
+        <li>
+          <button data-theme-btn="nord" class="theme-btn">
+            <svg class="w-4 h-4 opacity-70" aria-hidden="true" focusable="false"><use href="#icon-winter"></use></svg>
+            Invierno
+          </button>
+        </li>
 
         <div class="divider my-0.5"></div>
         <li>

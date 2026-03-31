@@ -178,15 +178,25 @@ export const baseProvinces: Record<string, any> = {
 };
 
 /**
+ * Helper: returns a clean base API URL, trimming trailing slashes and whitespace.
+ * Falls back to the actual production URL if PUBLIC_API_URL is not defined.
+ */
+export const getApiUrl = (): string => {
+    const raw = import.meta.env.PUBLIC_API_URL;
+    if (raw && raw.trim()) {
+        return raw.trim().replace(/\/+$/, '');
+    }
+    // Fallback a la URL real del backend en producción
+    return 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api';
+};
+
+/**
  * Realiza el fetch de destinos a la API backend con soporte para paginación y filtros.
  */
 export const getDestinations = async (params: Record<string, string | number | undefined> = {}) => {
     try {
-        const url = new URL(
-            import.meta.env.PUBLIC_API_URL 
-                ? `${import.meta.env.PUBLIC_API_URL}/destinations` 
-                : 'http://localhost:3000/api/destinations'
-        );
+        const apiBase = getApiUrl();
+        const url = new URL(`${apiBase}/destinations`);
 
         Object.entries(params).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
@@ -200,7 +210,7 @@ export const getDestinations = async (params: Record<string, string | number | u
         const json = await res.json();
         return json.success ? json : { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 0 } };
     } catch (error) {
-        console.error("Error fetching destinations:", error);
+        console.error('[API] getDestinations error:', error);
         return { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 0 } };
     }
 };
@@ -210,11 +220,8 @@ export const getDestinations = async (params: Record<string, string | number | u
  */
 export const getBlogs = async (params: Record<string, string | number> = {}) => {
     try {
-        const url = new URL(
-            import.meta.env.PUBLIC_API_URL
-                ? `${import.meta.env.PUBLIC_API_URL}/blogs`
-                : 'http://localhost:3000/api/blogs'
-        );
+        const apiBase = getApiUrl();
+        const url = new URL(`${apiBase}/blogs`);
         Object.entries(params).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
                 url.searchParams.append(key, String(value));
@@ -227,7 +234,7 @@ export const getBlogs = async (params: Record<string, string | number> = {}) => 
         const json = await res.json();
         return json.success ? json : { data: [], meta: {} };
     } catch (error) {
-        console.error("Error fetching blogs:", error);
+        console.error('[API] getBlogs error:', error);
         return { data: [], meta: {} };
     }
 };
@@ -280,26 +287,35 @@ export const getProvincesWithDestinations = async (params: Record<string, any> =
  * El token viene de Astro.cookies.get('auth_token')?.value
  */
 export const getUser = async (token: string | undefined | null) => {
-    if (!token) return null;
+    if (!token) {
+        console.log('[API] getUser: no token provided, skipping');
+        return null;
+    }
+    const apiBase = getApiUrl();
+    const targetUrl = `${apiBase}/users/me`;
+    console.log(`[API] getUser → calling: ${targetUrl}`);
     try {
-        const apiBase = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000/api';
-        const res = await fetch(`${apiBase}/users/me`, {
-            headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch(targetUrl, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         });
+        console.log(`[API] getUser ← status: ${res.status}`);
         if (!res.ok) {
-            console.warn(`[API] getUser failed with status ${res.status}`);
+            console.warn(`[API] getUser failed: HTTP ${res.status} from ${targetUrl}`);
             return null;
         }
         const json = await res.json();
         const userData = json.success ? json.data : null;
-        
         if (userData) {
-            console.log(`[API] Logged in user: ${userData.email} | Role: ${userData.role}`);
+            console.log(`[API] getUser ✅ Logged in: ${userData.email} | Role: ${userData.role}`);
+        } else {
+            console.warn('[API] getUser: response OK but no user data in payload', json);
         }
-        
         return userData;
     } catch (e: any) {
-        console.error(`[API] getUser exception: ${e.message}`);
+        console.error(`[API] getUser 💥 Network error calling ${targetUrl}: ${e.message}`);
         return null;
     }
 };
@@ -312,12 +328,19 @@ export const getUser = async (token: string | undefined | null) => {
 export const getFavoriteIds = async (token: string | undefined | null) => {
     const empty = { destinationIds: new Set<string>(), blogIds: new Set<string>() };
     if (!token) return empty;
+    const apiBase = getApiUrl();
+    const targetUrl = `${apiBase}/favorites`;
     try {
-        const apiBase = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000/api';
-        const res = await fetch(`${apiBase}/favorites`, {
-            headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch(targetUrl, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         });
-        if (!res.ok) return empty;
+        if (!res.ok) {
+            console.warn(`[API] getFavoriteIds failed: HTTP ${res.status} from ${targetUrl}`);
+            return empty;
+        }
         const json = await res.json();
         const favorites: any[] = json.data ?? [];
         const destinationIds = new Set<string>(
@@ -327,7 +350,8 @@ export const getFavoriteIds = async (token: string | undefined | null) => {
             favorites.filter((f: any) => f.type === 'BLOG' && f.blogId).map((f: any) => f.blogId)
         );
         return { destinationIds, blogIds };
-    } catch {
+    } catch (e: any) {
+        console.error(`[API] getFavoriteIds 💥 Network error calling ${targetUrl}: ${e.message}`);
         return empty;
     }
 };
