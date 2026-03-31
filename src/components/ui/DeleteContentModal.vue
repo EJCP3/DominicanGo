@@ -57,7 +57,7 @@ const confirmDelete = async () => {
   errorMsg.value = '';
 
   try {
-    const apiBase = (import.meta as any).env?.PUBLIC_API_URL || 'http://localhost:3000/api';
+    const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '');
     const endpoint = props.resourceType === 'destination' ? 'destinations' : 'blogs';
     const res = await fetch(`${apiBase}/${endpoint}/${props.resourceId}`, {
       method: 'DELETE',

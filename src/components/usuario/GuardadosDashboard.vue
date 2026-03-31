@@ -24,7 +24,7 @@ const favorites = ref<FavoriteItem[]>([]);
 const loading = ref(true);
 const error = ref('');
 
-const apiBase = (import.meta as any).env?.PUBLIC_API_URL || 'http://localhost:3000/api';
+const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '');
 
 async function fetchFavorites() {
   loading.value = true;

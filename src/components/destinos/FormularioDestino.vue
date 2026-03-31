@@ -97,7 +97,7 @@ async function submitForm() {
   submitError.value = ''
 
   try {
-    const apiBase = 'http://localhost:3000/api'
+    const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '')
 
     const toBase64 = (file: File) => new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -170,7 +170,7 @@ async function verifyOTP() {
   otpError.value = ''
 
   try {
-    const apiBase = 'http://localhost:3000/api'
+    const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '')
 
     const res = await fetch(`${apiBase}/destinations/verify`, {
       method: 'POST',

@@ -71,8 +71,10 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
             <!-- Esto evita el problema del timing de SSR post-OAuth redirect -->
             <UserMenu client:load apiBase={API_BASE} />
 
-            <!-- ThemeDropdown: siempre visible, maneja el cambio de tema globalmente -->
-            <ThemeDropdown />
+            <!-- ThemeDropdown: visible cuando NO hay sesión. UserMenu.vue lo oculta al loguearse -->
+            <div id="external-theme-dropdown">
+                <ThemeDropdown />
+            </div>
 
             <MobileMenu user={user} apiBase={API_BASE} />
             <FeedbackModal client:load apiBase={API_BASE} />

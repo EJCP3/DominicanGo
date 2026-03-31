@@ -52,25 +52,25 @@
         <div class="divider my-0.5"></div>
         <li class="menu-title px-2"><span class="text-xs">Estaciones (Tema)</span></li>
         <li>
-          <button data-theme-btn="pastel" class="theme-btn">
+          <button @click="setTheme('pastel')" :class="['theme-btn-inner', activeTheme === 'pastel' ? 'bg-base-200 font-bold text-primary' : 'font-medium']">
             <svg class="w-4 h-4 opacity-70" aria-hidden="true" focusable="false"><use href="#icon-spring"></use></svg>
             Primavera
           </button>
         </li>
         <li>
-          <button data-theme-btn="cupcake" class="theme-btn">
+          <button @click="setTheme('cupcake')" :class="['theme-btn-inner', activeTheme === 'cupcake' ? 'bg-base-200 font-bold text-primary' : 'font-medium']">
             <svg class="w-4 h-4 opacity-70" aria-hidden="true" focusable="false"><use href="#icon-summer"></use></svg>
             Verano
           </button>
         </li>
         <li>
-          <button data-theme-btn="caramellatte" class="theme-btn">
+          <button @click="setTheme('caramellatte')" :class="['theme-btn-inner', activeTheme === 'caramellatte' ? 'bg-base-200 font-bold text-primary' : 'font-medium']">
             <svg class="w-4 h-4 opacity-70" aria-hidden="true" focusable="false"><use href="#icon-autumn"></use></svg>
             Otoño
           </button>
         </li>
         <li>
-          <button data-theme-btn="nord" class="theme-btn">
+          <button @click="setTheme('nord')" :class="['theme-btn-inner', activeTheme === 'nord' ? 'bg-base-200 font-bold text-primary' : 'font-medium']">
             <svg class="w-4 h-4 opacity-70" aria-hidden="true" focusable="false"><use href="#icon-winter"></use></svg>
             Invierno
           </button>
@@ -121,6 +121,33 @@ const props = defineProps<{
 
 const user = ref<User | null>(null);
 const loading = ref(true);
+const activeTheme = ref(localStorage.getItem('theme') || 'cupcake');
+
+/** Aplica el tema directamente — no depende de ThemeScript (que corre antes que Vue) */
+const setTheme = (theme: string) => {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  activeTheme.value = theme;
+  // Sincronizar con ThemeScript por si acaso (para que los botones externos también se actualicen)
+  document.querySelectorAll('[data-theme-btn]').forEach(btn => {
+    btn.classList.toggle('bg-base-200', btn.getAttribute('data-theme-btn') === theme);
+    btn.classList.toggle('font-bold', btn.getAttribute('data-theme-btn') === theme);
+  });
+  // Cerrar el dropdown
+  if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+};
+
+/** Oculta el ThemeDropdown externo cuando el usuario está logueado */
+const hideExternalThemeDropdown = () => {
+  const externalTheme = document.getElementById('external-theme-dropdown');
+  if (externalTheme) externalTheme.style.display = 'none';
+};
+
+/** Muestra el ThemeDropdown externo cuando el usuario no está logueado */
+const showExternalThemeDropdown = () => {
+  const externalTheme = document.getElementById('external-theme-dropdown');
+  if (externalTheme) externalTheme.style.display = '';
+};
 
 const openFeedback = () => {
   const modal = document.getElementById('feedback_modal') as HTMLDialogElement;
@@ -130,6 +157,7 @@ const openFeedback = () => {
 const handleLogout = () => {
   // 1. Limpiar estado reactivo inmediatamente (el dropdown desaparece rápido)
   user.value = null;
+  showExternalThemeDropdown(); // Mostrar el ThemeDropdown externo al desloguearse
 
   // 2. Borrar la cookie del lado del cliente también (por si acaso)
   //    El dominio debe coincidir con el que se usó al guardar la cookie
@@ -155,14 +183,15 @@ onMounted(async () => {
   if (!token) {
     console.warn('❌ [UserMenu] No se encontró la cookie auth_token');
     loading.value = false;
+    showExternalThemeDropdown();
     return;
   }
 
   console.log('✅ [UserMenu] Token encontrado, llamando a la API...');
 
   try {
-    const apiUrl = props.apiBase || import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3000';
-    const res = await fetch(`${apiUrl}/api/users/me`, {
+    const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '');
+    const res = await fetch(`${apiBase}/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -172,8 +201,10 @@ onMounted(async () => {
       const json = await res.json();
       user.value = json.success ? json.data : json;
       console.log('👤 [UserMenu] Usuario cargado:', user.value);
+      if (user.value) hideExternalThemeDropdown();
     } else {
       console.warn('❌ [UserMenu] La API rechazó el token:', res.status);
+      showExternalThemeDropdown();
     }
   } catch (err) {
     console.error('💥 [UserMenu] Error fatal en el fetch:', err);
