@@ -21,14 +21,17 @@ Esta biblioteca te permite ver fotografías, ubicaciones en mapas e historias a 
 
 ![mapa](/public/page1.jpg)
 
-![destinos](/public/page2.jpg)
+![modal](/public/page1.5.jpg)
 
-![blogs](/public/page3.jpg)
+![cards](/public/page2.jpg)
 
+![blogs](/public/page2.5.jpg)
+
+![blogpage](/public/page3.jpg)
 
 ## Links
 
-- Frontend: [Repositorio Actual]
+- Frontend: https://dominicango.45.90.237.199.sslip.io
 - Backend: https://github.com/EJCP3/DominicanGo-api
 
 ## Tecnologías
