@@ -78,10 +78,10 @@
 
         <div class="divider my-0.5"></div>
         <li>
-          <a href="/logout" data-astro-reload class="text-error font-medium">
+          <button @click="handleLogout" class="text-error font-medium w-full text-left">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             Cerrar sesión
-          </a>
+          </button>
         </li>
       </ul>
     </div>
@@ -125,6 +125,22 @@ const loading = ref(true);
 const openFeedback = () => {
   const modal = document.getElementById('feedback_modal') as HTMLDialogElement;
   if (modal) modal.showModal();
+};
+
+const handleLogout = () => {
+  // 1. Limpiar estado reactivo inmediatamente (el dropdown desaparece rápido)
+  user.value = null;
+
+  // 2. Borrar la cookie del lado del cliente también (por si acaso)
+  //    El dominio debe coincidir con el que se usó al guardar la cookie
+  const domain = window.location.hostname; // ej: dominicango.45.90.237.199.sslip.io
+  document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
+  document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=45.90.237.199.sslip.io;`;
+  document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+
+  // 3. Navegar a /logout (SSR de Astro hará el borrado definitivo del servidor)
+  //    window.location.href fuerza un hard reload completo
+  window.location.href = '/logout';
 };
 
 onMounted(async () => {

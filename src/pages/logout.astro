@@ -1,5 +1,9 @@
 ---
 // /logout — Clears the auth_token cookie and redirects home
-Astro.cookies.delete("auth_token", { path: "/" });
-return Astro.redirect("/");
+// IMPORTANTE: domain y path deben coincidir EXACTAMENTE con los usados al SET
+Astro.cookies.delete("auth_token", { 
+    path: "/",
+    domain: "45.90.237.199.sslip.io",  // mismo dominio que se usó en callback.astro
+});
+return Astro.redirect("/", 302);
 ---
