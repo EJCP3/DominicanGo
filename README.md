@@ -49,3 +49,5 @@ Esta biblioteca te permite ver fotografías, ubicaciones en mapas e historias a 
 - **Sharp**
 - **Node.js**
 
+## Final
+- Proyecto desarrollado para el Hackathon de Mdidudev utilizado CubePath como parte del reto
