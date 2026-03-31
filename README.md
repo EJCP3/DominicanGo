@@ -2,20 +2,19 @@
 
 ## Descripción
 
-Es una página web que permite a los usuarios explorar los diferentes destinos turísticos de la República Dominicana y añadir nuevos destinos, crear blogs turísticos. 
+**DominicanGo** es un proyecto web interactivo enfocado en dar a conocer la riqueza natural y cultural de la República Dominicana. Más que una herramienta para conseguir tours o guías turísticas, el objetivo principal es que los usuarios aprendan y conozcan sobre el país a nivel geográfico y visual. 
 
+Esta plataforma se inspiró fuertemente en la página de turismo web del gobierno, buscando crear una experiencia moderna y fluida. Por esto mismo, el sitio cuenta con un diseño cargado de animaciones e información muy visual para el usuario promedio; como resultado, el catálogo de exploración está en etapa de crecimiento, dado que aún faltan documentar varios lugares y provincias.
+
+Esta biblioteca te permite ver fotografías, ubicaciones en mapas e historias a través del área de blogs de la comunidad, acercándote a esos destinos desde la comodidad de tu navegador.
 
 ## Funcionalidades
 
-- Explorar destinos turísticos
-- Añadir nuevos destinos    
-- Crear blogs turísticas
-- Filtrar destinos por provincia y tipo
-- Buscar destinos
-- Ver detalles de cada destino
-- Ver mapa de cada destino
-- Ver imágenes de cada destino
-- Ver información de cada destino
+- **Exploración de Destinos:** Descubre nuevos lugares filtrando por provincia y categoría (playa, montaña, río, etc.).
+- **Mapas Integrados:** Visualiza la ubicación aproximada de los destinos.
+- **Blogs Comunitarios:** Lee o publica reseñas sobre el turismo nacional.
+- **Contribución Libre:** Ayuda a complementar el catálogo subiendo lugares o provincias faltantes.
+- **Interfaz Fluida:** Disfruta de un diseño altamente animado y moderno.
 
 
 ## imagenes 
@@ -29,16 +28,24 @@ Es una página web que permite a los usuarios explorar los diferentes destinos t
 
 ## Links
 
-- 
-
-- backend: https://github.com/EJCP3/DominicanGo-api
+- Frontend: [Repositorio Actual]
+- Backend: https://github.com/EJCP3/DominicanGo-api
 
 ## Tecnologías
 
-- Astro
-- Vue
-- GASP
-- DaisyUI
-- Tailwind CSS
-- TypeScript
+### Core
+- **Astro 5**
+- **Vue 3**
+- **TypeScript**
+
+### Estilo y Diseño
+- **Tailwind CSS 4**
+- **DaisyUI 5**
+- **GSAP 3**
+- **Fontsource (Gluten)**
+
+### Utilidades
+- **@panzoom/panzoom**
+- **Sharp**
+- **Node.js**
 
