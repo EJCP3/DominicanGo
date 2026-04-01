@@ -21,13 +21,13 @@
         </li>
         <div class="divider my-0.5"></div>
         <li>
-          <a href="/favoritos" data-astro-prefetch="hover">
+          <a href="/favoritos" data-astro-prefetch="hover" class="text-base-content font-medium">
             <svg class="w-4 h-4 text-error" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             Mis Favoritos
           </a>
         </li>
         <li>
-          <a href="/destinos/nuevo" data-astro-prefetch="hover">
+          <a href="/destinos/nuevo" data-astro-prefetch="hover" class="text-base-content font-medium">
             <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Registrar Destino
           </a>
@@ -43,8 +43,8 @@
         </li>
         <!-- Usuario normal -->
         <li v-else>
-          <button @click="openFeedback" class="text-info font-medium">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          <button @click="openFeedback" class="text-base-content font-medium">
+            <svg class="w-4 h-4 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
             Sugerencias
           </button>
         </li>

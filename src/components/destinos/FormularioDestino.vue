@@ -207,7 +207,7 @@ async function verifyOTP() {
          STEP 3: Success screen
     ════════════════════════════════════════════════════════════════════════════ -->
     <div v-if="step === 3"
-      class="bg-white rounded-3xl p-10 md:p-16 shadow-sm border border-[#f0e6d2] text-center max-w-2xl mx-auto my-8 animate-in">
+      class="bg-base-100 rounded-3xl p-10 md:p-16 shadow-sm border border-base-content/10 text-center max-w-2xl mx-auto my-8 animate-in">
       <div
         class="w-24 h-24 mx-auto bg-success/20 rounded-full flex items-center justify-center mb-8 border-[6px] border-success/30">
         <svg class="w-12 h-12 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +226,7 @@ async function verifyOTP() {
          STEP 2: OTP Verification
     ════════════════════════════════════════════════════════════════════════════ -->
     <div v-else-if="step === 2" class="max-w-lg mx-auto my-8 animate-in">
-      <div class="bg-white rounded-3xl p-10 shadow-sm border border-[#f0e6d2] text-center">
+      <div class="bg-base-100 rounded-3xl p-10 shadow-sm border border-base-content/10 text-center">
 
         <div
           class="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-6 border-4 border-primary/20">
@@ -275,7 +275,7 @@ async function verifyOTP() {
     <div v-else class="space-y-8 animate-in">
 
       <!-- Section 1: Basic Info -->
-      <section class="bg-white rounded-3xl p-6 shadow-sm border border-[#f0e6d2]">
+      <section class="bg-base-100 rounded-3xl p-6 shadow-sm border border-base-content/10">
         <h3 class="font-heading font-extrabold text-xl text-base-content mb-5 border-b border-base-200 pb-3">Información
           Básica</h3>
         <div class="space-y-5">
@@ -299,14 +299,14 @@ async function verifyOTP() {
               <div class="flex gap-4">
                 <label
                   class="flex-1 cursor-pointer flex items-center justify-center gap-2 p-3 rounded-2xl border transition-colors relative"
-                  :class="form.precio === 'gratis' ? 'bg-[#FFF1E0] border-[#D5A77B] text-[#5A3824] shadow-inner' : 'border-base-300 hover:border-base-content/30'">
+                  :class="form.precio === 'gratis' ? 'bg-primary/10 border-primary/60 text-primary shadow-inner' : 'border-base-300 hover:border-base-content/30'">
                   <input type="radio" value="gratis" v-model="form.precio"
                     class="radio radio-sm radio-primary opacity-0 absolute" />
                   <span class="font-medium text-sm">Gratis</span>
                 </label>
                 <label
                   class="flex-1 cursor-pointer flex items-center justify-center gap-2 p-3 rounded-2xl border transition-colors relative"
-                  :class="form.precio === 'pagado' ? 'bg-[#FFF1E0] border-[#D5A77B] text-[#5A3824] shadow-inner' : 'border-base-300 hover:border-base-content/30'">
+                  :class="form.precio === 'pagado' ? 'bg-primary/10 border-primary/60 text-primary shadow-inner' : 'border-base-300 hover:border-base-content/30'">
                   <input type="radio" value="pagado" v-model="form.precio"
                     class="radio radio-sm radio-primary opacity-0 absolute" />
                   <span class="font-medium text-sm">Pagado</span>
@@ -324,7 +324,7 @@ async function verifyOTP() {
       </section>
 
       <!-- Section 2: Location and Details -->
-      <section class="bg-white rounded-3xl p-6 shadow-sm border border-[#f0e6d2]">
+      <section class="bg-base-100 rounded-3xl p-6 shadow-sm border border-base-content/10">
         <h3 class="font-heading font-extrabold text-xl text-base-content mb-5 border-b border-base-200 pb-3">Ubicación y
           Detalles</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
@@ -414,7 +414,7 @@ async function verifyOTP() {
       </section>
 
       <!-- Section 3: Tags -->
-      <section class="bg-white rounded-3xl p-6 shadow-sm border border-[#f0e6d2]">
+      <section class="bg-base-100 rounded-3xl p-6 shadow-sm border border-base-content/10">
         <h3 class="font-heading font-extrabold text-xl text-base-content mb-2">Qué encontrarás allí</h3>
         <p class="text-base-content/60 text-sm mb-5 border-b border-base-200 pb-3">Añade palabras clave para ayudar a
           otros viajeros (ej. parqueo, comida local, senderismo).</p>
@@ -439,7 +439,7 @@ async function verifyOTP() {
       </section>
 
       <!-- Section 4: Images -->
-      <section class="bg-white rounded-3xl p-6 shadow-sm border border-[#f0e6d2]">
+      <section class="bg-base-100 rounded-3xl p-6 shadow-sm border border-base-content/10">
         <h3 class="font-heading font-extrabold text-xl text-base-content mb-5 border-b border-base-200 pb-3">Fotografías
         </h3>
         <div class="space-y-6">

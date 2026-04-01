@@ -377,7 +377,7 @@ onMounted(() => {
 
               <!-- Filter Panel -->
               <div v-show="isFilterOpen" data-flip-id="prov-filter-bg"
-                class="absolute top-0 right-0 w-80 min-h-fit bg-[#fdfcfa]/98 backdrop-blur-2xl shadow-2xl rounded-2xl flex flex-col z-50 origin-top-right">
+                class="absolute top-0 right-0 w-80 min-h-fit bg-base-100/95 backdrop-blur-2xl shadow-2xl rounded-2xl flex flex-col z-50 origin-top-right">
                 
                 <!-- Panel Header -->
                 <div class="flex items-center justify-between p-6 pb-4 border-b border-base-200/50 bg-white/50">
@@ -411,19 +411,19 @@ onMounted(() => {
                 <div id="prov-filter-content" class="p-6 pb-20 relative z-10 shrink-0">
                   <!-- Category Horizontal Slider -->
                   <fieldset class="mb-6 border-none p-0 m-0 min-w-0 w-full">
-                    <legend class="text-[10px] font-extrabold tracking-[0.15em] text-[#B58C73] uppercase mb-4 opacity-80">
+                    <legend class="text-[10px] font-extrabold tracking-[0.15em] text-base-content/50 uppercase mb-4 opacity-80">
                       Categorías
                     </legend>
                     <div class="relative group/scroll w-full min-w-0">
                       <!-- Left Fade & Arrow -->
                       <div v-show="canScrollLeft" 
-                        class="absolute left-0 top-0 bottom-2 w-12 bg-linear-to-r from-[#fdfcfa] to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center">
-                        <button class="btn btn-xs btn-circle bg-white shadow-md border-none hover:bg-white pointer-events-auto -ml-1 focus:ring-2 focus:ring-primary focus:outline-none"
+                        class="absolute left-0 top-0 bottom-2 w-12 bg-linear-to-r from-base-100 to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center">
+                        <button class="btn btn-xs btn-circle bg-base-100 text-base-content shadow-md border-none hover:bg-base-200 pointer-events-auto -ml-1 focus:ring-2 focus:ring-primary focus:outline-none"
                           tabindex="0"
                           @keydown.enter.space.prevent="scrollCat('left')"
                           @click.stop="scrollCat('left')"
                           aria-label="Desplazar categorías a la izquierda">
-                          <svg class="w-3 h-3 text-[#B58C73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                           </svg>
                         </button>
@@ -431,13 +431,13 @@ onMounted(() => {
 
                       <!-- Right Fade & Arrow -->
                       <div v-show="canScrollRight" 
-                        class="absolute right-0 top-0 bottom-2 w-12 bg-linear-to-l from-[#fdfcfa] to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-end">
-                        <button class="btn btn-xs btn-circle bg-white shadow-md border-none hover:bg-white pointer-events-auto -mr-1 focus:ring-2 focus:ring-primary focus:outline-none"
+                        class="absolute right-0 top-0 bottom-2 w-12 bg-linear-to-l from-base-100 to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-end">
+                        <button class="btn btn-xs btn-circle bg-base-100 text-base-content shadow-md border-none hover:bg-base-200 pointer-events-auto -mr-1 focus:ring-2 focus:ring-primary focus:outline-none"
                           tabindex="0"
                           @keydown.enter.space.prevent="scrollCat('right')"
                           @click.stop="scrollCat('right')"
                           aria-label="Desplazar categorías a la derecha">
-                          <svg class="w-3 h-3 text-[#B58C73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                           </svg>
                         </button>
@@ -461,7 +461,7 @@ onMounted(() => {
 
                   <!-- Price Pills -->
                   <fieldset class="mt-2 border-none p-0 m-0">
-                    <legend class="text-[10px] font-extrabold tracking-[0.15em] text-[#B58C73] uppercase mb-4 opacity-80">
+                    <legend class="text-[10px] font-extrabold tracking-[0.15em] text-base-content/50 uppercase mb-4 opacity-80">
                       Precio
                     </legend>
                     <div class="flex gap-2">
@@ -531,15 +531,15 @@ onMounted(() => {
   font-size: 11px;
   font-weight: 600;
   flex-shrink: 0;
-  border: 1px solid #e5e7eb;
-  background: white;
-  color: #7A4B3A;
+  border: 1px solid var(--fallback-bc, oklch(var(--bc)/0.2));
+  background: var(--fallback-b1, oklch(var(--b1)/1));
+  color: var(--fallback-bc, oklch(var(--bc)/0.8));
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
 .filter-pill:hover {
-  border-color: #D5A77B;
+  border-color: var(--fallback-p, oklch(var(--p)/0.4));
   transform: translateY(-1px);
 }
 
@@ -548,10 +548,10 @@ onMounted(() => {
 }
 
 .filter-pill.active {
-  border-color: #3b82f6;
-  color: #1d4ed8;
-  background: #eff6ff;
-  box-shadow: 0 0 0 1px #3b82f6;
+  border-color: var(--fallback-p, oklch(var(--p)/1));
+  color: var(--fallback-pc, oklch(var(--pc)/1));
+  background: var(--fallback-p, oklch(var(--p)/1));
+  box-shadow: 0 0 0 1px var(--fallback-p, oklch(var(--p)/1));
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -582,19 +582,19 @@ onMounted(() => {
 }
 
 .custom-scrollbar-x::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--fallback-b2, oklch(var(--b2)/0.5));
   border-radius: 10px;
   margin: 0 10px;
 }
 
 .custom-scrollbar-x::-webkit-scrollbar-thumb {
-  background: #B58C73;
+  background: var(--fallback-bc, oklch(var(--bc)/0.3));
   border-radius: 10px;
-  border: 1px solid #f1f1f1;
+  border: 1px solid var(--fallback-b1, oklch(var(--b1)/1));
 }
 
 .custom-scrollbar-x::-webkit-scrollbar-thumb:hover {
-  background: #7A4B3A;
+  background: var(--fallback-bc, oklch(var(--bc)/0.5));
 }
 
 /* Ensure the arrows container doesn't block clicks */

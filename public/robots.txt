@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Bloquear rutas privadas/admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /logout
+
+Sitemap: https://dominicango.com/sitemap.xml

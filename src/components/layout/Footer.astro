@@ -3,15 +3,10 @@
 import Icon from "../ui/Icon.astro";
 import FooterCarousel from "../ui/FooterCarousel.vue";
 import { getDestinations } from "../../services/api";
+import datosRD from "../../data/datosRandoms.json";
 
 // Datos curiosos de RD para el widget de "Vibra"
-const datosRD = [
-    "La Catedral de Santo Domingo es la más antigua de América.",
-    "El Pico Duarte es el punto más alto del Caribe (3,087m).",
-    "El Larimar solo se encuentra en República Dominicana.",
-    "Tenemos el lago más grande del Caribe (Lago Enriquillo).",
-    "La primera ciudad fundada en el Nuevo Mundo fue La Isabela.",
-];
+
 const datoVibra = datosRD[Math.floor(Math.random() * datosRD.length)];
 
 // Obtención dinámica de destinos para el carrusel
@@ -129,17 +124,8 @@ const { data: destinations } = await getDestinations({ limit: 12 });
 
 <script>
     import { gsap } from "gsap";
-
-    // Datos para la actualización dinámica del widget
-    const datosRD = [
-        "La Catedral de Santo Domingo es la más antigua de América.",
-        "El Pico Duarte es el punto más alto del Caribe (3,087m).",
-        "El Larimar solo se encuentra en República Dominicana.",
-        "Tenemos el lago más grande del Caribe (Lago Enriquillo).",
-        "La primera ciudad fundada en el Nuevo Mundo fue La Isabela.",
-        "El merengue fue declarado Patrimonio de la Humanidad.",
-        "República Dominicana es el mayor exportador de tabaco orgánico."
-    ];
+    import datosRD from "../../data/datosRandoms.json";
+    
 
     const initAnimation = () => {
         const playBtn = document.getElementById('play-btn');

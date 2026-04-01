@@ -8,9 +8,7 @@ const regiones = [
 ].sort();
 ---
 
-<div
-    id="filtros-panel"
-    class="invisible opacity-0 scale-95 pointer-events-none origin-right transition-all duration-300 ease-out absolute top-30 right-0 -translate-y-1/2 w-[calc(100vw-2rem)] sm:w-[500px] z-50 bg-[#fdfcfa] border border-[#f0e6d2] shadow-2xl rounded-3xl p-6"
+    class="invisible opacity-0 scale-95 pointer-events-none origin-right transition-all duration-300 ease-out absolute top-30 right-0 -translate-y-1/2 w-[calc(100vw-2rem)] sm:w-[500px] z-50 bg-base-100 border border-base-content/8 shadow-2xl rounded-3xl p-6"
 >
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
@@ -103,10 +101,10 @@ const regiones = [
 
         <!-- Right Column: Warm Cards -->
         <div class="space-y-5">
-            <!-- Región Cards (Warm styling) -->
-            <div class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA]">
+            <!-- Región Cards -->
+            <div class="bg-base-200/50 rounded-2xl p-4 border border-base-content/8">
                 <h4
-                    class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4"
+                    class="text-xs font-extrabold tracking-widest text-base-content/50 uppercase mb-4"
                 >
                     Región
                 </h4>
@@ -119,7 +117,7 @@ const regiones = [
                                 <button
                                     data-filter="region"
                                     data-value={region}
-                                    class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold border-2 bg-white transition-all text-[#7A4B3A]"
+                                    class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold border-2 bg-base-100 transition-all text-base-content/80"
                                     style={`border-color:${borderColor}`}
                                 >
                                     {region}
@@ -131,9 +129,9 @@ const regiones = [
             </div>
 
             <!-- Precio Cards -->
-            <div class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA]">
+            <div class="bg-base-200/50 rounded-2xl p-4 border border-base-content/8">
                 <h4
-                    class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4"
+                    class="text-xs font-extrabold tracking-widest text-base-content/50 uppercase mb-4"
                 >
                     Precio
                 </h4>
@@ -141,14 +139,14 @@ const regiones = [
                     <button
                         data-filter="precio"
                         data-value="gratis"
-                        class="filter-btn flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border border-[#E8D4BE] bg-white hover:border-[#D5A77B] transition-all"
+                        class="filter-btn flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-base-content border border-base-300 bg-base-100 hover:border-primary/40 transition-all"
                     >
                         Gratis
                     </button>
                     <button
                         data-filter="precio"
                         data-value="pagado"
-                        class="filter-btn flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border border-[#E8D4BE] bg-white hover:border-[#D5A77B] transition-all"
+                        class="filter-btn flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-base-content border border-base-300 bg-base-100 hover:border-primary/40 transition-all"
                     >
                         Pagado
                     </button>
@@ -165,12 +163,11 @@ const regiones = [
         @apply visible opacity-100 scale-100 pointer-events-auto;
     }
 
-    /* Active states for Pill buttons */
     .filter-btn[data-filter="region"].active {
-        @apply shadow-md scale-105 border-transparent text-white;
-        background-color: var(--active-bg, #d5a77b);
+        @apply shadow-md scale-105 border-transparent text-primary-content;
+        background-color: var(--active-bg, var(--color-primary));
     }
     .filter-btn[data-filter="precio"].active {
-        @apply bg-[#FFF1E0] border-[#D5A77B] text-[#5A3824] shadow-inner;
+        @apply bg-primary/10 border-primary/60 text-primary shadow-inner;
     }
 </style>
