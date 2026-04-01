@@ -122,11 +122,13 @@ watch(state, () => {
 }, { deep: true })
 
 /* ── Button Toggles ───────────────────────────────────── */
-function toggleRegion(region: string) {
+function toggleRegion(ev: MouseEvent, region: string) {
+  ev.stopPropagation()
   state.region = state.region === region ? null : region
 }
 
-function togglePrecio(precio: string) {
+function togglePrecio(ev: MouseEvent, precio: string) {
+  ev.stopPropagation()
   state.precio = state.precio === precio ? null : precio
 }
 
@@ -239,21 +241,7 @@ function closePanel() {
   }
 }
 
-/* ── Click Outside Handler ────────────────────────────── */
-function handleClickOutside(event: MouseEvent) {
-  if (!panelRef.value || !triggerRef.value) return
-  
-  // Usamos composedPath() para detectar de forma robusta si el clic se originó
-  // dentro del panel, incluso si los botones dinámicos (como Precio) modifican
-  // el DOM y se desprenden antes de este evento global.
-  const path = event.composedPath()
-  const isInsidePanel = path.includes(panelRef.value)
-  const isClickOnBtn = path.includes(triggerRef.value)
-  
-  if (!isInsidePanel && !isClickOnBtn && isOpen.value) {
-    closePanel()
-  }
-}
+
 
 /* ── Active Pill Styles ───────────────────────────────── */
 function regionPillStyle(region: string) {
@@ -277,12 +265,33 @@ function precioPillClass(precio: string) {
     : 'border-[#E8D4BE] bg-white hover:border-[#D5A77B]'
 }
 
+/* ── Click-outside handler ────────────────────────────── */
+function handleDocumentClick(ev: MouseEvent) {
+  if (!isOpen.value) return
+  const target = ev.target as HTMLElement
+  const insidePanel = !!target.closest?.('[data-filter-panel]')
+  const insideTrigger = !!target.closest?.('[data-filter-trigger]')
+
+  if (insidePanel || insideTrigger) return
+  closePanel()
+}
+
+// Native DOM blocker — bypasses Vue's event system entirely
+let _nativePanelStop: ((e: Event) => void) | null = null
+
 /* ── Lifecycle ────────────────────────────────────────── */
 onMounted(() => {
   isMounted.value = true
-  document.addEventListener('click', handleClickOutside)
+
+  document.addEventListener('click', handleDocumentClick)
 
   nextTick(() => {
+    // Belt-and-suspenders: block all clicks from leaving the panel natively
+    if (panelRef.value) {
+      _nativePanelStop = (e: Event) => e.stopPropagation()
+      panelRef.value.addEventListener('click', _nativePanelStop)
+    }
+
     const currentCards = Array.from(document.querySelectorAll<HTMLElement>('.destino-card'))
     const resultCount = document.getElementById('result-count')
     if (resultCount) resultCount.textContent = `${currentCards.length} destinos`
@@ -290,15 +299,22 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('click', handleDocumentClick)
+  if (panelRef.value && _nativePanelStop) {
+    panelRef.value.removeEventListener('click', _nativePanelStop)
+  }
 })
 </script>
 
 <template>
   <div class="relative z-50 h-10 shrink-0">
+
+
+
+
     <!-- Trigger Button & Search -->
-    <div v-show="!isOpen" ref="triggerRef" data-flip-id="filter-container"
-      class=" flex items-center h-10 px-4 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0 cursor-text shadow-sm ring-1 ring-base-content/5"
+    <div v-show="!isOpen" ref="triggerRef" data-flip-id="filter-container" data-filter-trigger
+      class="z-[101] flex items-center h-10 px-4 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0 cursor-text shadow-sm ring-1 ring-base-content/5"
       @click.stop
     >
 
@@ -331,8 +347,8 @@ onUnmounted(() => {
     </div>
 
     <!-- Filter Panel -->
-    <div v-show="isOpen" ref="panelRef" data-flip-id="filter-container"
-      class="absolute top-0 right-0 w-[calc(100vw-2rem)] sm:w-[500px] z-[101] bg-[#fdfcfa] rounded-3xl p-6 origin-top-right overflow-hidden flex flex-col"
+    <div v-show="isOpen" ref="panelRef" data-flip-id="filter-container" data-filter-panel
+      class="absolute top-0 right-0 w-[calc(100vw-2rem)] sm:w-[500px] z-[101] bg-[#fdfcfa] rounded-3xl p-6 origin-top-right overflow-y-auto max-h-[90vh] flex flex-col"
       @click.stop
     >
 
@@ -400,7 +416,7 @@ onUnmounted(() => {
         <!-- Right Column: Pill Buttons -->
         <div class="space-y-5">
           <!-- Región -->
-          <fieldset class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA] m-0">
+          <fieldset class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA] m-0" @click.stop>
             <legend class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4 w-full">
               Región
             </legend>
@@ -410,14 +426,14 @@ onUnmounted(() => {
                 state.region === region
                   ? 'shadow-md scale-105'
                   : 'text-[#7A4B3A]',
-              ]" @click="toggleRegion(region)">
+              ]" @click="toggleRegion($event, region)">
                 {{ region }}
               </button>
             </div>
           </fieldset>
 
           <!-- Precio -->
-          <fieldset class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA] m-0">
+          <fieldset class="bg-[#FFFDF9] rounded-2xl p-4 border border-[#F2E8DA] m-0" @click.stop>
             <legend class="text-xs font-extrabold tracking-widest text-[#B58C73] uppercase mb-4 w-full">
               Precio
             </legend>
@@ -425,13 +441,13 @@ onUnmounted(() => {
               <button :class="[
                 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
                 precioPillClass('gratis'),
-              ]" @click="togglePrecio('gratis')">
+              ]" @click="togglePrecio($event, 'gratis')">
                 Gratis
               </button>
               <button :class="[
                 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm font-semibold text-[#7A4B3A] border transition-all',
                 precioPillClass('pagado'),
-              ]" @click="togglePrecio('pagado')">
+              ]" @click="togglePrecio($event, 'pagado')">
                 Pagado
               </button>
             </div>

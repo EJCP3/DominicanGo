@@ -25,7 +25,7 @@ try {
 }
 ---
 
-<div class="fixed bottom-28  md:bottom-6 right-1 z-50 flex flex-col items-end">
+<div class="fixed bottom-28 md:bottom-6 right-1 z-50 flex flex-col items-end pointer-events-none">
   <!-- Popover Tooltip -->
   <div 
     id="random-popover" 
@@ -63,7 +63,7 @@ try {
   <!-- Bolita Trigger — destinations injected as a data attribute -->
   <button 
     id="random-trigger" 
-    class="btn btn-circle btn-accent btn-lg shadow-2xl hover:scale-110 active:scale-95 transition-transform" 
+    class="btn btn-circle btn-accent btn-lg shadow-2xl hover:scale-110 active:scale-95 transition-transform pointer-events-auto" 
     aria-label="Destino Aleatorio"
     data-destinations={JSON.stringify(allDestinations)}
   >
@@ -75,10 +75,14 @@ try {
 </div>
 
 <style>
+  #random-popover {
+    pointer-events: none;
+  }
   #random-popover.popover-open {
     visibility: visible;
     opacity: 1;
     transform: scale(1);
+    pointer-events: auto;
   }
 </style>
 

@@ -121,7 +121,7 @@ const props = defineProps<{
 
 const user = ref<User | null>(null);
 const loading = ref(true);
-const activeTheme = ref(localStorage.getItem('theme') || 'cupcake');
+const activeTheme = ref('cupcake');
 
 /** Aplica el tema directamente — no depende de ThemeScript (que corre antes que Vue) */
 const setTheme = (theme: string) => {
@@ -172,6 +172,10 @@ const handleLogout = () => {
 };
 
 onMounted(async () => {
+  // Solo en el cliente
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) activeTheme.value = savedTheme;
+
   const token = document.cookie
     .split('; ')
     .find(row => row.startsWith('auth_token='))
