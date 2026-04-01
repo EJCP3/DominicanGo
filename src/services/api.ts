@@ -210,7 +210,6 @@ export const getDestinations = async (params: Record<string, string | number | u
         const json = await res.json();
         return json.success ? json : { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 0 } };
     } catch (error) {
-        console.error('[API] getDestinations error:', error);
         return { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 0 } };
     }
 };
@@ -234,7 +233,6 @@ export const getBlogs = async (params: Record<string, string | number> = {}) => 
         const json = await res.json();
         return json.success ? json : { data: [], meta: {} };
     } catch (error) {
-        console.error('[API] getBlogs error:', error);
         return { data: [], meta: {} };
     }
 };
@@ -287,13 +285,9 @@ export const getProvincesWithDestinations = async (params: Record<string, any> =
  * El token viene de Astro.cookies.get('auth_token')?.value
  */
 export const getUser = async (token: string | undefined | null) => {
-    if (!token) {
-        console.log('[API] getUser: no token provided, skipping');
-        return null;
-    }
+    if (!token) return null;
     const apiBase = getApiUrl();
     const targetUrl = `${apiBase}/users/me`;
-    console.log(`[API] getUser → calling: ${targetUrl}`);
     try {
         const res = await fetch(targetUrl, {
             headers: { 
@@ -301,21 +295,10 @@ export const getUser = async (token: string | undefined | null) => {
                 'Content-Type': 'application/json',
             },
         });
-        console.log(`[API] getUser ← status: ${res.status}`);
-        if (!res.ok) {
-            console.warn(`[API] getUser failed: HTTP ${res.status} from ${targetUrl}`);
-            return null;
-        }
+        if (!res.ok) return null;
         const json = await res.json();
-        const userData = json.success ? json.data : null;
-        if (userData) {
-            console.log(`[API] getUser ✅ Logged in: ${userData.email} | Role: ${userData.role}`);
-        } else {
-            console.warn('[API] getUser: response OK but no user data in payload', json);
-        }
-        return userData;
-    } catch (e: any) {
-        console.error(`[API] getUser 💥 Network error calling ${targetUrl}: ${e.message}`);
+        return json.success ? json.data : null;
+    } catch {
         return null;
     }
 };
@@ -337,10 +320,7 @@ export const getFavoriteIds = async (token: string | undefined | null) => {
                 'Content-Type': 'application/json',
             },
         });
-        if (!res.ok) {
-            console.warn(`[API] getFavoriteIds failed: HTTP ${res.status} from ${targetUrl}`);
-            return empty;
-        }
+        if (!res.ok) return empty;
         const json = await res.json();
         const favorites: any[] = json.data ?? [];
         const destinationIds = new Set<string>(
@@ -350,8 +330,7 @@ export const getFavoriteIds = async (token: string | undefined | null) => {
             favorites.filter((f: any) => f.type === 'BLOG' && f.blogId).map((f: any) => f.blogId)
         );
         return { destinationIds, blogIds };
-    } catch (e: any) {
-        console.error(`[API] getFavoriteIds 💥 Network error calling ${targetUrl}: ${e.message}`);
+    } catch {
         return empty;
     }
 };

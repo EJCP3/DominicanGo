@@ -172,22 +172,16 @@ const handleLogout = () => {
 };
 
 onMounted(async () => {
-  console.log('🔍 [UserMenu] Intentando leer cookie auth_token...');
-  console.log('🍪 [UserMenu] Todas las cookies:', document.cookie);
-
   const token = document.cookie
     .split('; ')
     .find(row => row.startsWith('auth_token='))
     ?.split('=')[1];
 
   if (!token) {
-    console.warn('❌ [UserMenu] No se encontró la cookie auth_token');
     loading.value = false;
     showExternalThemeDropdown();
     return;
   }
-
-  console.log('✅ [UserMenu] Token encontrado, llamando a la API...');
 
   try {
     const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '');
@@ -195,19 +189,15 @@ onMounted(async () => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    console.log(`📡 [UserMenu] Respuesta de la API: ${res.status}`);
-
     if (res.ok) {
       const json = await res.json();
       user.value = json.success ? json.data : json;
-      console.log('👤 [UserMenu] Usuario cargado:', user.value);
       if (user.value) hideExternalThemeDropdown();
     } else {
-      console.warn('❌ [UserMenu] La API rechazó el token:', res.status);
       showExternalThemeDropdown();
     }
-  } catch (err) {
-    console.error('💥 [UserMenu] Error fatal en el fetch:', err);
+  } catch {
+    // silencioso en producción
   } finally {
     loading.value = false;
   }
