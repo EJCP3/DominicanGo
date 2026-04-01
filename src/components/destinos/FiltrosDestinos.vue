@@ -298,7 +298,9 @@ onUnmounted(() => {
   <div class="relative z-50 h-10 shrink-0">
     <!-- Trigger Button & Search -->
     <div v-show="!isOpen" ref="triggerRef" data-flip-id="filter-container"
-      class=" flex items-center h-10 px-4 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0 cursor-text shadow-sm ring-1 ring-base-content/5">
+      class=" flex items-center h-10 px-4 rounded-full bg-[#fdfcfa] text-base-content shrink-0 origin-top-right border-0 cursor-text shadow-sm ring-1 ring-base-content/5"
+      @click.stop
+    >
 
       <!-- Search Icon -->
       <svg class="w-4 h-4 text-base-content/40 shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -330,7 +332,9 @@ onUnmounted(() => {
 
     <!-- Filter Panel -->
     <div v-show="isOpen" ref="panelRef" data-flip-id="filter-container"
-      class="absolute top-0 right-0 w-[calc(100vw-2rem)] sm:w-[500px] z-50 bg-[#fdfcfa]  rounded-3xl p-6 origin-top-right overflow-hidden flex flex-col">
+      class="absolute top-0 right-0 w-[calc(100vw-2rem)] sm:w-[500px] z-[101] bg-[#fdfcfa] rounded-3xl p-6 origin-top-right overflow-hidden flex flex-col"
+      @click.stop
+    >
 
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
