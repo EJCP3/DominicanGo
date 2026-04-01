@@ -90,7 +90,7 @@ const provinciasList = Object.entries(provinces)
                     </div>
 
                     <FiltrosDestinos
-                        client:only="vue"
+                        client:load
                         tipos={TIPOS}
                         typeLabels={TYPE_LABELS}
                         regiones={regiones}
@@ -164,26 +164,10 @@ const provinciasList = Object.entries(provinces)
     <!-- <DestinosFilterScript /> -->
 
     <script>
-        import { gsap } from "gsap";
-        import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-        gsap.registerPlugin(ScrollTrigger);
-
+        // Si hay eventos globales necesarios para la página, van aquí
         document.addEventListener("astro:page-load", () => {
-            const cards = document.querySelectorAll("#destinos-grid > *");
-            if (cards.length > 0) {
-                gsap.from(cards, {
-                    scrollTrigger: {
-                        trigger: "#destinos-grid",
-                        start: "top 85%", // Trigger animation when the top of the grid hits 85% of the viewport height
-                    },
-                    y: 60,
-                    opacity: 0,
-                    duration: 0.8,
-                    stagger: 0.05, // Slight delay between each card
-                    ease: "power3.out",
-                });
-            }
+            // Las animaciones GSAP de entrada chocaban con la hidratación y el filtro dinámico de Vue,
+            // dejando las cards "lavadas" o invisibles. Se ha eliminado en favor del filtro directo.
         });
     </script>
 </Layout>

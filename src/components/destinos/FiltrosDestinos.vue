@@ -40,8 +40,6 @@ const isOpen = ref(false)
 const panelRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLElement | null>(null)
 
-let cards: HTMLElement[] = []
-
 /* ── Computed ─────────────────────────────────────────── */
 const activeFilters = computed(() => {
   const filters: { key: string; label: string }[] = []
@@ -68,12 +66,13 @@ const activeFilters = computed(() => {
 
 const hasFilter = computed(() => activeFilters.value.length > 0)
 
-/* ── Filter Logic ─────────────────────────────────────── */
 function applyFilters() {
   const q = (state.search ?? '').toLowerCase()
   let visible = 0
 
-  cards.forEach((card) => {
+  const currentCards = Array.from(document.querySelectorAll('.destino-card')) as HTMLElement[]
+
+  currentCards.forEach((card) => {
     const dName = (card.dataset.name ?? '').toLowerCase()
     const dDesc = (card.dataset.description ?? '').toLowerCase()
     const dTags = (card.dataset.tags ?? '').toLowerCase()
@@ -85,7 +84,18 @@ function applyFilters() {
       (!state.region || card.dataset.region === state.region) &&
       (!state.precio || card.dataset.precio === state.precio)
 
-    card.style.display = ok ? '' : 'none'
+    // Solo actualizar DOM si es necesario para evitar reflujos
+    const newDisplay = ok ? '' : 'none'
+    if (card.style.display !== newDisplay) {
+        card.style.display = newDisplay
+    }
+    
+    // Forzamos visibilidad opaca por si GSAP se trabó previamente
+    if (ok) {
+        card.style.opacity = '1'
+        card.style.transform = 'none'
+    }
+
     if (ok) visible++
   })
 
@@ -231,10 +241,15 @@ function closePanel() {
 
 /* ── Click Outside Handler ────────────────────────────── */
 function handleClickOutside(event: MouseEvent) {
-  const target = event.target as Node
   if (!panelRef.value || !triggerRef.value) return
-  const isInsidePanel = panelRef.value.contains(target)
-  const isClickOnBtn = triggerRef.value.contains(target)
+  
+  // Usamos composedPath() para detectar de forma robusta si el clic se originó
+  // dentro del panel, incluso si los botones dinámicos (como Precio) modifican
+  // el DOM y se desprenden antes de este evento global.
+  const path = event.composedPath()
+  const isInsidePanel = path.includes(panelRef.value)
+  const isClickOnBtn = path.includes(triggerRef.value)
+  
   if (!isInsidePanel && !isClickOnBtn && isOpen.value) {
     closePanel()
   }
@@ -264,14 +279,13 @@ function precioPillClass(precio: string) {
 
 /* ── Lifecycle ────────────────────────────────────────── */
 onMounted(() => {
-
   isMounted.value = true
   document.addEventListener('click', handleClickOutside)
 
   nextTick(() => {
-    cards = Array.from(document.querySelectorAll<HTMLElement>('.destino-card'))
+    const currentCards = Array.from(document.querySelectorAll<HTMLElement>('.destino-card'))
     const resultCount = document.getElementById('result-count')
-    if (resultCount) resultCount.textContent = `${cards.length} destinos`
+    if (resultCount) resultCount.textContent = `${currentCards.length} destinos`
   })
 })
 
