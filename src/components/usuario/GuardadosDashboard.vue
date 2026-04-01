@@ -133,12 +133,12 @@ onMounted(fetchFavorites);
 
         <!-- Destination cards -->
         <template v-if="activeTab === 'destinos'">
-          <a
+          <div
             v-for="fav in activeList"
             :key="fav.id"
-            :href="`/destinos/${fav.destination!.provinceId}/${fav.destination!.slug}`"
             class="group block bg-white rounded-2xl overflow-hidden border border-[#f0e6d2] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative"
           >
+            <a :href="`/destinos/${fav.destination!.provinceId}/${fav.destination!.slug}`" class="absolute inset-0 z-10" aria-label="Ver destino"></a>
             <!-- Remove button -->
             <button
               class="absolute top-2 right-2 z-20 btn btn-circle btn-sm bg-white/90 backdrop-blur border-none shadow-md text-error hover:bg-error hover:text-white transition-all duration-200 hover:scale-110"
@@ -166,17 +166,17 @@ onMounted(fetchFavorites);
               <h3 class="font-heading font-bold text-base-content text-base mb-1 truncate group-hover:text-primary transition-colors">{{ fav.destination!.name }}</h3>
               <p class="text-base-content/70 text-xs line-clamp-2">{{ fav.destination!.description }}</p>
             </div>
-          </a>
+          </div>
         </template>
 
         <!-- Blog cards -->
         <template v-if="activeTab === 'blog'">
-          <a
+          <div
             v-for="fav in activeList"
             :key="fav.id"
-            :href="`/blog/${fav.blog!.slug}`"
             class="group bg-white rounded-2xl overflow-hidden border border-[#f0e6d2] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
           >
+            <a :href="`/blog/${fav.blog!.slug}`" class="absolute inset-0 z-10" aria-label="Leer diario"></a>
             <!-- Remove button -->
             <button
               class="absolute top-2 right-2 z-20 btn btn-circle btn-sm bg-white/90 backdrop-blur border-none shadow-md text-error hover:bg-error hover:text-white transition-all duration-200 hover:scale-110"
@@ -202,7 +202,7 @@ onMounted(fetchFavorites);
                 <span>5 min read</span>
               </div>
             </div>
-          </a>
+          </div>
         </template>
       </div>
     </template>

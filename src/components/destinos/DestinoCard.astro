@@ -109,11 +109,11 @@ const { d, token = "", initialFavorited = false } = Astro.props;
         >
             {d.name}
         </h3>
-        <p
+        <div
             class="text-base-content/70 text-xs leading-relaxed line-clamp-2 mb-3"
         >
             {d.description}
-        </p>
+        </div>
         <div class="flex flex-wrap gap-1">
             {
                 (d.tags ?? [])
