@@ -2,7 +2,7 @@
 // RandomDestinationPop.astro
 import { getProvincesWithDestinations, slugify } from '../../services/api';
 
-const provinces = await getProvincesWithDestinations();
+const { provinces } = await getProvincesWithDestinations();
 
 // Flatten destinations server-side so no async fetch is needed in the browser
 const allDestinations: { nombre: string; desc: string; url: string }[] = [];
@@ -20,8 +20,8 @@ try {
       });
     }
   }
-} catch (e) {
-  console.error('Error building destinations list:', e);
+} catch {
+  // silencioso
 }
 ---
 
