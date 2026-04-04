@@ -1,96 +1,96 @@
 ---
 import { Image } from "astro:assets";
 
-const { images, name } = Astro.props;
+const { images = [], name } = Astro.props;
 ---
 
-<div
-    class="grid grid-cols-3 grid-rows-2 gap-2.5 h-[340px] rounded-3xl overflow-hidden shadow-sm bg-base-200"
->
-    <!-- Large: col-span-2, row-span-2 -->
-    <button 
-        type="button"
-        class="block w-full h-full p-0 border-none appearance-none col-span-2 row-span-2 relative overflow-hidden bento-item cursor-zoom-in group text-left"
-        onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 0, alt: '${name} - Vista 1' } }))`}
-        aria-label={`Ampliar imagen: ${name} - Vista 1`}
-    >
-        <Image
-            src={images[0]}
-            alt={`${name} - vista 1`}
-            width={800}
-            height={600}
-            format="webp"
-            loading="lazy"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        <div
-            class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-4"
+{images.length > 0 ? (
+    <div class="grid grid-cols-3 grid-rows-2 gap-2.5 h-[340px] rounded-3xl overflow-hidden shadow-sm bg-base-200">
+        <!-- Large: col-span-2, row-span-2 -->
+        <button 
+            type="button"
+            class={`block w-full h-full p-0 border-none appearance-none ${images.length === 1 ? 'col-span-3' : 'col-span-2'} row-span-2 relative overflow-hidden bento-item cursor-zoom-in group text-left`}
+            onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 0, alt: '${name} - Vista 1' } }))`}
+            aria-label={`Ampliar imagen: ${name} - Vista 1`}
         >
-            <span
-                class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full"
-                >Vista 1</span
-            >
-        </div>
-    </button>
-    <!-- Small top-right -->
-    <button 
-        type="button"
-        class="block w-full h-full p-0 border-none appearance-none col-span-1 row-span-1 relative overflow-hidden bento-item cursor-zoom-in group text-left"
-        onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 1, alt: '${name} - Vista 2' } }))`}
-        aria-label={`Ampliar imagen: ${name} - Vista 2`}
-    >
-        <Image
-            src={images[1]}
-            alt={`${name} - vista 2`}
-            width={400}
-            height={300}
-            format="webp"
-            loading="lazy"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        <div
-            class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-3"
-        >
-            <span
-                class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full"
-                >Vista 2</span
-            >
-        </div>
-    </button>
-    <!-- Small bottom-right -->
-    <button 
-        type="button"
-        class="block w-full h-full p-0 border-none appearance-none col-span-1 row-span-1 relative overflow-hidden bento-item cursor-zoom-in group text-left"
-        onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 2, alt: '${name} - Vista 3' } }))`}
-        aria-label={`Ampliar imagen: ${name} - Vista 3`}
-    >
-        <Image
-            src={images[2]}
-            alt={`${name} - vista 3`}
-            width={400}
-            height={300}
-            format="webp"
-            loading="lazy"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        
-        {images.length > 3 ? (
-            <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white transition-all group-hover:bg-black/50">
-                <span class="text-3xl font-black italic">+{images.length - 2}</span>
-                <span class="text-[10px] uppercase font-bold tracking-[0.2em] mt-1 opacity-80">Ver más</span>
+            <Image
+                src={images[0]}
+                alt={`${name} - vista 1`}
+                width={800}
+                height={600}
+                format="webp"
+                loading="lazy"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-4">
+                <span class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">Vista 1</span>
             </div>
-        ) : (
-            <div
-                class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-3"
+        </button>
+
+        <!-- Small top-right (solo si hay > 1 imagen) -->
+        {images.length > 1 && (
+            <button 
+                type="button"
+                class={`block w-full h-full p-0 border-none appearance-none col-span-1 ${images.length === 2 ? 'row-span-2' : 'row-span-1'} relative overflow-hidden bento-item cursor-zoom-in group text-left`}
+                onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 1, alt: '${name} - Vista 2' } }))`}
+                aria-label={`Ampliar imagen: ${name} - Vista 2`}
             >
-                <span
-                    class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full"
-                    >Vista 3</span
-                >
-            </div>
+                <Image
+                    src={images[1]}
+                    alt={`${name} - vista 2`}
+                    width={400}
+                    height={300}
+                    format="webp"
+                    loading="lazy"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-3">
+                    <span class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full">Vista 2</span>
+                </div>
+            </button>
         )}
-    </button>
-</div>
+
+        <!-- Small bottom-right (solo si hay > 2 imágenes) -->
+        {images.length > 2 && (
+            <button 
+                type="button"
+                class="block w-full h-full p-0 border-none appearance-none col-span-1 row-span-1 relative overflow-hidden bento-item cursor-zoom-in group text-left"
+                onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 2, alt: '${name} - Vista 3' } }))`}
+                aria-label={`Ampliar imagen: ${name} - Vista 3`}
+            >
+                <Image
+                    src={images[2]}
+                    alt={`${name} - vista 3`}
+                    width={400}
+                    height={300}
+                    format="webp"
+                    loading="lazy"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                
+                {images.length > 3 ? (
+                    <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white transition-all group-hover:bg-black/50">
+                        <span class="text-3xl font-black italic">+{images.length - 2}</span>
+                        <span class="text-[10px] uppercase font-bold tracking-[0.2em] mt-1 opacity-80">Ver más</span>
+                    </div>
+                ) : (
+                    <div class="bento-hover absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 flex items-end p-3">
+                        <span class="text-white text-xs font-semibold bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full">Vista 3</span>
+                    </div>
+                )}
+            </button>
+        )}
+    </div>
+) : (
+    <div class="flex items-center justify-center h-[340px] rounded-3xl bg-base-200 border-2 border-dashed border-base-300">
+        <span class="text-base-content/50 font-medium flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Sin fotografías
+        </span>
+    </div>
+)}
 <style>
     .bento-item:hover .bento-hover {
         opacity: 1;

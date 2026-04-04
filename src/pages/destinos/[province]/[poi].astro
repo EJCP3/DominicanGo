@@ -218,7 +218,7 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
 
                             <!-- Province banner -->
                             <div
-                                class="rounded-3xl overflow-hidden shadow-sm border p-8"
+                                class="rounded-3xl overflow-hidden shadow-sm border p-10"
                                 style={`background:linear-gradient(135deg,${province.color}18 0%,${province.color}08 100%);border-color:${province.color}30`}
                             >
                                 <div class="flex items-start gap-4">
@@ -254,11 +254,37 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                                     </div>
                                 </div>
                             </div>
+                            
+                           
+                        </div>
+
+                        <!-- Sidebar: mobile order-3, desktop order-2 -->
+                        <div class="order-3 md:order-2 w-full">
+                            <PoiSidebar
+                                poi={poi}
+                                province={province}
+                                hours={hours}
+                                website={website}
+                                mapLink={mapLink}
+                                showHours={showHours}
+                                token={token}
+                                isLoggedIn={isLoggedIn}
+                                isFavorited={isFavorited}
+                                user={user}
+                                loginUrl={loginUrl}
+                            />
+                        </div>
+
+                        <!-- Bento Grid: mobile order-2, desktop order-3, col-span-2 -->
+                        <div class="order-2 md:order-3 md:col-span-2 w-full mt-4 md:mt-0">
                             <PoiBentoGrid
                                 images={bentoImages}
                                 name={poi.name}
                             />
+                        </div>
 
+                        <!-- Comments: mobile order-4, desktop order-4, col-span-2 -->
+                        <div class="order-4 md:order-4 md:col-span-2 w-full max-w-4xl mx-auto mt-4 md:mt-0">
                             <Comments
                                 client:visible
                                 targetType="DESTINATION"
@@ -267,21 +293,6 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                                 loginUrl={loginUrl}
                             />
                         </div>
-
-                        <!-- Sidebar -->
-                        <PoiSidebar
-                            poi={poi}
-                            province={province}
-                            hours={hours}
-                            website={website}
-                            mapLink={mapLink}
-                            showHours={showHours}
-                            token={token}
-                            isLoggedIn={isLoggedIn}
-                            isFavorited={isFavorited}
-                            user={user}
-                            loginUrl={loginUrl}
-                        />
                     </div>
                 </div>
             </div>

@@ -218,7 +218,7 @@ const canEdit = isAdmin || (isOwner && poi.createdAt && (Date.now() - new Date(p
     <!-- Navigation Card -->
     <div class="sidebar-card bg-base-100">
         <h3 class="font-heading font-bold text-base-content">Explorar más</h3>
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 justify-center items-center">
             <a
                 href={mapLink}
                 target="_blank"
@@ -277,22 +277,7 @@ const canEdit = isAdmin || (isOwner && poi.createdAt && (Date.now() - new Date(p
                 )
             }
 
-            <a
-                href={`/destinos`}
-                class="flex items-center justify-center gap-2 mt-2 py-3 text-xs font-bold text-neutral/80 hover:text-secondary transition-colors no-underline"
-            >
-                <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    ><path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg
-                >
-            </a>
+          
         </div>
     </div>
 
