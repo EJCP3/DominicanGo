@@ -85,9 +85,9 @@ function resetFilters() {
 async function animateToggleFilter(force?: boolean) {
   if (isFilterAnimating.value) return;
   isFilterAnimating.value = true;
-  
+
   const targetState = force !== undefined ? force : !isFilterOpen.value;
-  
+
   const panelBg = document.querySelector('[data-flip-id="prov-filter-bg"]')
   const panelContent = document.querySelector('#prov-filter-content')
 
@@ -125,7 +125,7 @@ async function animateToggleFilter(force?: boolean) {
 
     const newContent = document.querySelector('#prov-filter-content')
     const oldHeader = document.querySelector('[data-flip-id="prov-filter-header"]')
-    
+
     if (newContent || oldHeader) {
       gsap.set([newContent, oldHeader], { opacity: 0, y: 12 })
     }
@@ -138,16 +138,16 @@ async function animateToggleFilter(force?: boolean) {
       nested: true,
       onComplete: () => {
         if (newContent || oldHeader) {
-          gsap.to([newContent, oldHeader], { 
+          gsap.to([newContent, oldHeader], {
             opacity: 1, y: 0, duration: 0.25, stagger: 0.05, ease: 'back.out(1.2)',
             onComplete: () => {
               isFilterAnimating.value = false;
               // Asegurar que el contenedor sea auto-ajustable y no tenga altura fija de GSAP
               if (panelBg) {
-                gsap.set(panelBg, { 
-                  height: "auto", 
-                  width: "20rem", 
-                  clearProps: "all" 
+                gsap.set(panelBg, {
+                  height: "auto",
+                  width: "20rem",
+                  clearProps: "all"
                 })
               }
               // Inicializar flechas de scroll
@@ -235,7 +235,8 @@ async function openModal(id: string, data: ProvincesMap) {
     } else {
       gsap.fromTo(panelRef.value,
         { scale: 0.9, opacity: 0, y: 20 },
-        { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.5)",
+        {
+          scale: 1, opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.5)",
           onComplete: () => {
             gsap.to(contentRef.value, { opacity: 1, y: 0, duration: 0.3 })
             isAnimating.value = false
@@ -296,7 +297,7 @@ async function closeModal() {
     isFilterOpen.value = false
     document.body.style.overflow = ''
     isAnimating.value = false
-    
+
     document.querySelectorAll('.map-province.active').forEach(el => el.classList.remove('active'))
     const mapContainer = document.getElementById('map-container')
     if (mapContainer) mapContainer.classList.remove('shifted')
@@ -358,14 +359,13 @@ onMounted(() => {
           </div>
 
           <!-- Action Bar -->
-          <div class="px-8 bg-base-200/20 border-b border-base-200/50 relative z-30 shrink-0 h-[72px] flex flex-col justify-center">
+          <div
+            class="px-8 bg-base-200/20 border-b border-base-200/50 relative z-30 shrink-0 h-[72px] flex flex-col justify-center">
             <div class="relative flex justify-end w-full">
               <!-- Filter Toggle Button (Morphs to header) -->
               <button v-show="!isFilterOpen" data-flip-id="prov-filter-bg"
                 class="btn btn-sm h-9 px-5 rounded-full flex items-center gap-2 cursor-pointer btn-ghost bg-base-100 shadow-sm hover:shadow-md transition-shadow border-none"
-                @click="animateToggleFilter()"
-                aria-label="Abrir filtros"
-              >
+                @click="animateToggleFilter()" aria-label="Abrir filtros">
                 <div data-flip-id="prov-filter-header" class="flex items-center gap-2">
                   <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -378,7 +378,7 @@ onMounted(() => {
               <!-- Filter Panel -->
               <div v-show="isFilterOpen" data-flip-id="prov-filter-bg"
                 class="absolute top-0 right-0 w-80 min-h-fit bg-base-100/95 backdrop-blur-2xl shadow-2xl rounded-2xl flex flex-col z-50 origin-top-right">
-                
+
                 <!-- Panel Header -->
                 <div class="flex items-center justify-between p-6 pb-4 border-b border-base-200/50 bg-white/50">
                   <div data-flip-id="prov-filter-header" class="flex items-center gap-2 flex-1 origin-left">
@@ -388,7 +388,7 @@ onMounted(() => {
                     </svg>
                     <h4 class="font-heading font-extrabold text-xl text-base-content whitespace-nowrap">Filtros</h4>
                   </div>
-                  
+
                   <div id="prov-filter-icons" class="flex items-center gap-1.5 origin-right">
                     <button
                       class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-primary transition-colors border-none"
@@ -402,7 +402,8 @@ onMounted(() => {
                       class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-error transition-colors border-none"
                       @click="animateToggleFilter(false)">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                   </div>
@@ -411,32 +412,32 @@ onMounted(() => {
                 <div id="prov-filter-content" class="p-6 pb-20 relative z-10 shrink-0">
                   <!-- Category Horizontal Slider -->
                   <fieldset class="mb-6 border-none p-0 m-0 min-w-0 w-full">
-                    <legend class="text-[10px] font-extrabold tracking-[0.15em] text-base-content/50 uppercase mb-4 opacity-80">
+                    <legend
+                      class="text-[10px] font-extrabold tracking-[0.15em] text-base-content/50 uppercase mb-4 opacity-80">
                       Categorías
                     </legend>
                     <div class="relative group/scroll w-full min-w-0">
                       <!-- Left Fade & Arrow -->
-                      <div v-show="canScrollLeft" 
+                      <div v-show="canScrollLeft"
                         class="absolute left-0 top-0 bottom-2 w-12 bg-linear-to-r from-base-100 to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center">
-                        <button class="btn btn-xs btn-circle bg-base-100 text-base-content shadow-md border-none hover:bg-base-200 pointer-events-auto -ml-1 focus:ring-2 focus:ring-primary focus:outline-none"
-                          tabindex="0"
-                          @keydown.enter.space.prevent="scrollCat('left')"
-                          @click.stop="scrollCat('left')"
+                        <button
+                          class="btn btn-xs btn-circle bg-base-100 text-base-content shadow-md border-none hover:bg-base-200 pointer-events-auto -ml-1 focus:ring-2 focus:ring-primary focus:outline-none"
+                          tabindex="0" @keydown.enter.space.prevent="scrollCat('left')" @click.stop="scrollCat('left')"
                           aria-label="Desplazar categorías a la izquierda">
                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                              d="M15 19l-7-7 7-7" />
                           </svg>
                         </button>
                       </div>
 
                       <!-- Right Fade & Arrow -->
-                      <div v-show="canScrollRight" 
+                      <div v-show="canScrollRight"
                         class="absolute right-0 top-0 bottom-2 w-12 bg-linear-to-l from-base-100 to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-end">
-                        <button class="btn btn-xs btn-circle bg-base-100 text-base-content shadow-md border-none hover:bg-base-200 pointer-events-auto -mr-1 focus:ring-2 focus:ring-primary focus:outline-none"
-                          tabindex="0"
-                          @keydown.enter.space.prevent="scrollCat('right')"
-                          @click.stop="scrollCat('right')"
-                          aria-label="Desplazar categorías a la derecha">
+                        <button
+                          class="btn btn-xs btn-circle bg-base-100 text-base-content shadow-md border-none hover:bg-base-200 pointer-events-auto -mr-1 focus:ring-2 focus:ring-primary focus:outline-none"
+                          tabindex="0" @keydown.enter.space.prevent="scrollCat('right')"
+                          @click.stop="scrollCat('right')" aria-label="Desplazar categorías a la derecha">
                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                           </svg>
@@ -446,14 +447,13 @@ onMounted(() => {
                       <!-- Scroll Container -->
                       <div ref="scrollContainer" @scroll="handleScroll"
                         class="flex items-center gap-2 overflow-x-auto pb-4 -mx-1 px-1 custom-scrollbar-x snap-x scroll-smooth whitespace-nowrap flex-nowrap w-full">
-                        <button class="filter-pill snap-start whitespace-nowrap px-5 focus:ring-2 focus:ring-primary focus:outline-none" 
-                          :class="{ active: currentCategory === 'all' }"
-                          @click="currentCategory = 'all'"
-                          tabindex="0">Todas</button>
-                        <button v-for="[value, label] in typeEntries" :key="value" 
+                        <button
                           class="filter-pill snap-start whitespace-nowrap px-5 focus:ring-2 focus:ring-primary focus:outline-none"
-                          :class="{ active: currentCategory === value }" 
-                          @click="currentCategory = value"
+                          :class="{ active: currentCategory === 'all' }" @click="currentCategory = 'all'"
+                          tabindex="0">Todas</button>
+                        <button v-for="[value, label] in typeEntries" :key="value"
+                          class="filter-pill snap-start whitespace-nowrap px-5 focus:ring-2 focus:ring-primary focus:outline-none"
+                          :class="{ active: currentCategory === value }" @click="currentCategory = value"
                           tabindex="0">{{ label }}</button>
                       </div>
                     </div>
@@ -461,7 +461,8 @@ onMounted(() => {
 
                   <!-- Price Pills -->
                   <fieldset class="mt-2 border-none p-0 m-0">
-                    <legend class="text-[10px] font-extrabold tracking-[0.15em] text-base-content/50 uppercase mb-4 opacity-80">
+                    <legend
+                      class="text-[10px] font-extrabold tracking-[0.15em] text-base-content/50 uppercase mb-4 opacity-80">
                       Precio
                     </legend>
                     <div class="flex gap-2">
@@ -601,6 +602,7 @@ onMounted(() => {
 .group\/scroll .absolute {
   pointer-events: none;
 }
+
 .group\/scroll .absolute button {
   pointer-events: auto;
 }

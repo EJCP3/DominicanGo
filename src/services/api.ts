@@ -193,15 +193,17 @@ export const getDestinations = async (params: Record<string, string | number | u
         const apiBase = getApiUrl();
         const url = new URL(`${apiBase}/destinations`);
 
+        url.searchParams.set('limit', '50');
+
         Object.entries(params).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
-                url.searchParams.append(key, String(value));
+                url.searchParams.set(key, String(value));
             }
         });
 
         const res = await fetch(url.toString());
         if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
-        
+
         const json = await res.json();
         return json.success ? json : { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 0 } };
     } catch (error) {
@@ -240,15 +242,15 @@ export const getBlogs = async (params: Record<string, string | number> = {}) => 
 export const getProvincesWithDestinations = async (params: Record<string, any> = {}) => {
     // 1. Clona la base para no mutar el original y crea arreglos limpios
     const mapped = JSON.parse(JSON.stringify(baseProvinces));
-    
+
     // 2. Obtiene los destinos de la API (ahora devuelve { data, meta })
     const response = await getDestinations(params);
     const destinations = response.data || [];
-    
+
     // 3. Los inserta en su respectiva provincia
     destinations.forEach((dest: any) => {
         const provSlug = dest.provinceId || dest.province?.id;
-        
+
         if (provSlug && mapped[provSlug]) {
             mapped[provSlug].pois.push({
                 id: dest.id,
@@ -259,9 +261,9 @@ export const getProvincesWithDestinations = async (params: Record<string, any> =
                 description: dest.description,
                 image: dest.image || img(dest.slug || 'default'),
                 images: dest.images || [],
-                hours: { 
-                    weekdays: dest.hoursWeekdays || "", 
-                    weekend: dest.hoursWeekend || "" 
+                hours: {
+                    weekdays: dest.hoursWeekdays || "",
+                    weekend: dest.hoursWeekend || ""
                 },
                 website: dest.website || null,
                 slug: dest.slug,
@@ -270,7 +272,7 @@ export const getProvincesWithDestinations = async (params: Record<string, any> =
             });
         }
     });
-    
+
     return { provinces: mapped, meta: response.meta };
 };
 
@@ -285,7 +287,7 @@ export const getUser = async (token: string | undefined | null) => {
     const targetUrl = `${apiBase}/users/me`;
     try {
         const res = await fetch(targetUrl, {
-            headers: { 
+            headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
@@ -310,7 +312,7 @@ export const getFavoriteIds = async (token: string | undefined | null) => {
     const targetUrl = `${apiBase}/favorites`;
     try {
         const res = await fetch(targetUrl, {
-            headers: { 
+            headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },

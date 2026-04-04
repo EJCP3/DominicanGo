@@ -19,18 +19,19 @@ const price = (Astro.url.searchParams.get("price") as any) || undefined;
 const search = Astro.url.searchParams.get("search") || undefined;
 
 // Parallelize API calls
-const [{ provinces, meta }, { destinationIds: favDestinationIds }] = await Promise.all([
-    getProvincesWithDestinations({ 
-        page, 
-        limit: 12,
-        type,
-        provinceId,
-        region,
-        price,
-        search
-    }),
-    getFavoriteIds(token)
-]);
+const [{ provinces, meta }, { destinationIds: favDestinationIds }] =
+    await Promise.all([
+        getProvincesWithDestinations({
+            page,
+            limit: 12,
+            type,
+            provinceId,
+            region,
+            price,
+            search,
+        }),
+        getFavoriteIds(token),
+    ]);
 
 import DestinosHero from "../../components/destinos/DestinosHero.astro";
 import FiltrosDestinos from "../../components/destinos/FiltrosDestinos.vue";
@@ -115,15 +116,18 @@ const provinciasList = Object.entries(provinces)
                 </div>
 
                 <!-- Pagination -->
-                <Pagination 
-                    currentPage={meta.page} 
-                    totalPages={meta.totalPages} 
-                    baseUrl="/destinos" 
+                <Pagination
+                    currentPage={meta.page}
+                    totalPages={meta.totalPages}
+                    baseUrl="/destinos"
                     searchParams={Astro.url.searchParams}
                 />
 
                 <!-- Empty state -->
-                <div id="empty-state" class={`${allDestinos.length === 0 ? 'block' : 'hidden'} text-center py-24`}>
+                <div
+                    id="empty-state"
+                    class={`${allDestinos.length === 0 ? "block" : "hidden"} text-center py-24`}
+                >
                     <div
                         class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center"
                     >
