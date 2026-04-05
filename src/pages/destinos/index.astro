@@ -60,6 +60,14 @@ const regiones = [
 const provinciasList = Object.entries(provinces)
     .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
     .map(([slug, prov]: any) => ({ slug, name: prov.name }));
+
+const initialState = {
+    tipo: type,
+    provincia: provinceId,
+    region,
+    precio: price,
+    search,
+};
 ---
 
 <Layout
@@ -92,11 +100,13 @@ const provinciasList = Object.entries(provinces)
 
                     <FiltrosDestinos
                         client:load
+                        transition:persist="filtros-destinos"
                         tipos={TIPOS}
                         typeLabels={TYPE_LABELS}
                         regiones={regiones}
                         regionColors={REGION_COLORS}
                         provincias={provinciasList}
+                        initialState={initialState}
                     />
                 </div>
 
@@ -153,12 +163,12 @@ const provinciasList = Object.entries(provinces)
                     <p class="text-base-content/60 text-sm">
                         Intenta con otros filtros o términos de búsqueda.
                     </p>
-                    <button
-                        id="reset-empty"
+                    <a
+                        href="/destinos"
                         class="btn btn-outline btn-primary btn-sm rounded-full mt-4"
                     >
                         Limpiar filtros
-                    </button>
+                    </a>
                 </div>
             </section>
         </div>

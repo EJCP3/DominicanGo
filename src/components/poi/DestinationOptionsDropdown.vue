@@ -82,15 +82,18 @@ function handleDelete() {
 </script>
 
 <template>
-  <div class="absolute right-0 top-0">
+  <div class="absolute right-0 -top-0">
     <button ref="triggerRef" @click="toggleMenu" class="btn btn-ghost btn-sm btn-circle text-base-content/70 hover:text-base-content">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
     </button>
-    <div v-show="isOpen" ref="menuRef" class="z-50 absolute right-0 top-10 mt-2 w-56 p-2 rounded-2xl bg-base-100 shadow-sm shadow-black/10 border border-base-200" style="display: none;">
+    <div v-show="isOpen" ref="menuRef" class="z-50 absolute right-0 top-0 mt-2 w-56 p-2 rounded-2xl bg-base-100 shadow-sm shadow-black/10 border border-base-200" style="display: none;">
         <ul class="menu p-0 w-full relative">
-            <li class="menu-title px-3 py-1.5 min-h-0">
+            <li class="menu-title flex flex-row items-baseline justify-between px-2 py-2 min-h-0">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-base-content/50">Explorar más</span>
-            </li>
+                <button @click="toggleMenu" class="btn btn-ghost btn-sm btn-circle text-base-content/40 hover:text-base-content">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </li>   
             <li>
                 <a :href="mapLink" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 py-2 px-3 rounded-xl hover:bg-base-200/50">
                     <div class="w-6 h-6 rounded-md bg-error/10 flex items-center justify-center text-error">

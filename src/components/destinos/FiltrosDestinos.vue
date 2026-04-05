@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, shallowRef, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { navigate } from 'astro:transitions/client'
 import { gsap } from 'gsap'
 import { Flip } from 'gsap/Flip'
 
@@ -17,6 +18,13 @@ const props = defineProps<{
   regiones: string[]
   regionColors: Record<string, string>
   provincias: Provincia[]
+  initialState: {
+    tipo?: string | null
+    provincia?: string | null
+    region?: string | null
+    precio?: string | null
+    search?: string
+  }
 }>()
 
 /* ── Reactive State ──────────────────────────────────── */
@@ -27,11 +35,11 @@ const state = reactive<{
   precio: string | null
   search: string
 }>({
-  tipo: null,
-  provincia: null,
-  region: null,
-  precio: null,
-  search: '',
+  tipo: props.initialState?.tipo ?? null,
+  provincia: props.initialState?.provincia ?? null,
+  region: props.initialState?.region ?? null,
+  precio: props.initialState?.precio ?? null,
+  search: props.initialState?.search ?? '',
 })
 
 const isMounted = shallowRef(false)
@@ -67,59 +75,57 @@ const activeFilters = computed(() => {
 const hasFilter = computed(() => activeFilters.value.length > 0)
 
 function applyFilters() {
-  const q = (state.search ?? '').toLowerCase()
-  let visible = 0
+  // Empty function: DOM manipulation is removed.
+  // URL routing handles the filter application visually natively through Astro now.
+}
 
-  const currentCards = Array.from(document.querySelectorAll('.destino-card')) as HTMLElement[]
-
-  currentCards.forEach((card) => {
-    const dName = (card.dataset.name ?? '').toLowerCase()
-    const dDesc = (card.dataset.description ?? '').toLowerCase()
-    const dTags = (card.dataset.tags ?? '').toLowerCase()
-
-    const ok =
-      (!q || dName.includes(q) || dDesc.includes(q) || dTags.includes(q)) &&
-      (!state.tipo || card.dataset.tipo === state.tipo) &&
-      (!state.provincia || card.dataset.provincia === state.provincia) &&
-      (!state.region || card.dataset.region === state.region) &&
-      (!state.precio || card.dataset.precio === state.precio)
-
-    // Solo actualizar DOM si es necesario para evitar reflujos
-    const newDisplay = ok ? '' : 'none'
-    if (card.style.display !== newDisplay) {
-        card.style.display = newDisplay
-    }
+function buildAndNavigate() {
+  const params = new URLSearchParams(window.location.search)
     
-    // Forzamos visibilidad opaca por si GSAP se trabó previamente
-    if (ok) {
-        card.style.opacity = '1'
-        card.style.transform = 'none'
-    }
+  // Al filtrar, resetear paginación a la página 1
+  params.delete('page')
+    
+  if (state.tipo) params.set('type', state.tipo)
+  else params.delete('type')
+    
+  if (state.provincia) params.set('provinceId', state.provincia)
+  else params.delete('provinceId')
+    
+  if (state.region) params.set('region', state.region)
+  else params.delete('region')
+    
+  if (state.precio) params.set('price', state.precio)
+  else params.delete('price')
+    
+  if (state.search) params.set('search', state.search)
+  else params.delete('search')
 
-    if (ok) visible++
-  })
-
-  const resultCount = document.getElementById('result-count')
-  const emptyState = document.getElementById('empty-state')
-  const grid = document.getElementById('destinos-grid')
-  const resetEmpty = document.getElementById('reset-empty')
-
-  if (resultCount) resultCount.textContent = `${visible} destino${visible !== 1 ? 's' : ''}`
-
-  const showEmpty = hasFilter.value && visible === 0
-  if (emptyState) emptyState.classList.toggle('hidden', !showEmpty)
-  if (grid) grid.classList.toggle('hidden', showEmpty)
-
-  // Wire the "reset empty" button
-  if (resetEmpty) {
-    resetEmpty.onclick = resetAll
+  const newUrl = `/destinos${params.toString() ? '?' + params.toString() : ''}`
+    
+  if (window.location.pathname + window.location.search !== newUrl) {
+    navigate(newUrl)
   }
 }
 
+let searchTimer: ReturnType<typeof setTimeout> | null = null
+let isSyncing = false
+
 /* ── Watch state → filter ─────────────────────────────── */
-watch(state, () => {
-  applyFilters()
-}, { deep: true })
+// Cambios de selección (Pills/Selects) aplican inmediatamente
+watch(() => [state.tipo, state.provincia, state.region, state.precio], () => {
+  if (isSyncing) return
+  buildAndNavigate()
+})
+
+// Texto de búsqueda tiene un debounce largo específico (800ms) para dejar escribir libremente
+watch(() => state.search, () => {
+  if (isSyncing) return
+
+  if (searchTimer) clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    buildAndNavigate()
+  }, 800)
+})
 
 /* ── Button Toggles ───────────────────────────────────── */
 function toggleRegion(ev: MouseEvent, region: string) {
@@ -271,12 +277,37 @@ function handleKeydown(ev: KeyboardEvent) {
   if (ev.key === 'Escape' && isOpen.value) closePanel()
 }
 
+/* ── Sync URLs ────────────────────────────────────────── */
+function syncStateFromURL() {
+  isSyncing = true
+  const params = new URLSearchParams(window.location.search)
+  state.tipo = params.get('type') || null
+  state.provincia = params.get('provinceId') || null
+  state.region = params.get('region') || null
+  state.precio = params.get('price') || null
+  state.search = params.get('search') || ''
+  nextTick(() => {
+    isSyncing = false
+  })
+}
+
+function handleAstroSwap() {
+  // Cuando Astro reemplaza el DOM (incluyendo el contenedor #active-chips), 
+  // el Teleport de Vue se "rompe". Lo apagamos y prendemos para que se re-ancle al nuevo DOM.
+  isMounted.value = false
+  nextTick(() => {
+    isMounted.value = true
+  })
+}
+
 /* ── Lifecycle ────────────────────────────────────────── */
 onMounted(() => {
   isMounted.value = true
 
   document.addEventListener('click', handleDocumentClick)
   document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('astro:page-load', syncStateFromURL)
+  document.addEventListener('astro:after-swap', handleAstroSwap)
 
   nextTick(() => {
     // Bloqueador nativo: impide que clics internos suban al document
@@ -284,16 +315,14 @@ onMounted(() => {
       _nativePanelStop = (e: Event) => e.stopPropagation()
       panelRef.value.addEventListener('click', _nativePanelStop)
     }
-
-    const currentCards = Array.from(document.querySelectorAll<HTMLElement>('.destino-card'))
-    const resultCount = document.getElementById('result-count')
-    if (resultCount) resultCount.textContent = `${currentCards.length} destinos`
   })
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleDocumentClick)
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('astro:page-load', syncStateFromURL)
+  document.removeEventListener('astro:after-swap', handleAstroSwap)
   if (panelRef.value && _nativePanelStop) {
     panelRef.value.removeEventListener('click', _nativePanelStop)
   }
