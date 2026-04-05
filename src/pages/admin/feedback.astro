@@ -1,8 +1,8 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Header from "../../components/layout/Header.astro";
-import { getUser } from "../../services/api";
-import AdminFeedbackPanel from "../../components/admin/AdminFeedbackPanel.vue";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/layout/Header.astro";
+import { getUser } from "@/services/api";
+import AdminFeedbackPanel from "@/components/admin/AdminFeedbackPanel.vue";
 
 const token = Astro.cookies.get("auth_token")?.value;
 const user = await getUser(token);

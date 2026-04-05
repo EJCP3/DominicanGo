@@ -1,14 +1,14 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Header from "../../components/layout/Header.astro";
-import BlogPostHero from "../../components/blog/BlogPostHero.astro";
-import BlogPostContent from "../../components/blog/BlogPostContent.astro";
-import BlogBentoGallery from "../../components/blog/BlogBentoGallery.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/layout/Header.astro";
+import BlogPostHero from "@/components/blog/BlogPostHero.astro";
+import BlogPostContent from "@/components/blog/BlogPostContent.astro";
+import BlogBentoGallery from "@/components/blog/BlogBentoGallery.astro";
 
-import { getBlogs, getFavoriteIds, getUser } from "../../services/api";
-import SocialActions from "../../components/interactions/SocialActions.vue";
-import Comments from "../../components/interactions/Comments.vue";
-import DeleteContentModal from "../../components/ui/DeleteContentModal.vue";
+import { getBlogs, getFavoriteIds, getUser } from "@/services/api";
+import SocialActions from "@/components/interactions/SocialActions.vue";
+import Comments from "@/components/interactions/Comments.vue";
+import DeleteContentModal from "@/components/ui/DeleteContentModal.vue";
 
 const token = Astro.cookies.get("auth_token")?.value ?? "";
 const isLoggedIn = !!token;

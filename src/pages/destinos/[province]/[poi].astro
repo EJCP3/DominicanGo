@@ -1,19 +1,21 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import Header from "../../../components/layout/Header.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/layout/Header.astro";
 import {
     getProvincesWithDestinations,
     slugify,
     getFavoriteIds,
     getUser,
-} from "../../../services/api";
-import { DEFAULT_HOURS } from "../../../data/poi-config.ts";
-import PoiHero from "../../../components/poi/PoiHero.astro";
-import PoiBentoGrid from "../../../components/poi/PoiBentoGrid.astro";
-import PoiSidebar from "../../../components/poi/PoiSidebar.astro";
-import PoiRelated from "../../../components/poi/PoiRelated.astro";
-import SocialActions from "../../../components/interactions/SocialActions.vue";
-import Comments from "../../../components/interactions/Comments.vue";
+} from "@/services/api";
+import { DEFAULT_HOURS } from "@/data/poi-config.ts";
+import PoiHero from "@/components/poi/PoiHero.astro";
+import PoiBentoGrid from "@/components/poi/PoiBentoGrid.astro";
+import PoiSidebar from "@/components/poi/PoiSidebar.astro";
+import PoiRelated from "@/components/poi/PoiRelated.astro";
+import SocialActions from "@/components/interactions/SocialActions.vue";
+import Comments from "@/components/interactions/Comments.vue";
+import DeleteContentModal from "@/components/ui/DeleteContentModal.vue";
+import DestinationOptionsDropdown from "@/components/poi/DestinationOptionsDropdown.vue";
 
 const token = Astro.cookies.get("auth_token")?.value ?? "";
 const isLoggedIn = !!token;
@@ -106,6 +108,11 @@ const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComp
 const showHours = poi.type !== "playa";
 
 const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
+
+const isOwner = user && poi.authorId && user.id === poi.authorId;
+const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
+const canManage = isOwner || isAdmin;
+const canEdit = isAdmin || (isOwner && poi.createdAt && (Date.now() - new Date(poi.createdAt).getTime() < 60 * 60 * 1000));
 ---
 
 <Layout title={`${poi.name} — DominicanGo`} description={poi.description}>
@@ -141,27 +148,24 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
                                 class="bg-base-100 rounded-3xl shadow-sm border border-base-200 p-8"
                                 aria-label="Sobre este lugar"
                             >
-                                <h2
-                                    class="font-heading font-bold text-xl text-neutral mb-5 flex items-center gap-3"
-                                >
-                                    <span
-                                        class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
-                                    >
-                                        <svg
-                                            class="w-4 h-4"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                            ><path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                            ></path></svg
-                                        >
-                                    </span>
-                                    Sobre este lugar
-                                </h2>
+                                <div class="flex items-center justify-between mb-5 relative">
+                                    <h2 class="font-heading font-bold text-xl text-neutral flex items-center gap-3 mb-0">
+                                        <span class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </span>
+                                        Sobre este lugar
+                                    </h2>
+                                    <DestinationOptionsDropdown
+                                        client:load
+                                        mapLink={mapLink}
+                                        website={website}
+                                        canManage={canManage}
+                                        canEdit={canEdit}
+                                        poiId={poi.id}
+                                    />
+                                </div>
                                 <p
                                     class="text-base-content/80 text-base leading-relaxed"
                                 >
@@ -298,6 +302,14 @@ const isFavorited = poi.id ? favDestinationIds.has(poi.id) : false;
             </div>
 
             <PoiRelated related={related} />
+            <DeleteContentModal
+                client:load
+                show={false}
+                resourceId={poi.id}
+                resourceType="destination"
+                resourceTitle={poi.name}
+                token={token}
+            />
         </article>
     </main>
 </Layout>

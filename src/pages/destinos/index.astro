@@ -1,12 +1,12 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Header from "../../components/layout/Header.astro";
-import Pagination from "../../components/ui/Pagination.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/layout/Header.astro";
+import Pagination from "@/components/ui/Pagination.astro";
 import {
     getProvincesWithDestinations,
     slugify,
     getFavoriteIds,
-} from "../../services/api";
+} from "@/services/api";
 
 const token = Astro.cookies.get("auth_token")?.value ?? "";
 
@@ -33,12 +33,12 @@ const [{ provinces, meta }, { destinationIds: favDestinationIds }] =
         getFavoriteIds(token),
     ]);
 
-import DestinosHero from "../../components/destinos/DestinosHero.astro";
-import FiltrosDestinos from "../../components/destinos/FiltrosDestinos.vue";
-import DestinoCard from "../../components/destinos/DestinoCard.astro";
-import DestinoModal from "../../components/destinos/DestinoModal.astro";
+import DestinosHero from "@/components/destinos/DestinosHero.astro";
+import FiltrosDestinos from "@/components/destinos/FiltrosDestinos.vue";
+import DestinoCard from "@/components/destinos/DestinoCard.astro";
+import DestinoModal from "@/components/destinos/DestinoModal.astro";
 
-import { TIPOS, TYPE_LABELS, REGION_COLORS } from "../../data/poi-config.ts";
+import { TIPOS, TYPE_LABELS, REGION_COLORS } from "@/data/poi-config.ts";
 
 const allDestinos = Object.entries(provinces).flatMap(
     ([provinceSlug, province]: any) =>

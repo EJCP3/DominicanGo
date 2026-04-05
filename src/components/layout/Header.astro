@@ -1,12 +1,12 @@
 ---
 // Header — auth-aware with client-side UserMenu (Vue, client:load)
-import ThemeDropdown from "./header/ThemeDropdown.astro";
-import MobileMenu from "./header/MobileMenu.astro";
-import FeedbackModal from "../ui/FeedbackModal.vue";
-import ThemeScript from "./header/ThemeScript.astro";
-import UserMenu from "./header/UserMenu.vue";
-import { getUser } from "../../services/api";
-import Icon from "../ui/Icon.astro";
+import ThemeDropdown from "@/components/layout/header/ThemeDropdown.astro";
+import MobileMenu from "@/components/layout/header/MobileMenu.astro";
+import FeedbackModal from "@/components/ui/FeedbackModal.vue";
+import ThemeScript from "@/components/layout/header/ThemeScript.astro";
+import UserMenu from "@/components/layout/header/UserMenu.vue";
+import { getUser } from "@/services/api";
+import Icon from "@/components/ui/Icon.astro";
 
 const currentPath = Astro.url.pathname;
 const isHomeOrDestinos = currentPath === "/" || currentPath.startsWith("/destinos");

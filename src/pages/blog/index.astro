@@ -1,11 +1,11 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Header from "../../components/layout/Header.astro";
-import BlogFiltersPanel from "../../components/blog/BlogFiltersPanel.astro";
-import Pagination from "../../components/ui/Pagination.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/layout/Header.astro";
+import BlogFiltersPanel from "@/components/blog/BlogFiltersPanel.astro";
+import Pagination from "@/components/ui/Pagination.astro";
 import { Image } from "astro:assets";
 
-import { getBlogs, getFavoriteIds } from "../../services/api";
+import { getBlogs, getFavoriteIds } from "@/services/api";
 
 const token = Astro.cookies.get("auth_token")?.value ?? "";
 const isLoggedIn = !!token;

@@ -1,5 +1,5 @@
-import { loadAndRenderMap } from '../components/mapa/map-renderer.js';
-import { provinceColors, displayNames } from '../components/mapa/map-config.js';
+import { loadAndRenderMap } from '@/components/mapa/map-renderer.js';
+import { provinceColors, displayNames } from '@/components/mapa/map-config.js';
 import { gsap } from 'gsap';
 
 // Proxy helpers — delegate to the Vue component mounted in ProvinceModal.astro

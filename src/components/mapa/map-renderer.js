@@ -9,10 +9,10 @@ import {
   provinceColors,
   dataProvinces,
   displayNames,
-} from './map-config';
+} from '@/components/mapa/map-config';
 
 // Import projection, simplification and centroid utilities
-import { computeProjection, computeRingCenter } from './map-projection';
+import { computeProjection, computeRingCenter } from '@/components/mapa/map-projection';
 
 const DR_GEOJSON_LINK = '/dr-optimized.geojson.json';
 

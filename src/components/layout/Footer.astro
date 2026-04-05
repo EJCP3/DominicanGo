@@ -1,9 +1,9 @@
 ---
 // Footer — DominicanGo (DaisyUI & Premium Dynamic Style)
-import Icon from "../ui/Icon.astro";
-import FooterCarousel from "../ui/FooterCarousel.vue";
-import { getDestinations } from "../../services/api";
-import datosRD from "../../data/datosRandoms.json";
+import Icon from "@/components/ui/Icon.astro";
+import FooterCarousel from "@/components/ui/FooterCarousel.vue";
+import { getDestinations } from "@/services/api";
+import datosRD from "@/data/datosRandoms.json";
 
 // Datos curiosos de RD para el widget de "Vibra"
 
@@ -124,7 +124,7 @@ const { data: destinations } = await getDestinations({ limit: 12 });
 
 <script>
     import { gsap } from "gsap";
-    import datosRD from "../../data/datosRandoms.json";
+    import datosRD from "@/data/datosRandoms.json";
     
 
     const initAnimation = () => {

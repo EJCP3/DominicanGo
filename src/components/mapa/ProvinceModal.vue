@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { TYPE_LABELS } from '../../data/poi-config.ts'
+import { TYPE_LABELS } from '@/data/poi-config.ts'
 import { gsap } from 'gsap'
 import { Flip } from 'gsap/Flip'
 

@@ -1,9 +1,9 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Header from "../components/layout/Header.astro";
-import MapSection from "../components/mapa/MapSection.astro";
-import ProvinceModal from "../components/mapa/ProvinceModal.astro";
-import { getProvincesWithDestinations } from "../services/api";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/layout/Header.astro";
+import MapSection from "@/components/mapa/MapSection.astro";
+import ProvinceModal from "@/components/mapa/ProvinceModal.astro";
+import { getProvincesWithDestinations } from "@/services/api";
 const { provinces } = await getProvincesWithDestinations();
 const error = Astro.url.searchParams.get("error");
 ---
@@ -55,6 +55,6 @@ const error = Astro.url.searchParams.get("error");
 			window.location.replace("/destinos");
 		}
 
-		import "../composables/useApp.js";
+		import "@/composables/useApp.js";
 	</script>
 </Layout>

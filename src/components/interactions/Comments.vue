@@ -115,7 +115,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import LoginRequiredModal from '../ui/LoginRequiredModal.vue';
+import LoginRequiredModal from '@/components/ui/LoginRequiredModal.vue';
 
 const props = defineProps<{
   targetType: 'DESTINATION' | 'BLOG';

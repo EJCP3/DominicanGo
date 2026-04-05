@@ -1,10 +1,10 @@
 ---
 export const prerender = false;
 
-import Layout from "../../layouts/Layout.astro";
-import Header from "../../components/layout/Header.astro";
-import FormularioBlog from "../../components/blog/FormularioBlog.vue";
-import { getProvincesWithDestinations, getUser } from "../../services/api";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/layout/Header.astro";
+import FormularioBlog from "@/components/blog/FormularioBlog.vue";
+import { getProvincesWithDestinations, getUser } from "@/services/api";
 
 // ── Auth Guard & Data Fetching ──────────────────────────────────────────────
 const token = Astro.cookies.get("auth_token")?.value;

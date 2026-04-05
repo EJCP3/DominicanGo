@@ -10,6 +10,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@/*":            ["src/*"],
       "@layout/*":      ["src/components/layout/*"],
       "@ui/*":          ["src/components/ui/*"],
       "@home/*":        ["src/components/home/*"],
