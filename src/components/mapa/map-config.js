@@ -52,52 +52,48 @@ export const nameToSlug = {
 };
 
 /** 
- * Paleta de Colores por Ecosistema (Tonos Pastel / Muted)
- * Diseñada para máxima legibilidad de etiquetas y estética moderna.
+ * Paleta de Colores por Región Geográfica
+ * Basada en la imagen de referencia del diseño "DESPUES".
  */
 export const provinceColors = {
-    // 🏖️ TROPICAL / PLAYA
-    'la-altagracia': '#6EE7B7', // emerald-300
-    'samana': '#5EEAD4',        // teal-300
-    'puerto-plata': '#7DD3FC',  // sky-300
-    'barahona': '#38BDF8',      // sky-400
-    'la-romana': '#99F6E4',     // teal-200
-    'san-pedro-de-macoris': '#BAE6FD', // sky-200
+    // 🔵 REGIÓN NORTE (Cibao) — Grises azulados medios
+    'puerto-plata': '#6D8E9A',   // medium slate
+    'santiago': '#5E7D8C',       // steel blue
+    'valverde': '#7A9DAA',       // light slate
+    'monte-cristi': '#688A98',   // cadet
+    'dajabon': '#627F8E',        // blue-gray
+    'santiago-rodriguez': '#6F8D98', // dusty blue
+    'espaillat': '#7D9BA6',      // silver blue
+    'hermanas-mirabal': '#7898A3', // slate gray
+    'salcedo': '#7898A3',        // slate gray
+    'la-vega': '#6A8B9A',        // medium steel
+    'monsenor-nouel': '#7494A2', // grayish blue
+    'sanchez-ramirez': '#809FA9', // light steel
+    'duarte': '#6E8C9A',         // cadet blue
+    'maria-trinidad-sanchez': '#607A8A', // dark slate
+    'samana': '#6B909E',         // teal-slate
 
-    // ⛰️ FRÍO / MONTAÑA
-    'la-vega': '#93C5FD',       // blue-300
-    'monsenor-nouel': '#A5B4FC',// indigo-300
-    'san-jose-de-ocoa': '#C4B5FD',// violet-300
-    'san-juan': '#60A5FA',      // blue-400
-    'elias-pina': '#A78BFA',    // violet-400
+    // 🟢 REGIÓN SUROESTE — Verdes suaves y frescos
+    'azua': '#8AB87A',           // soft green
+    'barahona': '#7DAE6E',       // sage
+    'pedernales': '#96C486',     // light sage
+    'independencia': '#85B475',  // fern
+    'bahoruco': '#79A86A',       // meadow
+    'san-juan': '#82B072',       // clover
+    'elias-pina': '#74A465',     // spring green
+    'peravia': '#9ECC8E',        // mint sage
+    'san-jose-de-ocoa': '#8BBC7C', // pistachio
+    'san-cristobal': '#92C082',  // seafoam green
 
-    // 🏜️ SECO / ÁRIDO (Corrección en Valverde)
-    'pedernales': '#FCD34D',    // amber-300
-    'independencia': '#FDE047', // yellow-300
-    'bahoruco': '#FBBF24',      // amber-400
-    'azua': '#FB923C',          // orange-400
-    'peravia': '#FDBA74',       // orange-300
-    'monte-cristi': '#FCA5A5',  // red-300
-    'dajabon': '#FBBF24',       // amber-400
-    'santiago-rodriguez': '#FACC15',// yellow-400
-    'valverde': '#FDE047',      // yellow-300 (Garantizado diferente de Azua)
-
-    // 🌿 SELVA / LLUVIOSO
-    'maria-trinidad-sanchez': '#4ADE80', // green-400
-    'duarte': '#BEF264',        // lime-300
-    'hato-mayor': '#86EFAC',    // green-300
-    'el-seibo': '#84CC16',      // lime-500
-    'monte-plata': '#34D399',   // emerald-400
-    'sanchez-ramirez': '#A3E635',// lime-400
-    'espaillat': '#A3E635',     // lime-400
-    'hermanas-mirabal': '#86EFAC', // green-300
-    'salcedo': '#f44336',
-
-    // 🏙️ METROPOLITANO
-    'santiago': '#94A3B8',      // slate-400
-    'distrito-nacional': '#93C5FD',// blue-300 (Más vibrante para DN)
-    'santo-domingo': '#ea899a', // pink-400 (Como solicitaste)
-    'san-cristobal': '#9CA3AF', // gray-400
+    // 🔹 REGIÓN SURESTE/ESTE — Azules claros y cian
+    'la-altagracia': '#7ABABE',  // turquoise
+    'la-romana': '#88C4C0',      // soft teal
+    'san-pedro-de-macoris': '#94CCC6', // light teal
+    'hato-mayor': '#84C0B8',     // seafoam
+    'el-seibo': '#78B6AE',       // muted cyan
+    'monte-plata': '#8EC8C0',    // jade
+    'distrito-nacional': '#80BABA', // cyan blue
+    'santo-domingo': '#92C8C2',  // pale teal
 };
 
 /** Provinces that have POI data and are clickable */

@@ -200,7 +200,7 @@ function renderOverlays(labelsGroup, center, slug, color) {
   text.setAttribute('x', center[0].toFixed(0));
   text.setAttribute('y', center[1].toFixed(0));
   text.setAttribute('text-anchor', 'middle');
-  text.setAttribute('fill', '#5a7a6e');
+  text.setAttribute('fill', '#2A3D4A');
   text.setAttribute('font-size', '6');
   text.setAttribute('font-family', "'Outfit', sans-serif");
   text.setAttribute('font-weight', '600');

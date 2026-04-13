@@ -13,21 +13,7 @@
     >
      
         <div class="flex-1 relative overflow-hidden" id="map-wrapper">
-            <!-- Animated Airplane Banner -->
-            <div class="plane-animation absolute top-[15%] left-0 z-50 flex items-center pointer-events-none drop-shadow-lg opacity-0">
-                <!-- Banner -->
-                <div class="bg-base-100/90 backdrop-blur-sm border-2 border-base-200 text-base-content px-5 py-2 shadow-sm rounded-sm font-heading font-extrabold uppercase tracking-[0.15em] text-xs sm:text-sm relative ml-4">
-                    ¡Haz Clic en algunas provincias y Explora!
-                </div>
-                <!-- String -->
-                <svg class="w-10 sm:w-16 h-4 ml-[-2px] text-base-content/40" viewBox="0 0 100 20" preserveAspectRatio="none">
-                    <path d="M0,10 Q50,20 100,10" fill="none" stroke="currentColor" stroke-width="2"/>
-                </svg>
-                <!-- Plane SVG -->
-                <svg class="w-8 h-8 sm:w-10 sm:h-10 text-primary -ml-2 shrink-0" style="transform: rotate(90deg);" viewBox="0 0 24 24" fill="currentColor">
-                     <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
-                </svg>
-            </div>
+
 
             <div class="map-container w-full h-full" id="map-container">
                 <div
@@ -117,11 +103,30 @@
                             ></polygon>
                         </g>
                     </g>
+
                 </svg>
+
+                <!-- Airplane pulling banner across the top -->
+                <div class="airplane-flyby pointer-events-none absolute top-[8%] left-0 w-full z-20 overflow-hidden">
+                    <div class="airplane-slider">
+                        <!-- Banner -->
+                        <div class="airplane-banner-box">
+                            ¡Haz clic en algunas provincias y explora!
+                        </div>
+                        <!-- Rope -->
+                        <svg class="airplane-rope" width="50" height="20" viewBox="0 0 50 20">
+                            <line x1="0" y1="14" x2="48" y2="10" stroke="#4A7088" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5"/>
+                        </svg>
+                        <!-- Airplane -->
+                        <svg class="airplane-plane" width="32" height="32" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="#3D5E6E"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
 
-        
+        <!-- Bottom hint bar -->
         <div
             id="hint-bar"
             class="flex items-center justify-center pb-28 md:pb-4 pt-2 relative z-10"
@@ -159,17 +164,93 @@
 </section>
 
 <style>
-@keyframes fly-banner {
-    0% { transform: translateX(-110%) translateY(20px) rotate(8deg); opacity: 0; }
-    10% { opacity: 1; }
-    50% { transform: translateX(40vw) translateY(-30px) rotate(-2deg); }
-    90% { opacity: 1; }
-    100% { transform: translateX(120vw) translateY(50px) rotate(8deg); opacity: 0; }
+@keyframes bounce-x {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
 }
-.plane-animation {
-    /* Retrasamos 1s el inicio y la animación de vuelo cruza la pantalla en 12s */
-    animation: fly-banner 20s cubic-bezier(0.25, 0.1, 0.25, 1) 1s forwards;
-    will-change: transform, opacity;
+.animate-bounce-x {
+    animation: bounce-x 1.5s ease-in-out infinite;
+}
+
+/* Airplane flyby */
+.airplane-flyby {
+    height: 50px;
+}
+
+.airplane-slider {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: absolute;
+    animation: flyby-x 20s ease-in-out infinite, flyby-y 20s ease-in-out infinite;
+    left: 10px;
+}
+
+.airplane-banner-box {
+    background: rgba(240, 246, 248, 0.92);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(120, 160, 180, 0.25);
+    color: #2A3D4A;
+    padding: 8px 22px;
+    border-radius: 6px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    animation: banner-counterflip 20s ease-in-out infinite;
+}
+
+.airplane-rope {
+    flex-shrink: 0;
+    margin: 0 -2px;
+    align-self: center;
+    animation: banner-counterflip 20s ease-in-out infinite;
+}
+
+.airplane-plane {
+    flex-shrink: 0;
+    transform: rotate(90deg);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
+}
+
+/* Horizontal movement with flip at each end */
+@keyframes flyby-x {
+    0%    { left: 10px;  transform: scaleX(1); }
+    42%   { left: calc(100% - 500px); transform: scaleX(1); }
+    46%   { left: calc(100% - 490px); transform: scaleX(1); }
+    50%   { left: calc(100% - 500px); transform: scaleX(-1); }
+    92%   { left: 10px; transform: scaleX(-1); }
+    96%   { left: 0px; transform: scaleX(-1); }
+    100%  { left: 10px; transform: scaleX(1); }
+}
+
+/* Vertical arc during turns */
+@keyframes flyby-y {
+    0%    { top: 0; }
+    42%   { top: 0; }
+    44%   { top: -18px; }
+    46%   { top: -30px; }
+    48%   { top: -18px; }
+    50%   { top: 0; }
+    92%   { top: 0; }
+    94%   { top: -18px; }
+    96%   { top: -30px; }
+    98%   { top: -18px; }
+    100%  { top: 0; }
+}
+
+/* Counter-flip banner text so it stays readable when parent flips */
+@keyframes banner-counterflip {
+    0%    { transform: scaleX(1); }
+    42%   { transform: scaleX(1); }
+    46%   { transform: scaleX(1); }
+    50%   { transform: scaleX(-1); }
+    92%   { transform: scaleX(-1); }
+    96%   { transform: scaleX(-1); }
+    100%  { transform: scaleX(1); }
 }
 </style>
 

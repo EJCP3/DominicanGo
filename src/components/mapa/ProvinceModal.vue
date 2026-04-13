@@ -28,12 +28,12 @@ type ProvincesMap = Record<string, ProvinceData>
 
 /* ── State ──────────────────────────────────────────────── */
 const isOpen = ref(false)
-const isFilterOpen = ref(false)
 const isAnimating = ref(false)
 const provinceId = ref<string | null>(null)
 const provincesData = ref<ProvincesMap | null>(null)
 const currentCategory = ref<string>('all')
 const currentPrice = ref<string>('all')
+const searchQuery = ref<string>('')
 
 const panelRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
@@ -52,15 +52,20 @@ const filteredPois = computed<POI[]>(() => {
   return province.value.pois.filter(poi => {
     const catOk = currentCategory.value === 'all' || poi.type === currentCategory.value
     const priceOk = currentPrice.value === 'all' || poi.price === currentPrice.value
-    return catOk && priceOk
+    const searchOk = !searchQuery.value || 
+      poi.name.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
+      poi.description.toLowerCase().includes(searchQuery.value.toLowerCase());
+    return catOk && priceOk && searchOk
   })
 })
 
-const typeEntries = computed(() => Object.entries(TYPE_LABELS) as [string, string][])
+const availableTypeEntries = computed(() => {
+  if (!province.value || !province.value.pois) return []
+  const typesInProvince = new Set(province.value.pois.map(poi => poi.type))
+  return Object.entries(TYPE_LABELS).filter(([typeKey]) => typesInProvince.has(typeKey)) as [string, string][]
+})
 
 /* ── Helpers ────────────────────────────────────────────── */
-const isFilterAnimating = ref(false)
-
 function handleScroll() {
   if (!scrollContainer.value) return
   const { scrollLeft, scrollWidth, clientWidth } = scrollContainer.value
@@ -80,86 +85,7 @@ function scrollCat(dir: 'left' | 'right') {
 function resetFilters() {
   currentCategory.value = 'all'
   currentPrice.value = 'all'
-}
-
-async function animateToggleFilter(force?: boolean) {
-  if (isFilterAnimating.value) return;
-  isFilterAnimating.value = true;
-
-  const targetState = force !== undefined ? force : !isFilterOpen.value;
-
-  const panelBg = document.querySelector('[data-flip-id="prov-filter-bg"]')
-  const panelContent = document.querySelector('#prov-filter-content')
-
-  if (!targetState) {
-    // SECUENCIA DE CIERRE:
-    if (panelContent) {
-      gsap.to(panelContent, { opacity: 0, duration: 0.15, ease: 'power2.out' })
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 80))
-
-    const targets = gsap.utils.toArray<HTMLElement>('[data-flip-id^="prov-filter-"]')
-    const flipState = Flip.getState(targets)
-
-    isFilterOpen.value = false
-    await nextTick()
-
-    Flip.from(flipState, {
-      duration: 0.3,
-      ease: 'power3.inOut',
-      scale: true,
-      absolute: true,
-      nested: true,
-      onComplete: () => {
-        isFilterAnimating.value = false;
-      }
-    })
-  } else {
-    // SECUENCIA DE APERTURA:
-    const targets = gsap.utils.toArray<HTMLElement>('[data-flip-id^="prov-filter-"]')
-    const flipState = Flip.getState(targets)
-
-    isFilterOpen.value = true
-    await nextTick()
-
-    const newContent = document.querySelector('#prov-filter-content')
-    const oldHeader = document.querySelector('[data-flip-id="prov-filter-header"]')
-
-    if (newContent || oldHeader) {
-      gsap.set([newContent, oldHeader], { opacity: 0, y: 12 })
-    }
-
-    Flip.from(flipState, {
-      duration: 0.45,
-      ease: 'power2.inOut',
-      scale: true,
-      absolute: true,
-      nested: true,
-      onComplete: () => {
-        if (newContent || oldHeader) {
-          gsap.to([newContent, oldHeader], {
-            opacity: 1, y: 0, duration: 0.25, stagger: 0.05, ease: 'back.out(1.2)',
-            onComplete: () => {
-              isFilterAnimating.value = false;
-              // Asegurar que el contenedor sea auto-ajustable y no tenga altura fija de GSAP
-              if (panelBg) {
-                gsap.set(panelBg, {
-                  height: "auto",
-                  width: "20rem",
-                  clearProps: "all"
-                })
-              }
-              // Inicializar flechas de scroll
-              setTimeout(() => handleScroll(), 100)
-            }
-          })
-        } else {
-          isFilterAnimating.value = false;
-        }
-      }
-    })
-  }
+  searchQuery.value = ''
 }
 
 function handleBackdropClick() {
@@ -174,9 +100,6 @@ async function openModal(id: string, data: ProvincesMap) {
   provinceId.value = id
   provincesData.value = data
   resetFilters()
-  if (isFilterOpen.value) {
-    isFilterOpen.value = false
-  }
 
   const originEl = document.querySelector(`[data-province="${id}"]`)
   let rect = null;
@@ -294,7 +217,6 @@ async function closeModal() {
 
   function finishClose() {
     isOpen.value = false
-    isFilterOpen.value = false
     document.body.style.overflow = ''
     isAnimating.value = false
 
@@ -360,122 +282,60 @@ onMounted(() => {
 
           <!-- Action Bar -->
           <div
-            class="px-8 bg-base-200/20 border-b border-base-200/50 relative z-30 shrink-0 h-[72px] flex flex-col justify-center">
-            <div class="relative flex justify-end w-full">
-              <!-- Filter Toggle Button (Morphs to header) -->
-              <button v-show="!isFilterOpen" data-flip-id="prov-filter-bg"
-                class="btn btn-sm h-9 px-5 rounded-full flex items-center gap-2 cursor-pointer btn-ghost bg-base-100 shadow-sm hover:shadow-md transition-shadow border-none"
-                @click="animateToggleFilter()" aria-label="Abrir filtros">
-                <div data-flip-id="prov-filter-header" class="flex items-center gap-2">
-                  <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
-                  <span class="font-bold">Filtros</span>
+            class="px-5 sm:px-8 bg-base-200/20 border-b border-base-200/50 relative z-[999] shrink-0 h-[72px] flex flex-row items-center justify-between gap-4">
+            
+            <!-- Buscador -->
+            <div class="relative flex-1 max-w-[14rem] sm:max-w-xs">
+              <svg class="w-4 h-4 text-base-content/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input type="text" v-model="searchQuery" placeholder="Buscar destino..." class="input h-10 w-full pl-10 bg-base-100 hover:bg-base-100/80 border-none shadow-sm rounded-full focus:ring-2 focus:ring-primary/20 text-sm font-medium placeholder:font-normal placeholder:text-base-content/40 transition-shadow" />
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+              
+              <!-- Dropdown Precio (Entrada) -->
+              <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn h-9 sm:h-10 px-4 rounded-[1.25rem] flex items-center gap-1.5 shadow-none transition-all duration-200 outline-none text-xs sm:text-sm font-bold border-2"
+                     :class="currentPrice !== 'all' ? 'border-base-content/80 text-base-content bg-transparent shadow-sm' : 'border-transparent bg-base-200/60 hover:bg-base-200 text-base-content/70'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"></path></svg>
+                  <span class="hidden sm:inline">Entrada</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="opacity-50"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
-              </button>
-
-              <!-- Filter Panel -->
-              <div v-show="isFilterOpen" data-flip-id="prov-filter-bg"
-                class="absolute top-0 right-0 w-80 min-h-fit bg-base-100/95 backdrop-blur-2xl shadow-2xl rounded-2xl flex flex-col z-50 origin-top-right">
-
-                <!-- Panel Header -->
-                <div class="flex items-center justify-between p-6 pb-4 border-b border-base-200/50 bg-white/50">
-                  <div data-flip-id="prov-filter-header" class="flex items-center gap-2 flex-1 origin-left">
-                    <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                    <h4 class="font-heading font-extrabold text-xl text-base-content whitespace-nowrap">Filtros</h4>
-                  </div>
-
-                  <div id="prov-filter-icons" class="flex items-center gap-1.5 origin-right">
-                    <button
-                      class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-primary transition-colors border-none"
-                      title="Restablecer" @click="resetFilters">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                    </button>
-                    <button
-                      class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-error transition-colors border-none"
-                      @click="animateToggleFilter(false)">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                <div id="prov-filter-content" class="p-6 pb-20 relative z-10 shrink-0">
-                  <!-- Category Horizontal Slider -->
-                  <fieldset class="mb-6 border-none p-0 m-0 min-w-0 w-full">
-                    <legend
-                      class="text-[10px] font-extrabold tracking-[0.15em] text-base-content/50 uppercase mb-4 opacity-80">
-                      Categorías
-                    </legend>
-                    <div class="relative group/scroll w-full min-w-0">
-                      <!-- Left Fade & Arrow -->
-                      <div v-show="canScrollLeft"
-                        class="absolute left-0 top-0 bottom-2 w-12 bg-linear-to-r from-base-100 to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center">
-                        <button
-                          class="btn btn-xs btn-circle bg-base-100 text-base-content shadow-md border-none hover:bg-base-200 pointer-events-auto -ml-1 focus:ring-2 focus:ring-primary focus:outline-none"
-                          tabindex="0" @keydown.enter.space.prevent="scrollCat('left')" @click.stop="scrollCat('left')"
-                          aria-label="Desplazar categorías a la izquierda">
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                              d="M15 19l-7-7 7-7" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      <!-- Right Fade & Arrow -->
-                      <div v-show="canScrollRight"
-                        class="absolute right-0 top-0 bottom-2 w-12 bg-linear-to-l from-base-100 to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-end">
-                        <button
-                          class="btn btn-xs btn-circle bg-base-100 text-base-content shadow-md border-none hover:bg-base-200 pointer-events-auto -mr-1 focus:ring-2 focus:ring-primary focus:outline-none"
-                          tabindex="0" @keydown.enter.space.prevent="scrollCat('right')"
-                          @click.stop="scrollCat('right')" aria-label="Desplazar categorías a la derecha">
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      <!-- Scroll Container -->
-                      <div ref="scrollContainer" @scroll="handleScroll"
-                        class="flex items-center gap-2 overflow-x-auto pb-4 -mx-1 px-1 custom-scrollbar-x snap-x scroll-smooth whitespace-nowrap flex-nowrap w-full">
-                        <button
-                          class="filter-pill snap-start whitespace-nowrap px-5 focus:ring-2 focus:ring-primary focus:outline-none"
-                          :class="{ active: currentCategory === 'all' }" @click="currentCategory = 'all'"
-                          tabindex="0">Todas</button>
-                        <button v-for="[value, label] in typeEntries" :key="value"
-                          class="filter-pill snap-start whitespace-nowrap px-5 focus:ring-2 focus:ring-primary focus:outline-none"
-                          :class="{ active: currentCategory === value }" @click="currentCategory = value"
-                          tabindex="0">{{ label }}</button>
-                      </div>
-                    </div>
-                  </fieldset>
-
-                  <!-- Price Pills -->
-                  <fieldset class="mt-2 border-none p-0 m-0">
-                    <legend
-                      class="text-[10px] font-extrabold tracking-[0.15em] text-base-content/50 uppercase mb-4 opacity-80">
-                      Precio
-                    </legend>
-                    <div class="flex gap-2">
-                      <button class="filter-pill flex-1 text-center" :class="{ active: currentPrice === 'all' }"
-                        @click="currentPrice = 'all'">Todos</button>
-                      <button class="filter-pill flex-1 text-center" :class="{ active: currentPrice === 'gratis' }"
-                        @click="currentPrice = 'gratis'">Gratis</button>
-                      <button class="filter-pill flex-1 text-center" :class="{ active: currentPrice === 'pagado' }"
-                        @click="currentPrice = 'pagado'">Pagado</button>
-                    </div>
-                  </fieldset>
-                </div>
+                <!-- Menu -->
+                <ul tabindex="0" class="dropdown-content z-[1000] menu p-2 mt-2 shadow-2xl bg-base-100 rounded-[1.25rem] w-40 flex flex-col gap-1 border border-base-200/50">
+                  <li><button class="rounded-lg text-sm font-medium" :class="currentPrice === 'all' ? 'active font-bold bg-base-200/50' : ''" @click="currentPrice = 'all'; document.activeElement?.blur()">Todas</button></li>
+                  <li><button class="rounded-lg text-sm font-medium" :class="currentPrice === 'gratis' ? 'active font-bold bg-base-200/50' : ''" @click="currentPrice = 'gratis'; document.activeElement?.blur()">Gratis</button></li>
+                  <li><button class="rounded-lg text-sm font-medium" :class="currentPrice === 'pagado' ? 'active font-bold bg-base-200/50' : ''" @click="currentPrice = 'pagado'; document.activeElement?.blur()">De pago</button></li>
+                </ul>
               </div>
+
+              <!-- Dropdown Categorías -->
+              <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn h-9 sm:h-10 px-4 rounded-[1.25rem] flex items-center gap-1.5 shadow-none transition-all duration-200 outline-none text-xs sm:text-sm font-bold border-2"
+                     :class="currentCategory !== 'all' ? 'border-base-content/80 text-base-content bg-transparent shadow-sm' : 'border-transparent bg-base-200/60 hover:bg-base-200 text-base-content/70'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+                  <span class="hidden sm:inline">Categorías</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="opacity-50"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <!-- Menu -->
+                <ul tabindex="0" class="dropdown-content z-[1000] menu p-2 mt-2 shadow-2xl bg-base-100 rounded-[1.25rem] w-48 flex flex-col gap-1 border border-base-200/50 max-h-64 overflow-y-auto custom-scrollbar">
+                  <li><button class="rounded-lg text-sm font-medium" :class="currentCategory === 'all' ? 'active font-bold bg-base-200/50' : ''" @click="currentCategory = 'all'; document.activeElement?.blur()">Todas</button></li>
+                  <li v-for="[value, label] in availableTypeEntries" :key="value">
+                    <button class="rounded-lg text-sm font-medium" :class="currentCategory === value ? 'active font-bold bg-base-200/50' : ''" @click="currentCategory = value; document.activeElement?.blur()">{{ label }}</button>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Filter Reset Button (if filters are active) -->
+              <button v-if="currentPrice !== 'all' || currentCategory !== 'all' || searchQuery !== ''" 
+                class="btn btn-sm btn-circle btn-ghost text-base-content/40 hover:text-error transition-colors" 
+                title="Limpiar filtros" @click="resetFilters">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+              
             </div>
           </div>
 

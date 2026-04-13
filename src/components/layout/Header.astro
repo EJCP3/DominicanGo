@@ -1,27 +1,27 @@
 ---
-// Header — auth-aware with client-side UserMenu (Vue, client:load)
-import ThemeDropdown from "@/components/layout/header/ThemeDropdown.astro";
-import MobileMenu from "@/components/layout/header/MobileMenu.astro";
-import FeedbackModal from "@/components/ui/FeedbackModal.vue";
+// Header — Unified bar: Logo | Search | Mapa/Listas toggle + Hamburger
 import ThemeScript from "@/components/layout/header/ThemeScript.astro";
 import UserMenu from "@/components/layout/header/UserMenu.vue";
-import { getUser } from "@/services/api";
+import HeaderSearch from "@/components/layout/header/HeaderSearch.vue";
+import FeedbackModal from "@/components/ui/FeedbackModal.vue";
 import Icon from "@/components/ui/Icon.astro";
+import { getUser } from "@/services/api";
 
 const currentPath = Astro.url.pathname;
-const isHomeOrDestinos = currentPath === "/" || currentPath.startsWith("/destinos");
+const isMapActive = currentPath === "/" || currentPath === "/index";
+const isGridActive = currentPath === "/destinos" || currentPath === "/destinos/";
+const isOnTogglePage = isMapActive || isGridActive;
 
-// SSR: lee el token para pasar el user al MobileMenu (que sigue siendo SSR)
 const token = Astro.cookies.get("auth_token")?.value;
 const user = await getUser(token);
 
 const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3000';
 ---
 
-<header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md no-underline">
-    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-        <!-- Logo -->
-        <div class="flex items-center gap-2">
+<header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-base-100/80 border-b border-base-200/40">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
+        <!-- Logo (Left) -->
+        <div class="flex items-center shrink-0">
             <a
                 href="/"
                 class="no-underline font-heading font-extrabold text-neutral text-lg sm:text-xl transition-all hover:opacity-80"
@@ -30,152 +30,300 @@ const API_BASE = import.meta.env.PUBLIC_API_URL?.replace('/api', '') || 'http://
             </a>
         </div>
 
-        <!-- Nav links (Desktop) -->
-        <nav id="desktop-nav" aria-label="Navegación principal">
-            <ul class="hidden md:flex items-center gap-1 relative px-1 py-1 rounded-full">
-                <!-- Sliding Highlighter -->
-                <li id="header-highlighter" class="absolute h-[calc(100%-8px)] top-1 left-1 bg-primary rounded-full z-0 pointer-events-none shadow-[0_4px_12px_rgba(var(--p),0.3)] opacity-0 transition-opacity" aria-hidden="true"></li>
+        <!-- Search (Center) — visible on md+ -->
+        <div class="hidden md:flex flex-1 max-w-md mx-4 relative">
+            <HeaderSearch client:load apiBase={API_BASE} />
+        </div>
 
-                <li>
-                    <a
-                        href="/"
-                        data-astro-prefetch="hover"
-                        class={`nav-link relative z-10 no-underline px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300 ${
-                            isHomeOrDestinos
-                                ? "text-primary-content active-nav"
-                                : "text-base-content/60 hover:text-base-content"
-                        }`}
-                    >
-                        Destinos
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="/blog"
-                        data-astro-prefetch="hover"
-                        class={`nav-link relative z-10 no-underline px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300 ${
-                            currentPath.startsWith("/blog")
-                                ? "text-primary-content active-nav"
-                                : "text-base-content/60 hover:text-base-content"
-                        }`}
-                    >
-                        Blog
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <!-- Right side: View Toggle + Hamburger -->
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+            
+            <!-- View Toggle (Mapa / Listas) — inline pill -->
+            <nav id="view-toggle-header" class="hidden md:flex items-center bg-base-200/50 p-1 rounded-full relative">
+                <!-- Sliding Highlighter (hidden when not on a toggle page) -->
+                <div id="header-toggle-highlighter" class:list={["absolute h-[calc(100%-8px)] top-1 left-1 bg-primary rounded-full shadow-[0_2px_8px_rgba(var(--p),0.3)] z-0 pointer-events-none transition-all duration-300", !isOnTogglePage && "opacity-0"]}></div>
+                
+                <a
+                    href="/"
+                    id="header-toggle-map"
+                    data-astro-prefetch="hover"
+                    class:list={[
+                        "header-toggle-btn relative z-10 flex items-center gap-1.5 px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300",
+                        isMapActive ? "text-primary-content" : "text-base-content/50 hover:text-base-content/70",
+                    ]}
+                >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Mapa
+                </a>
+                <a
+                    href="/destinos"
+                    id="header-toggle-grid"
+                    data-astro-prefetch="hover"
+                    class:list={[
+                        "header-toggle-btn relative z-10 flex items-center gap-1.5 px-5 py-1.5 rounded-full text-sm font-bold transition-colors duration-300",
+                        isGridActive ? "text-primary-content" : "text-base-content/50 hover:text-base-content/70",
+                    ]}
+                >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Listas
+                </a>
+            </nav>
 
-        <!-- Right Side Actions -->
-        <div class="flex items-center gap-2 sm:gap-3">
-            <!-- UserMenu: componente Vue, lee la cookie en el cliente (client:load) -->
-            <!-- Esto evita el problema del timing de SSR post-OAuth redirect -->
-            <UserMenu client:load apiBase={API_BASE} />
+            <!-- Hamburger Menu (all screen sizes) -->
+            <div class="dropdown dropdown-end">
+                <button
+                    tabindex="0"
+                    class="btn btn-ghost btn-circle btn-sm"
+                    aria-label="Abrir menú"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                    </svg>
+                </button>
+                <ul
+                    tabindex="0"
+                    class="dropdown-content menu bg-base-100/95 backdrop-blur-md rounded-2xl z-50 w-64 p-4 mt-3 shadow-2xl border border-base-200"
+                >
+                    <!-- Mobile-only: Search -->
+                    <li class="md:hidden mb-2">
+                        <div class="relative w-full p-0">
+                            <HeaderSearch client:load apiBase={API_BASE} />
+                        </div>
+                    </li>
 
-            <!-- ThemeDropdown: visible cuando NO hay sesión. UserMenu.vue lo oculta al loguearse -->
-            <div id="external-theme-dropdown">
-                <ThemeDropdown />
+                    <!-- Mobile-only: View Toggle -->
+                    <li class="md:hidden">
+                        <div class="flex items-center gap-2 bg-base-200/50 rounded-full p-1">
+                            <a href="/" class:list={["flex-1 text-center py-1.5 rounded-full text-xs font-bold transition-all", isMapActive ? "bg-primary text-primary-content" : "text-base-content/50"]}>
+                                Mapa
+                            </a>
+                            <a href="/destinos" class:list={["flex-1 text-center py-1.5 rounded-full text-xs font-bold transition-all", isGridActive ? "bg-primary text-primary-content" : "text-base-content/50"]}>
+                                Listas
+                            </a>
+                        </div>
+                    </li>
+                    
+                    <div class="divider my-1"></div>
+
+                    <!-- Navigation Links -->
+                    <li>
+                        <a href="/" data-astro-prefetch="hover" class="font-medium px-4 py-2">
+                            <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                            Destinos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/blog" data-astro-prefetch="hover" class="font-medium px-4 py-2">
+                            <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                            Blog
+                        </a>
+                    </li>
+
+                    {user && (
+                        <>
+                            <div class="divider my-1"></div>
+                            <li>
+                                <a href="/favoritos" data-astro-prefetch="hover" class="font-medium px-4 py-2">
+                                    <svg class="w-4 h-4 text-error" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                    Mis Favoritos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/destinos/nuevo" data-astro-prefetch="hover" class="font-medium px-4 py-2">
+                                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Registrar Destino
+                                </a>
+                            </li>
+                            {user?.role?.toUpperCase() === 'ADMIN' ? (
+                                <li>
+                                    <a href="/admin/feedback" data-astro-prefetch="hover" class="text-info font-medium px-4 py-2 text-left">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                        Manejo de Reportes
+                                    </a>
+                                </li>
+                            ) : (
+                                <li>
+                                    <button onclick="document.getElementById('feedback_modal').showModal()" class="text-info font-medium px-4 py-2 text-left">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                                        Sugerencias
+                                    </button>
+                                </li>
+                            )}
+                        </>
+                    )}
+
+                    <div class="divider my-1"></div>
+
+                    <!-- Theme Options (Estaciones) -->
+                    <li class="menu-title px-1 pb-2 pt-1">
+                        <span class="text-xs font-bold uppercase tracking-wider opacity-60">Estaciones (Tema)</span>
+                    </li>
+                    <li>
+                        <button data-theme-btn="pastel" class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200">
+                            <Icon name="spring" class="w-4 h-4 mr-2" /> Primavera
+                        </button>
+                    </li>
+                    <li>
+                        <button data-theme-btn="cupcake" class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200">
+                            <Icon name="summer" class="w-4 h-4 mr-2" /> Verano
+                        </button>
+                    </li>
+                    <li>
+                        <button data-theme-btn="caramellatte" class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200">
+                            <Icon name="autumn" class="w-4 h-4 mr-2" /> Otoño
+                        </button>
+                    </li>
+                    <li>
+                        <button data-theme-btn="nord" class="theme-btn w-full flex items-center px-4 py-2 text-sm rounded-xl hover:bg-base-200">
+                            <Icon name="winter" class="w-4 h-4 mr-2" /> Invierno
+                        </button>
+                    </li>
+
+                    <div class="divider my-1"></div>
+
+                    {user ? (
+                        <li>
+                            <a href="/logout" data-astro-reload class="text-error font-medium px-4 py-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                                Cerrar sesión
+                            </a>
+                        </li>
+                    ) : (
+                        <li class="mt-2">
+                            <a
+                                href={`${API_BASE}/auth/google`}
+                                class="btn btn-primary btn-md rounded-full w-full justify-center gap-2"
+                                data-astro-reload
+                            >
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                </svg>
+                                Iniciar sesión
+                            </a>
+                        </li>
+                    )}
+                </ul>
             </div>
 
-            <MobileMenu user={user} apiBase={API_BASE} />
-            <FeedbackModal client:load apiBase={API_BASE} />
         </div>
     </div>
 </header>
 <ThemeScript />
+<FeedbackModal client:load apiBase={API_BASE} />
 
 <script>
     import { gsap } from "gsap";
+    import { navigate } from "astro:transitions/client";
 
-    function updateHeaderHighlighter() {
-        const highlighter = document.getElementById('header-highlighter');
-        const activeLink = document.querySelector('#desktop-nav a.active-nav');
-        
-        if (!highlighter || !activeLink) return;
+    // ── View Toggle Logic (Header) ─────────────────────
+    function moveHeaderHighlighter(activeBtn, anim = true) {
+        const highlighter = document.getElementById('header-toggle-highlighter');
+        if (!highlighter || !activeBtn) return;
 
-        gsap.set(highlighter, { opacity: 1 });
+        const parent = activeBtn.parentElement;
+        if (!parent) return;
 
-        // Calculamos x considerando el 'left-1' (4px) del highlighter
         gsap.to(highlighter, {
-            x: activeLink.offsetLeft - 4,
-            width: activeLink.offsetWidth,
-            duration: 0.4,
+            x: activeBtn.offsetLeft - 4,
+            width: activeBtn.offsetWidth,
+            duration: anim ? 0.35 : 0,
             ease: "power2.out",
             overwrite: "auto"
         });
     }
 
-    function setupHeaderTransitions() {
-        const navLinks = document.querySelectorAll('#desktop-nav a.nav-link');
+    function setupHeaderToggle() {
+        const toggleBtns = document.querySelectorAll('#view-toggle-header a.header-toggle-btn');
         
-        navLinks.forEach(link => {
-            const clone = link.cloneNode(true);
-            link.parentNode?.replaceChild(clone, link);
+        toggleBtns.forEach(btn => {
+            const clone = btn.cloneNode(true);
+            btn.parentNode?.replaceChild(clone, btn);
 
             clone.addEventListener('click', (e) => {
-                if (clone.classList.contains('active-nav')) return;
-
-                // Respuesta visual inmediata
-                document.querySelectorAll('#desktop-nav a.nav-link').forEach(l => {
-                    l.classList.remove('active-nav', 'text-primary-content');
-                    l.classList.add('text-base-content/60');
-                });
+                const targetHref = clone.getAttribute('href');
+                const targetPath = new URL(targetHref, window.location.origin).pathname;
+                const currentPath = window.location.pathname;
                 
-                clone.classList.remove('text-base-content/60');
-                clone.classList.add('active-nav', 'text-primary-content');
-                
-                updateHeaderHighlighter();
-            });
-            
-            // Efecto Magneto / Hover flotante 
-            clone.addEventListener('mouseenter', () => {
-                const highlighter = document.getElementById('header-highlighter');
-                if (highlighter && !clone.classList.contains('active-nav')) {
-                     gsap.to(highlighter, {
-                        x: clone.offsetLeft - 4,
-                        width: clone.offsetWidth,
-                        duration: 0.3,
-                        ease: "power2.out",
-                        opacity: 0.6, // Tenue en hover para resaltar
-                        overwrite: "auto"
-                    });
+                if (currentPath === targetPath || (currentPath === '/index' && targetPath === '/')) {
+                    e.preventDefault();
+                    return;
                 }
-            });
-            
-            clone.addEventListener('mouseleave', () => {
-                 const activeLink = document.querySelector('#desktop-nav a.active-nav');
-                 if (activeLink) {
-                     const highlighter = document.getElementById('header-highlighter');
-                     gsap.to(highlighter, {
-                        x: activeLink.offsetLeft - 4,
-                        width: activeLink.offsetWidth,
-                        opacity: 1, // Vuelve a sólido cuando regresa al activo
-                        duration: 0.3,
-                        ease: "power2.out",
-                        overwrite: "auto"
+                e.preventDefault();
+
+                // Visual feedback
+                document.querySelectorAll('#view-toggle-header a.header-toggle-btn').forEach(b => {
+                    b.classList.remove('text-primary-content');
+                    b.classList.add('text-base-content/50');
+                });
+                clone.classList.add('text-primary-content');
+                clone.classList.remove('text-base-content/50');
+                moveHeaderHighlighter(clone, true);
+
+                // Animate content out
+                const content = document.querySelector('section#mapa') || document.querySelector('main');
+                if (content) {
+                    gsap.to(content, {
+                        y: 40,
+                        opacity: 0,
+                        duration: 0.15,
+                        ease: "power1.in",
+                        onComplete: () => {
+                            sessionStorage.setItem('toggleTransition', 'true');
+                            navigate(targetHref);
+                        }
                     });
-                 }
+                } else {
+                    sessionStorage.setItem('toggleTransition', 'true');
+                    navigate(targetHref);
+                }
             });
         });
     }
 
+    // ── Init ───────────────────────────────────────────
     document.addEventListener('astro:page-load', () => {
-        const highlighter = document.getElementById('header-highlighter');
-        if (highlighter) {
-             const activeLink = document.querySelector('#desktop-nav a.active-nav');
-             if (activeLink) {
-                 // Posicionamiento instantáneo en la carga para evitar 'saltos'
-                 gsap.set(highlighter, {
-                     x: activeLink.offsetLeft - 4,
-                     width: activeLink.offsetWidth,
-                     opacity: 1
-                 });
-             } else {
-                 gsap.set(highlighter, { opacity: 0 }); 
-             }
-        }
-        setupHeaderTransitions();
+        const path = window.location.pathname;
+        const isMap = path === '/' || path === '/index';
+        const isGrid = path === '/destinos' || path === '/destinos/';
+        const isOnTogglePage = isMap || isGrid;
 
-        // Cerrar menú / dropdown al hacer clic en un enlace interior
+        const highlighter = document.getElementById('header-toggle-highlighter');
+        if (isOnTogglePage) {
+            const activeBtn = document.getElementById(isMap ? 'header-toggle-map' : 'header-toggle-grid');
+            if (highlighter) highlighter.style.opacity = '1';
+            moveHeaderHighlighter(activeBtn, !sessionStorage.getItem('toggleTransition'));
+        } else {
+            // No active state for toggle buttons on other pages
+            if (highlighter) highlighter.style.opacity = '0';
+            document.querySelectorAll('#view-toggle-header a.header-toggle-btn').forEach(b => {
+                b.classList.remove('text-primary-content');
+                b.classList.add('text-base-content/50');
+            });
+        }
+        setupHeaderToggle();
+
+        // Animate entrance if coming from toggle
+        if (sessionStorage.getItem('toggleTransition')) {
+            sessionStorage.removeItem('toggleTransition');
+            const content = document.querySelector('section#mapa') || document.querySelector('main');
+            if (content) {
+                gsap.fromTo(content,
+                    { y: -60, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.70, ease: "power3.out", clearProps: "all" }
+                );
+            }
+        }
+
+        // Close dropdown on link click
         const dropdownLinks = document.querySelectorAll('.dropdown-content a');
         dropdownLinks.forEach(link => {
             link.addEventListener('click', () => {
