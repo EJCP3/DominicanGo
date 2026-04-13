@@ -181,7 +181,7 @@ onUnmounted(() => {
     <!-- Loading State -->
     <Transition name="dropdown">
       <div
-        v-if="query.length >= 2 && isLoading"
+        v-if="isOpen && query.length >= 2 && isLoading"
         class="absolute top-full left-0 right-0 mt-2 bg-base-100 rounded-2xl shadow-2xl border border-base-200/60 z-50 p-6 flex flex-col items-center justify-center gap-3"
       >
         <span class="loading loading-spinner loading-md text-primary"></span>
@@ -192,7 +192,7 @@ onUnmounted(() => {
     <!-- No results -->
     <Transition name="dropdown">
       <div
-        v-if="query.length >= 2 && results.length === 0 && !isLoading"
+        v-if="isOpen && query.length >= 2 && results.length === 0 && !isLoading"
         class="absolute top-full left-0 right-0 mt-2 bg-base-100 rounded-2xl shadow-2xl border border-base-200/60 z-50 p-6 text-center"
       >
         <div class="text-3xl mb-2">🔍</div>
