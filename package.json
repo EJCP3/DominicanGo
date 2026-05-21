@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",
+    "@astrojs/vercel": "^10.0.7",
     "@astrojs/vue": "^5.1.4",
     "@fontsource-variable/gluten": "^5.2.8",
     "@panzoom/panzoom": "^4.6.1",
