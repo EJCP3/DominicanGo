@@ -3,7 +3,6 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/layout/Header.astro";
 import BlogFiltersPanel from "@/components/blog/BlogFiltersPanel.astro";
 import Pagination from "@/components/ui/Pagination.astro";
-import { Image } from "astro:assets";
 
 import { getBlogs, getFavoriteIds } from "@/services/api";
 
@@ -104,12 +103,9 @@ const [
                             <a href={`/blog/${post.slug}`} aria-label={`Leer artículo: ${post.title}`} class="absolute inset-0 z-20 w-full h-full cursor-pointer"></a>
                             
                             <figure class={`overflow-hidden relative bg-base-300 ${post.size?.includes('row-span-2') ? 'h-full min-h-[300px]' : 'aspect-video'}`}>
-                                <Image
+                                <img
                                     src={post.images[0]}
                                     alt={post.title}
-                                    width={600}
-                                    height={450}
-                                    format="webp"
                                     loading={posts.indexOf(post) < 3 ? "eager" : "lazy"}
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     transition:name={`img-blog-${post.slug}`}
@@ -133,12 +129,10 @@ const [
                                     <div class="flex items-center gap-2">
                                         <div class="w-6 h-6 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center ring-1 ring-base-200">
                                             {post.author?.foto ? (
-                                                <Image
+                                                <img
                                                     src={post.author.foto}
                                                     alt={post.author.name}
-                                                    width={48}
-                                                    height={48}
-                                                    format="webp"
+                                                    loading="lazy"
                                                     class="w-full h-full object-cover"
                                                 />
                                             ) : (

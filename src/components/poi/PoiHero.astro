@@ -16,7 +16,6 @@ interface Props {
     poiSlug?: string;
 }
 
-import { Image } from "astro:assets";
 
 const { name, image, images, slug, provinceSlug, poiSlug } = Astro.props;
 
@@ -51,14 +50,9 @@ const uniqueID = provinceSlug && poiSlug ? `${provinceSlug}-${poiSlug}` : null;
             tabindex="0"
         >
             <figure class="w-full h-full m-0 pointer-events-none">
-                <Image
+                <img
                     src={image}
                     alt={name}
-                    width={1200}
-                    height={600}
-                    widths={[400, 800, 1200]}
-                    sizes="(max-width: 640px) 400px, (max-width: 1024px) 800px, 1200px"
-                    format="webp"
                     loading="eager"
                     class="w-full h-full object-cover select-none transition-transform duration-700 group-hover:scale-105"
                     transition:name={uniqueID

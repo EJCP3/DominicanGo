@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import { TIPOS, TYPE_LABELS, ICONS } from "@/data/poi-config.ts";
 
 interface DestinoItem {
@@ -60,14 +59,9 @@ const { d, token = "", initialFavorited = false } = Astro.props;
         transition:name={`img-destino-${d.provinceSlug}-${d.poiSlug}`}
     >
         <figure class="w-full h-full m-0">
-            <Image
+            <img
                 src={d.image}
                 alt={d.name}
-                width={500}
-                height={400}
-                widths={[300, 500, 800]}
-                sizes="(max-width: 640px) 300px, (max-width: 1024px) 500px, 800px"
-                format="webp"
                 loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />

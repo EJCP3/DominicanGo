@@ -6,9 +6,6 @@ interface Props {
     images?: string[];
     slug: string;
 }
-
-import { Image } from "astro:assets";
-
 const { title, image, images = [], slug } = Astro.props;
 const lightboxImages = images.length > 0 ? images : [image];
 ---
@@ -20,12 +17,9 @@ const lightboxImages = images.length > 0 ? images : [image];
     tabindex="0"
 >
     <figure class="w-full h-full m-0 pointer-events-none">
-        <Image
+        <img
             src={image}
             alt={title}
-            width={1200}
-            height={600}
-            format="webp"
             loading="eager"
             class="w-full h-full object-cover select-none transition-transform duration-700 group-hover:scale-105"
             transition:name={`img-blog-${slug}`}

@@ -1,6 +1,4 @@
 ---
-import { Image } from "astro:assets";
-
 const { images = [], name } = Astro.props;
 ---
 
@@ -13,12 +11,9 @@ const { images = [], name } = Astro.props;
             onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 0, alt: '${name} - Vista 1' } }))`}
             aria-label={`Ampliar imagen: ${name} - Vista 1`}
         >
-            <Image
+            <img
                 src={images[0]}
                 alt={`${name} - vista 1`}
-                width={800}
-                height={600}
-                format="webp"
                 loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
@@ -35,12 +30,9 @@ const { images = [], name } = Astro.props;
                 onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 1, alt: '${name} - Vista 2' } }))`}
                 aria-label={`Ampliar imagen: ${name} - Vista 2`}
             >
-                <Image
+                <img
                     src={images[1]}
                     alt={`${name} - vista 2`}
-                    width={400}
-                    height={300}
-                    format="webp"
                     loading="lazy"
                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -58,12 +50,9 @@ const { images = [], name } = Astro.props;
                 onclick={`window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: ${JSON.stringify(images)}, currentIndex: 2, alt: '${name} - Vista 3' } }))`}
                 aria-label={`Ampliar imagen: ${name} - Vista 3`}
             >
-                <Image
+                <img
                     src={images[2]}
                     alt={`${name} - vista 3`}
-                    width={400}
-                    height={300}
-                    format="webp"
                     loading="lazy"
                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />

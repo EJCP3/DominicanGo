@@ -12,8 +12,6 @@ interface Props {
     authorFoto?: string | null;
 }
 
-import { Image } from "astro:assets";
-
 const {
     title,
     author,
@@ -68,12 +66,10 @@ const {
     <div class="flex items-center gap-4 mb-12 border-b border-base-200 pb-8">
         <div class="w-12 h-12 rounded-full ring-2 ring-primary/20 ring-offset-2 overflow-hidden bg-primary/10 flex items-center justify-center">
             {authorFoto ? (
-                <Image 
+                <img 
                     src={authorFoto} 
                     alt={author} 
-                    width={96}
-                    height={96}
-                    format="webp"
+                    loading="lazy"
                     class="w-full h-full object-cover"
                 />
             ) : (
