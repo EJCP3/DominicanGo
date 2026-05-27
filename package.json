@@ -22,9 +22,8 @@
     "gsap": "^3.14.2",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.2",
-    "vue": "^3.5.30"
-  },
-  "devDependencies": {
+    "vue": "^3.5.30",
     "daisyui": "^5.5.19"
-  }
+  },
+  "packageManager": "pnpm@9.12.0"
 }
