@@ -161,9 +161,8 @@ const handleLogout = () => {
 
   // 2. Borrar la cookie del lado del cliente también (por si acaso)
   //    El dominio debe coincidir con el que se usó al guardar la cookie
-  const domain = window.location.hostname; // ej: dominicango.45.90.237.199.sslip.io
+  const domain = window.location.hostname;
   document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
-  document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=45.90.237.199.sslip.io;`;
   document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 
   // 3. Navegar a /logout (SSR de Astro hará el borrado definitivo del servidor)
@@ -188,7 +187,7 @@ onMounted(async () => {
   }
 
   try {
-    const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '');
+    const apiBase = (import.meta.env.PUBLIC_API_URL || 'https://dominicango-api.onrender.com/api').trim().replace(/\/+$/, '');
     const res = await fetch(`${apiBase}/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });

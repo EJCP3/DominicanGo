@@ -7,13 +7,13 @@ if (!token) {
 }
 
 // Save the JWT as an HTTP cookie (1 day)
+// NOTA: No se especifica 'domain' para que funcione en cualquier entorno (localhost, Vercel, etc.)
 Astro.cookies.set("auth_token", token, {
     path: "/",
-    domain: "45.90.237.199.sslip.io",
     maxAge: 60 * 60 * 24 * 1, // 1 día
     httpOnly: false, // false para que los componentes Vue puedan leerla con document.cookie
     sameSite: "lax", // lax funciona cuando el backend redirige al frontend (navegación top-level)
-    secure: false, // false porque corremos HTTP sin SSL en el VPS por ahora
+    secure: true, // true porque Vercel sirve HTTPS
 });
 
 // data-astro-reload forces a full server-side reload so the Header SSR re-reads the cookie

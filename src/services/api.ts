@@ -181,8 +181,8 @@ export const getApiUrl = (): string => {
     if (raw && raw.trim()) {
         return raw.trim().replace(/\/+$/, '');
     }
-    // Fallback a la URL real del backend en producción
-    return 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api';
+    // Fallback al backend en Render (producción)
+    return 'https://dominicango-api.onrender.com/api';
 };
 
 /**

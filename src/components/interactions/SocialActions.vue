@@ -111,7 +111,7 @@ const favLoading = ref(false);
 // Login Modal State
 const showLoginModal = ref(false);
 
-const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '');
+const apiBase = (import.meta.env.PUBLIC_API_URL || 'https://dominicango-api.onrender.com/api').trim().replace(/\/+$/, '');
 
 // Fetch Reactions on mount
 const fetchReactions = async () => {

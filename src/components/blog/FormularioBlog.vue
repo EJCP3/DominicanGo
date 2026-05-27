@@ -306,7 +306,7 @@ const mainImageFile = ref('');
 
 const daisyColors = ['base-100', 'base-200', 'base-300', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'];
 
-const apiBase = (import.meta.env.PUBLIC_API_URL || 'http://voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io/api').trim().replace(/\/+$/, '');
+const apiBase = (import.meta.env.PUBLIC_API_URL || 'https://dominicango-api.onrender.com/api').trim().replace(/\/+$/, '');
 
 const quillEditor = ref(null);
 let quillInstance = null;
