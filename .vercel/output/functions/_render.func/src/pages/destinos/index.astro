@@ -1,0 +1,187 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/layout/Header.astro";
+import Pagination from "@/components/ui/Pagination.astro";
+import {
+    getProvincesWithDestinations,
+    slugify,
+    getFavoriteIds,
+} from "@/services/api";
+
+const token = Astro.cookies.get("auth_token")?.value ?? "";
+
+// Handle Pagination and Filters from search params
+const page = Number(Astro.url.searchParams.get("page") || 1);
+const type = (Astro.url.searchParams.get("type") as any) || undefined;
+const provinceId = Astro.url.searchParams.get("provinceId") || undefined;
+const region = Astro.url.searchParams.get("region") || undefined;
+const price = (Astro.url.searchParams.get("price") as any) || undefined;
+const search = Astro.url.searchParams.get("search") || undefined;
+
+// Parallelize API calls
+const [{ provinces, meta }, { destinationIds: favDestinationIds }] =
+    await Promise.all([
+        getProvincesWithDestinations({
+            page,
+            limit: 12,
+            type,
+            provinceId,
+            region,
+            price,
+            search,
+        }),
+        getFavoriteIds(token),
+    ]);
+
+import DestinosHero from "@/components/destinos/DestinosHero.astro";
+import FiltrosDestinos from "@/components/destinos/FiltrosDestinos.vue";
+import DestinoCard from "@/components/destinos/DestinoCard.astro";
+import DestinoModal from "@/components/destinos/DestinoModal.astro";
+
+import { TIPOS, TYPE_LABELS, REGION_COLORS } from "@/data/poi-config.ts";
+
+const allDestinos = Object.entries(provinces).flatMap(
+    ([provinceSlug, province]: any) =>
+        province.pois.map((poi: any) => ({
+            ...poi,
+            province: province.name,
+            provinceSlug,
+            region: province.region,
+            provinceColor: province.color,
+            poiSlug: slugify(poi.name),
+            href: `/destinos/${provinceSlug}/${slugify(poi.name)}`,
+        })),
+);
+
+const regiones = [
+    ...new Set(Object.values(provinces).map((p: any) => p.region)),
+].sort() as string[];
+
+const provinciasList = Object.entries(provinces)
+    .sort((a: any, b: any) => a[1].name.localeCompare(b[1].name))
+    .map(([slug, prov]: any) => ({ slug, name: prov.name }));
+
+const initialState = {
+    tipo: type,
+    provincia: provinceId,
+    region,
+    precio: price,
+    search,
+};
+---
+
+<Layout
+    title="Destinos — DominicanGo"
+    description="Explora todos los destinos turísticos de República Dominicana."
+>
+    <Header />
+
+    <main class="min-h-screen pt-14">
+        <DestinosHero
+            totalCount={meta.total}
+            provinceCount={Object.keys(provinces).length}
+        />
+
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 pb-16">
+            <section class="w-full">
+                <div
+                    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 relative z-40"
+                >
+                    <div
+                        class="flex flex-wrap items-center gap-2"
+                        id="active-chips"
+                    >
+                        <span
+                            id="result-count"
+                            class="text-sm text-base-content/70 font-medium"
+                            >{meta.total} destinos</span
+                        >
+                    </div>
+
+                    <FiltrosDestinos
+                        client:load
+                        transition:persist="filtros-destinos"
+                        tipos={TIPOS}
+                        typeLabels={TYPE_LABELS}
+                        regiones={regiones}
+                        regionColors={REGION_COLORS}
+                        provincias={provinciasList}
+                        initialState={initialState}
+                    />
+                </div>
+
+                <div
+                    id="destinos-grid"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                >
+                    {
+                        allDestinos.map((d: any) => (
+                            <DestinoCard
+                                d={d}
+                                token={token}
+                                initialFavorited={favDestinationIds.has(d.id)}
+                            />
+                        ))
+                    }
+                </div>
+
+                <!-- Pagination -->
+                <Pagination
+                    currentPage={meta.page}
+                    totalPages={meta.totalPages}
+                    baseUrl="/destinos"
+                    searchParams={Astro.url.searchParams}
+                />
+
+                <!-- Empty state -->
+                <div
+                    id="empty-state"
+                    class={`${allDestinos.length === 0 ? "block" : "hidden"} text-center py-24`}
+                >
+                    <div
+                        class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center"
+                    >
+                        <svg
+                            class="w-8 h-8 text-base-content/50"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.5"
+                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                            ></path>
+                        </svg>
+                    </div>
+                    <h3
+                        class="font-heading font-semibold text-base-content text-xl mb-2"
+                    >
+                        Sin resultados
+                    </h3>
+                    <p class="text-base-content/60 text-sm">
+                        Intenta con otros filtros o términos de búsqueda.
+                    </p>
+                    <a
+                        href="/destinos"
+                        class="btn btn-outline btn-primary btn-sm rounded-full mt-4"
+                    >
+                        Limpiar filtros
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <DestinoModal />
+    <!-- <DestinosFilterScript /> -->
+
+    <script>
+        // Si hay eventos globales necesarios para la página, van aquí
+        document.addEventListener("astro:page-load", () => {
+            // Las animaciones GSAP de entrada chocaban con la hidratación y el filtro dinámico de Vue,
+            // dejando las cards "lavadas" o invisibles. Se ha eliminado en favor del filtro directo.
+        });
+    </script>
+</Layout>
