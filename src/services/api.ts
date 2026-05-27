@@ -186,6 +186,23 @@ export const getApiUrl = (): string => {
 };
 
 /**
+ * Helper: fetch with a timeout to avoid hanging SSR functions.
+ * Returns null on timeout or network error.
+ */
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeoutMs = 5000): Promise<Response | null> => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const res = await fetch(url, { ...options, signal: controller.signal });
+        return res;
+    } catch {
+        return null;
+    } finally {
+        clearTimeout(id);
+    }
+};
+
+/**
  * Realiza el fetch de destinos a la API backend con soporte para paginación y filtros.
  */
 export const getDestinations = async (params: Record<string, string | number | undefined> = {}) => {
@@ -201,8 +218,8 @@ export const getDestinations = async (params: Record<string, string | number | u
             }
         });
 
-        const res = await fetch(url.toString());
-        if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+        const res = await fetchWithTimeout(url.toString());
+        if (!res || !res.ok) throw new Error(`Error HTTP: ${res?.status ?? 'timeout'}`);
 
         const json = await res.json();
         return json.success ? json : { data: [], meta: { total: 0, page: 1, limit: 12, totalPages: 0 } };
@@ -224,13 +241,13 @@ export const getBlogs = async (params: Record<string, string | number> = {}) => 
             }
         });
 
-        const res = await fetch(url.toString());
-        if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+        const res = await fetchWithTimeout(url.toString());
+        if (!res || !res.ok) throw new Error(`Error HTTP: ${res?.status ?? 'timeout'}`);
 
         const json = await res.json();
         return json.success ? json : { data: [], meta: {} };
     } catch (error) {
-        return { data: [], meta: {} };
+        return { data: [], meta: { page: 1, totalPages: 0, total: 0 } };
     }
 };
 
@@ -286,13 +303,13 @@ export const getUser = async (token: string | undefined | null) => {
     const apiBase = getApiUrl();
     const targetUrl = `${apiBase}/users/me`;
     try {
-        const res = await fetch(targetUrl, {
+        const res = await fetchWithTimeout(targetUrl, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
-        if (!res.ok) return null;
+        if (!res || !res.ok) return null;
         const json = await res.json();
         return json.success ? json.data : null;
     } catch {
@@ -311,13 +328,13 @@ export const getFavoriteIds = async (token: string | undefined | null) => {
     const apiBase = getApiUrl();
     const targetUrl = `${apiBase}/favorites`;
     try {
-        const res = await fetch(targetUrl, {
+        const res = await fetchWithTimeout(targetUrl, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
-        if (!res.ok) return empty;
+        if (!res || !res.ok) return empty;
         const json = await res.json();
         const favorites: any[] = json.data ?? [];
         const destinationIds = new Set<string>(
