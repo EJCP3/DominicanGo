@@ -14,6 +14,8 @@ export default defineConfig({
             { protocol: 'http', hostname: 'localhost' },
             { protocol: 'https', hostname: 'picsum.photos' },
             { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+            { protocol: 'https', hostname: 'res.cloudinary.com' },
+            { protocol: 'https', hostname: 'dominicango-api.onrender.com' },
             { protocol: 'http', hostname: 'vps23897.cubepath.net' },
             { protocol: 'https', hostname: 'vps23897.cubepath.net' },
             { protocol: 'http', hostname: 'voo5p8djop0273tcxmv6v821.45.90.237.199.sslip.io' },
