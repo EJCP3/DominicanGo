@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { reactive, ref, shallowRef, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
-import { navigate } from 'astro:transitions/client'
 import { gsap } from 'gsap'
 import { Flip } from 'gsap/Flip'
 
@@ -103,7 +102,7 @@ function buildAndNavigate() {
   const newUrl = `/destinos${params.toString() ? '?' + params.toString() : ''}`
     
   if (window.location.pathname + window.location.search !== newUrl) {
-    navigate(newUrl)
+    window.location.href = newUrl
   }
 }
 

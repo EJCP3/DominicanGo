@@ -2,7 +2,6 @@
 import { ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { Flip } from 'gsap/Flip'
-import { navigate } from 'astro:transitions/client'
 
 gsap.registerPlugin(Flip)
 
@@ -136,10 +135,9 @@ function applyFilter(category: string) {
   state.selectedCategory = category
   closePanel()
   setTimeout(() => {
-    navigate(category === 'todas' 
+    window.location.href = category === 'todas' 
       ? '/blog' 
       : `/blog?category=${encodeURIComponent(category)}`
-    )
   }, 200) // Small delay to let the GSAP close animation start feels smoother
 }
 
